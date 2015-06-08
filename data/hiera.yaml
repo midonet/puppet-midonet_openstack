@@ -1,0 +1,7 @@
+---
+:backends:
+  - yaml
+  - module_data
+:hierarchy:
+  - common
+:datadir: /var/lib/hiera
