@@ -22,8 +22,10 @@ class midonet_openstack::profile::neutron::router {
   include ::midonet::midonet_agent
 
   class { '::neutron::agents::dhcp':
-    debug   => $::openstack::config::debug,
-    enabled => true,
+    debug            => $::openstack::config::debug,
+    interface_driver => 'neutron.agent.linux.interface.MidonetInterfaceDriver',
+    dhcp_driver      => 'midonet.neutron.agent.midonet_driver.DhcpNoOpDriver',
+    enabled          => true,
   }
 
   class { '::neutron::agents::metadata':
