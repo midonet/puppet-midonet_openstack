@@ -1,5 +1,7 @@
 # midonet_openstack
 
+NOW UNDER HEAVY DEVELOPMENT!
+
 # midonet-midonet_openstack
 
 MidoNet Reference and Testing Deployment Module for OpenStack.
