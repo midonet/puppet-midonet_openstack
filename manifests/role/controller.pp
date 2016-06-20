@@ -20,5 +20,6 @@ class midonet_openstack::role::controller inherits ::midonet_openstack::role {
   class { '::midonet_openstack::profile::mysql::controller': }
   class { '::midonet_openstack::profile::repos': }
   class { '::midonet_openstack::profile::rabbitmq::controller': }
+  class { '::midonet_openstack::profile::glance::controller': }
 
 }
