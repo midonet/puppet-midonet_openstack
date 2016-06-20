@@ -52,3 +52,4 @@ Puppetfile.lock
 
 # Ignore vagrant-generated files
 .vagrant
+Vagrantfile
