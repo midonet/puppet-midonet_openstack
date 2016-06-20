@@ -14,16 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class midonet_openstack::params::profile::nova::compute {
+class midonet_openstack::profile::nova::compute {
 
-    $management_network = $::openstack::params::network_management
+    $management_network = $::midonet_openstack::params::network_management
     $management_address = ip_for_network($management_network)
 
     $storage_management_address = $::midonet_openstack::params::storage_address_management
     $controller_management_address = $::midonet_openstack::params::controller_address_management
 
-    $user                = $::midonet_openstack::params::mysql_user_nova
-    $pass                = $::midonet_openstack::params::mysql_pass_nova
+    $user                = $::midonet_openstack::params::mysql_nova_user
+    $pass                = $::midonet_openstack::params::mysql_nova_pass
     $database_connection = "mysql://${user}:${pass}@${controller_management_address}/nova"
     class { '::nova':
       database_connection     => $database_connection,
@@ -39,9 +39,9 @@ class midonet_openstack::params::profile::nova::compute {
     nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
 
     class { '::nova::network::neutron':
-      neutron_admin_password => $::midonet_openstack::params::neutron_password,
+      neutron_password => $::midonet_openstack::params::neutron_password,
       neutron_region_name    => $::midonet_openstack::params::region,
-      neutron_admin_auth_url => "http://${controller_management_address}:35357/v2.0",
+      neutron_auth_url => "http://${controller_management_address}:35357/v2.0",
       neutron_url            => "http://${controller_management_address}:9696",
       vif_plugging_is_fatal  => false,
       vif_plugging_timeout   => '0',
@@ -65,7 +65,7 @@ class midonet_openstack::params::profile::nova::compute {
 
   file { '/etc/libvirt/qemu.conf':
   ensure => present,
-  source => 'puppet:///modules/openstack/qemu.conf',
+  source => 'puppet:///modules/midonet_openstack/qemu.conf',
   owner  => 'root',
   group  => 'root',
   mode   => '0644',
