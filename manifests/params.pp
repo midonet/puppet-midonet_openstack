@@ -361,8 +361,8 @@ class midonet_params {
 
   network_external_ippool_start = '172.17.0.100'
   network_external_ippool_end = '172.17.0.200'
-  network_external_gateway = '%{_ipaddress}'
-  network_external_dns = '%{_ipaddress}'
+  network_external_gateway = '%{::ipaddress}'
+  network_external_dns = '%{::ipaddress}'
 
   ######## Private Neutron Network
 
@@ -370,10 +370,10 @@ class midonet_params {
 
   ######## Fixed IPs (controllers)
 
-  controller_address_api = '%{_ipaddress}'
-  controller_address_management = '%{_ipaddress}'
-  storage_address_api = '%{_ipaddress}'
-  storage_address_management = '%{_ipaddress}'
+  controller_address_api = '%{::ipaddress}'
+  controller_address_management = '%{::ipaddress}'
+  storage_address_api = '%{::ipaddress}'
+  storage_address_management = '%{::ipaddress}'
 
   ######## Database
 
@@ -386,7 +386,7 @@ class midonet_params {
 
   mysql_glance_user = 'glance'
   mysql_glance_pass = 'testmido'
-  glance_api_servers = ['%{_ipaddress} =9292']
+  glance_api_servers = ['%{::ipaddress}:9292']
 
   mysql_nova_user = 'nova'
   mysql_nova_pass = 'testmido'
@@ -398,7 +398,7 @@ class midonet_params {
 
   rabbitmq_user = 'openstack'
   rabbitmq_password = 'testmido'
-  rabbitmq_hosts = ['%{_ipaddress} =5672']
+  rabbitmq_hosts = ['%{::ipaddress}:5672']
 
   ######## Keystone
 
@@ -468,7 +468,7 @@ class midonet_params {
   neutron_service_plugins = []
 
   ######## Ceilometer
-  ceilometer_address_management = '%{_ipaddress}'
+  ceilometer_address_management = '%{::ipaddress}'
   ceilometer_mongo_username = 'mongo'
   ceilometer_mongo_password = 'mongosecretkey123'
   ceilometer_password = 'whi-truz'
