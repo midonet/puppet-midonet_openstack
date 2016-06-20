@@ -351,104 +351,158 @@
 #   Boolean. If Swift services are available.
 #
 class midonet_openstack::params {
-  $use_hiera = true
-  $region = undef
-  $network_api = undef
-  $networks = undef
-  $subnets = undef
-  $routers = undef
-  $router_interfaces = undef
-  $network_external = undef
-  $network_management = undef
-  $network_data = undef
-  $network_external_ippool_start = undef
-  $network_external_ippool_end = undef
-  $network_external_gateway = undef
-  $network_external_dns = undef
-  $network_neutron_private = undef
-  $controller_address_api = undef
-  $controller_address_management = undef
-  $storage_address_api = undef
-  $storage_address_management = undef
+  $region = 'openstack'
 
-  $mysql_root_password = undef
-  $mysql_service_password = undef
-  $mysql_allowed_hosts = undef
-  $mysql_user_keystone = 'keystone'
-  $mysql_pass_keystone = 'keystone_db_pass'
-  $mysql_user_cinder = undef
-  $mysql_pass_cinder = undef
-  $mysql_user_glance = undef
-  $mysql_pass_glance = undef
-  $mysql_user_nova = undef
-  $mysql_pass_nova = undef
-  $mysql_user_neutron = undef
-  $mysql_pass_neutron = undef
-  $mysql_user_heat = undef
-  $mysql_pass_heat = undef
+  ######## Networks
+  $network_api = '172.17.0.0/24'
+  $network_external = '172.17.0.0/24'
+  $network_management = '172.17.0.0/24'
+  $network_data = '172.17.0.0/24'
 
-  $rabbitmq_hosts = undef
-  $rabbitmq_user = undef
-  $rabbitmq_password = undef
+  $network_external_ippool_start = '172.17.0.100'
+  $network_external_ippool_end = '172.17.0.200'
+  $network_external_gateway = '%{::ipaddress}'
+  $network_external_dns = '%{::ipaddress}'
+
+  ######## Private Neutron Network
+
+  $network_neutron_private = '10.0.0.0/24'
+
+  ######## Fixed IPs (controllers)
+
+  $controller_address_api = '%{::ipaddress}'
+  $controller_address_management = '%{::ipaddress}'
+  $storage_address_api = '%{::ipaddress}'
+  $storage_address_management = '%{::ipaddress}'
+
+  ######## Database
+
+  $mysql_root_password = 'testmido'
+  $mysql_service_password = 'testmido'
+  $mysql_allowed_hosts = ['localhost', '127.0.0.1', '172.17.0.%']
+
+  $mysql_keystone_user = 'keystone'
+  $mysql_keystone_pass = 'testmido'
+
+  $mysql_glance_user = 'glance'
+  $mysql_glance_pass = 'testmido'
+  $glance_api_servers = ['%{::ipaddress}:9292']
+
+  $mysql_nova_user = 'nova'
+  $mysql_nova_pass = 'testmido'
+
+  $mysql_neutron_user = 'neutron'
+  $mysql_neutron_pass = 'testmido'
+
+  ######## RabbitMQ
+
+  $rabbitmq_user = 'openstack'
+  $rabbitmq_password = 'testmido'
+  $rabbitmq_hosts = ['%{::ipaddress}:5672']
   $rabbitmq_delete_guest_user = true
   $rabbitmq_ssl = true
   $rabbitmq_ssl_only = true
 
-  $keystone_admin_token = 'admin_token'
-  $keystone_admin_email = 'admin@example.tld'
-  $keystone_admin_password = 'admin'
-  $keystone_tenants = undef
-  $keystone_users = undef
+  ######## Keystone
+
+  $keystone_admin_token = 'testmido'
+  $keystone_admin_email = 'mido-dev@lists.midonet.org'
+  $keystone_admin_password = 'testmido'
   $keystone_use_httpd = false
   $keystone_debug = true
   $keystone_enabled = true
 
-  $glance_password = undef
-  $glance_api_servers = undef
-  $images = undef
-  $cinder_password = undef
-  $cinder_volume_size = undef
-  $swift_password = undef
-  $swift_hash_suffix = undef
-  $nova_libvirt_type = undef
-  $nova_password = undef
-  $neutron_password = undef
-  $neutron_shared_secret = undef
-  $neutron_core_plugin = undef
-  $neutron_service_plugins = undef
-  $plumgrid_director_vip = undef
-  $plumgrid_username = undef
-  $plumgrid_password = undef
-  $neutron_tunneling = true
-  $neutron_tunnel_types = ['gre']
-  $neutron_tenant_network_type = ['gre']
-  $neutron_type_drivers = ['gre']
-  $neutron_mechanism_drivers = ['openvswitch']
-  $neutron_tunnel_id_ranges = ['1:1000']
-  $ceilometer_address_management = undef
-  $ceilometer_mongo_username = undef
-  $ceilometer_mongo_password = undef
-  $ceilometer_password = undef
-  $ceilometer_meteringsecret = undef
-  $heat_password = undef
-  $heat_encryption_key = undef
-  $horizon_secret_key = undef
-  $horizon_allowed_hosts = undef
-  $horizon_server_aliases = undef
-  $tempest_configure_images    = undef
-  $tempest_image_name          = undef
-  $tempest_image_name_alt      = undef
-  $tempest_username            = undef
-  $tempest_username_alt        = undef
-  $tempest_username_admin      = undef
-  $tempest_configure_network   = undef
-  $tempest_public_network_name = undef
-  $tempest_cinder_available    = undef
-  $tempest_glance_available    = undef
-  $tempest_horizon_available   = undef
-  $tempest_nova_available      = undef
-  $tempest_neutron_available   = undef
-  $tempest_heat_available      = undef
-  $tempest_swift_available     = undef
-  $verbose = undef
+  $keystone_tenants = {
+  'midokura' =>
+      {
+        'description' => 'Test Tenant'
+      }
+  }
+
+  $keystone_users = {
+
+      'midogod' => {
+          'password' => 'midogod',
+          'tenant' => 'midokura',
+          'email' => 'foo@midokura.com',
+          'admin' => true
+
+        },
+      'midoguy' => {
+          'password' => 'midoguy',
+          'tenant' => 'midokura',
+          'email' => 'bar@midokura.com',
+          'admin' => false
+      },
+       'midonet' => {
+          'password' => 'testmido',
+          'tenant' => 'services',
+          'email' => 'midonet@midokura.com',
+          'admin' => true
+      }
+    }
+
+  ######## Glance
+
+  $glance_password = 'midokura'
+
+  ######## Cinder
+
+  $cinder_password = 'testmido'
+  $cinder_volume_size = '8G'
+
+  ######## Swift
+
+  $swift_password = 'dexc-flo'
+  $swift_hash_suffix = 'pop-bang'
+
+  ######## Nova
+
+  $nova_libvirt_type = 'qemu'
+  $nova_password = 'testmido'
+
+  ######## Neutron
+
+  $neutron_password = 'testmido'
+  $neutron_shared_secret = 'testmido'
+  $neutron_core_plugin = 'midonet'
+  $neutron_service_plugins = []
+
+  ######## Ceilometer
+  $ceilometer_address_management = '%{::ipaddress}'
+  $ceilometer_mongo_username = 'mongo'
+  $ceilometer_mongo_password = 'mongosecretkey123'
+  $ceilometer_password = 'whi-truz'
+  $ceilometer_meteringsecret = 'ceilometersecretkey'
+
+  ######## Heat
+  $heat_password = 'zap-bang'
+  $heat_encryption_key = 'heatsecretkey123'
+
+  ######## Horizon
+
+  $horizon_secret_key = 'testmido'
+
+  ######## Tempest
+
+  $tempest_configure_images     = true
+  $tempest_image_name           = 'Cirros'
+  $tempest_image_name_alt       = 'Cirros'
+  $tempest_username             = 'demo'
+  $tempest_username_alt         = 'demo2'
+  $tempest_username_admin       = 'test'
+  $tempest_configure_network    = true
+  $tempest_public_network_name  = 'public'
+  $tempest_cinder_available     = false
+  $tempest_glance_available     = true
+  $tempest_horizon_available    = true
+  $tempest_nova_available       = true
+  $tempest_neutron_available    = true
+  $tempest_heat_available       = false
+  $tempest_swift_available      = false
+
+  ######## Log levels
+  $verbose = 'True'
+  $debug = 'True'
+>>>>>>> b95c024... Add params with values
 }
