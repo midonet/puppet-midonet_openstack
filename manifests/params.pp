@@ -504,5 +504,4 @@ class midonet_openstack::params {
   ######## Log levels
   $verbose = 'True'
   $debug = 'True'
->>>>>>> b95c024... Add params with values
 }
