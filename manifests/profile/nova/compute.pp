@@ -1,4 +1,4 @@
-# == Class: midonet_openstack::profile::nova::compute
+# == Class: midonet_openstack::params::profile::nova::compute
 #
 # Copyright (c) 2015 Midokura SARL, All Rights Reserved.
 #
@@ -14,32 +14,70 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class midonet_openstack::profile::nova::compute {
-    class {'openstack::profile::nova::compute': }
+class midonet_openstack::params::profile::nova::compute {
 
+    $management_network = $::openstack::params::network_management
+    $management_address = ip_for_network($management_network)
+
+    $storage_management_address = $::midonet_openstack::params::storage_address_management
+    $controller_management_address = $::midonet_openstack::params::controller_address_management
+
+    $user                = $::midonet_openstack::params::mysql_user_nova
+    $pass                = $::midonet_openstack::params::mysql_pass_nova
+    $database_connection = "mysql://${user}:${pass}@${controller_management_address}/nova"
     class { '::nova':
-      database_connection     => 'mysql+pymysql://nova:nova@127.0.0.1/nova?charset=utf8',
-      api_database_connection => 'mysql+pymysql://nova_api:nova@127.0.0.1/nova_api?charset=utf8',
-      rabbit_hosts            => $::openstack::rabbitmq::hosts,
-      rabbit_userid           => $::openstack::rabbitmq::user,
-      rabbit_password         => 'an_even_bigger_secret',
-      glance_api_servers      => join($::openstack::config::glance_api_servers, ','),
-      memcached_servers   => ["$::openstack::config::controller_address_management:11211"],
-      verbose                 => $::openstack::config::verbose,
-      debug                   => $::openstack::config::debug,
+      database_connection     => $database_connection,
+      rabbit_hosts            => $::midonet_openstack::params::rabbitmq_hosts,
+      rabbit_userid           => $::midonet_openstack::params::rabbitmq_user,
+      rabbit_password         => $::midonet_openstack::params::rabbitmq_password,
+      glance_api_servers      => join($::midonet_openstack::params::glance_api_servers, ','),
+      memcached_servers   => ["$::midonet_openstack::params::controller_address_management:11211"],
+      verbose                 => $::midonet_openstack::params::verbose,
+      debug                   => $::midonet_openstack::params::debug,
     }
 
+    nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
+
     class { '::nova::network::neutron':
-      neutron_admin_password => $::openstack::config::neutron_password,
-      neutron_region_name    => $::openstack::config::region,
+      neutron_admin_password => $::midonet_openstack::params::neutron_password,
+      neutron_region_name    => $::midonet_openstack::params::region,
       neutron_admin_auth_url => "http://${controller_management_address}:35357/v2.0",
       neutron_url            => "http://${controller_management_address}:9696",
       vif_plugging_is_fatal  => false,
       vif_plugging_timeout   => '0',
     }
 
-    exec { "add_midonet_rootwrap":
-        command => "/bin/echo -e '[Filters]\nmm-ctl: CommandFilter, mm-ctl, root' > /etc/nova/rootwrap.d/midonet.filters",
-        require => Class['openstack::common::nova']
+
+  class { '::nova::compute':
+    enabled                       => true,
+    vnc_enabled                   => true,
+    vncserver_proxyclient_address => $management_address,
+    vncproxy_host                 => $::midonet_openstack::params::controller_address_api,
+  }
+
+  class { '::nova::compute::libvirt':
+    libvirt_virt_type => $::midonet_openstack::params::nova_libvirt_type,
+    vncserver_listen  => $management_address,
+  }
+
+  class { 'nova::migration::libvirt':
+  }
+
+  file { '/etc/libvirt/qemu.conf':
+  ensure => present,
+  source => 'puppet:///modules/openstack/qemu.conf',
+  owner  => 'root',
+  group  => 'root',
+  mode   => '0644',
+  notify => Service['libvirt'],
+  }
+
+  if $::osfamily == 'RedHat' {
+    package { 'device-mapper':
+      ensure => latest
     }
+    Package['device-mapper'] ~> Service['libvirtd'] ~> Service['nova-compute']
+  }
+  Package['libvirt'] -> File['/etc/libvirt/qemu.conf']
+
 }
