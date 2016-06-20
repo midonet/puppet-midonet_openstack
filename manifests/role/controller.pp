@@ -49,6 +49,7 @@ class midonet_openstack::role::controller {
   include ::openstack_integration::rabbitmq
   include ::openstack_integration::mysql
   include ::openstack_integration::keystone
+  include ::openstack_integration::repos
 
   # Create necessary users in RabbitMQ and grant them permissions
   rabbitmq_user { ['neutron', 'nova', 'glance']:
