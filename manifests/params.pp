@@ -7,7 +7,7 @@
 #   api calls are made on as well as the network to access Horizon.
 #
 # [*networks*]
-#   (optional) Hash of neutron networks. Example:
+#   (optional) Hash of neutron networks. Example =
 #     {
 #       'public' => {
 #         'tenant_name'              => 'services'
@@ -21,7 +21,7 @@
 #   Defaults to {}.
 #
 # [*subnets*]
-#   (optional) Hash of neutron subnets. Example:
+#   (optional) Hash of neutron subnets. Example =
 #     {
 #       '192.168.22.0/24' => {
 #         'cidr'             => '192.168.22.0/24'
@@ -38,7 +38,7 @@
 #   Defaults to {}.
 #
 # [*routers*]
-#   (optional) Hash of neutron routers. Example:
+#   (optional) Hash of neutron routers. Example =
 #     {
 #       'test' => {
 #         'tenant_name'          => 'test'
@@ -50,10 +50,10 @@
 #
 # [*router_interfaces*]
 #   (optional) Hash of neutron router interfaces. The key has the form
-#   tenant:subnet where the subnet is one of the subnets given by the
-#   $subnets parameter. Example:
+#   tenant =subnet where the subnet is one of the subnets given by the
+#   $subnets parameter. Example =
 #     {
-#       'test:10.0.0.0/24' => {
+#       'test =10.0.0.0/24' => {
 #         ensure => present
 #        }
 #     }
@@ -94,7 +94,7 @@
 #
 # [*mysql_allowed_hosts*]
 #   Array of hosts that are allowed to access the MySQL database. Should include all of the network_management CIDR.
-#   Example configuration: ['localhost' '127.0.0.1' '172.16.33.%']
+#   Example configuration = ['localhost' '127.0.0.1' '172.16.33.%']
 #
 # [*mysql_user_keystone*]
 #   The database username for keystone service.
@@ -153,12 +153,12 @@
 #   The password for keystone user in Keystone.
 #
 # [*keystone_tenants*]
-#   The intial keystone tenants to create. Should be a Hash in the form of:
+#   The intial keystone tenants to create. Should be a Hash in the form of =
 #   {'tenant_name1' => { 'descritpion' => 'Tenant Description 1'}
 #    'tenant_name2' => {'description' => 'Tenant Description 2'}}
 #
 # [*keystone_users*]
-#   The intial keystone users to create. Should be a Hash in the form of:
+#   The intial keystone users to create. Should be a Hash in the form of =
 #   {'user1' => {'password' => 'somepass1' 'tenant' => 'some_preexisting_tenant'
 #                'email' => 'foo@example.com' 'admin'  =>  'true'}
 #   'user2' => {'password' => 'somepass2' 'tenant' => 'some_preexisting_tenant'
@@ -166,7 +166,7 @@
 #
 # [*keystone_use_httpd*]
 #   Whether to set up an Apache web service with mod_wsgi or to use the default
-#   Eventlet service. If false the default from $keystone::params::service_name
+#   Eventlet service. If false the default from $keystone_params_service_name
 #   will be used which will be the default Eventlet service. Set to true to
 #   configure an Apache web service using mod_wsgi which is currently the only
 #   web service configuration available through the keystone module.
@@ -174,12 +174,12 @@
 #
 # == Glance
 # [*images*]
-#  (optional) Hash of glance_images resources. Example:
+#  (optional) Hash of glance_images resources. Example =
 #    {
 #      'Cirros' => {
 #        'container_format' => 'bare'
 #        'disk_format'      => 'qcow2'
-#        'source'           => 'http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img'
+#        'source'           => 'http =//download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img'
 #      }
 #   }
 #  Consult the glance_image documentation for more information.
@@ -189,14 +189,14 @@
 #
 # [*glance_api_servers*]
 #   Array of api servers with port setting
-#   Example configuration: ['172.16.33.4:9292']
+#   Example configuration = ['172.16.33.4 =9292']
 #
 # ==Cinder
 # [*cinder_password*]
 #   The password for the cinder user in Keystone.
 #
 # [*cinder_volume_size*]
-#   The size of the Cinder loopback storage device. Example: '8G'.
+#   The size of the Cinder loopback storage device. Example = '8G'.
 #
 # == Swift
 # [*swift_password*]
@@ -256,7 +256,7 @@
 #
 # [*neutron_tunnel_id_ranges*] (Deprecated)
 #   Neutron tunnel id ranges.
-#   Defaults to ['1:1000']
+#   Defaults to ['1 =1000']
 #
 # == Ceilometer
 # [*ceilometer_address_management*]
@@ -350,97 +350,157 @@
 # [*tempest_swift_available*]
 #   Boolean. If Swift services are available.
 #
-class midonet_openstack::params {
-  $use_hiera = true
-  $region = undef
-  $network_api = undef
-  $networks = undef
-  $subnets = undef
-  $routers = undef
-  $router_interfaces = undef
-  $network_external = undef
-  $network_management = undef
-  $network_data = undef
-  $network_external_ippool_start = undef
-  $network_external_ippool_end = undef
-  $network_external_gateway = undef
-  $network_external_dns = undef
-  $network_neutron_private = undef
-  $controller_address_api = undef
-  $controller_address_management = undef
-  $storage_address_api = undef
-  $storage_address_management = undef
-  $mysql_root_password = undef
-  $mysql_service_password = undef
-  $mysql_allowed_hosts = undef
-  $mysql_user_keystone = lalaland
-  $mysql_pass_keystone = undef
-  $mysql_user_cinder = undef
-  $mysql_pass_cinder = undef
-  $mysql_user_glance = undef
-  $mysql_pass_glance = undef
-  $mysql_user_nova = undef
-  $mysql_pass_nova = undef
-  $mysql_user_neutron = undef
-  $mysql_pass_neutron = undef
-  $mysql_user_heat = undef
-  $mysql_pass_heat = undef
-  $rabbitmq_hosts = undef
-  $rabbitmq_user = undef
-  $rabbitmq_password = undef
-  $keystone_admin_token = undef
-  $keystone_admin_email = undef
-  $keystone_admin_password = undef
-  $keystone_tenants = undef
-  $keystone_users = undef
-  $keystone_use_httpd = false
-  $glance_password = undef
-  $glance_api_servers = undef
-  $images = undef
-  $cinder_password = undef
-  $cinder_volume_size = undef
-  $swift_password = undef
-  $swift_hash_suffix = undef
-  $nova_libvirt_type = undef
-  $nova_password = undef
-  $neutron_password = undef
-  $neutron_shared_secret = undef
-  $neutron_core_plugin = undef
-  $neutron_service_plugins = undef
-  $plumgrid_director_vip = undef
-  $plumgrid_username = undef
-  $plumgrid_password = undef
-  $neutron_tunneling = true
-  $neutron_tunnel_types = ['gre']
-  $neutron_tenant_network_type = ['gre']
-  $neutron_type_drivers = ['gre']
-  $neutron_mechanism_drivers = ['openvswitch']
-  $neutron_tunnel_id_ranges = ['1:1000']
-  $ceilometer_address_management = undef
-  $ceilometer_mongo_username = undef
-  $ceilometer_mongo_password = undef
-  $ceilometer_password = undef
-  $ceilometer_meteringsecret = undef
-  $heat_password = undef
-  $heat_encryption_key = undef
-  $horizon_secret_key = undef
-  $horizon_allowed_hosts = undef
-  $horizon_server_aliases = undef
-  $tempest_configure_images    = undef
-  $tempest_image_name          = undef
-  $tempest_image_name_alt      = undef
-  $tempest_username            = undef
-  $tempest_username_alt        = undef
-  $tempest_username_admin      = undef
-  $tempest_configure_network   = undef
-  $tempest_public_network_name = undef
-  $tempest_cinder_available    = undef
-  $tempest_glance_available    = undef
-  $tempest_horizon_available   = undef
-  $tempest_nova_available      = undef
-  $tempest_neutron_available   = undef
-  $tempest_heat_available      = undef
-  $tempest_swift_available     = undef
-  $verbose = undef
-  $debug = undef
+class midonet_params {
+  region = 'openstack'
+
+  ######## Networks
+  network_api = '172.17.0.0/24'
+  network_external = '172.17.0.0/24'
+  network_management = '172.17.0.0/24'
+  network_data = '172.17.0.0/24'
+
+  network_external_ippool_start = '172.17.0.100'
+  network_external_ippool_end = '172.17.0.200'
+  network_external_gateway = '%{_ipaddress}'
+  network_external_dns = '%{_ipaddress}'
+
+  ######## Private Neutron Network
+
+  network_neutron_private = '10.0.0.0/24'
+
+  ######## Fixed IPs (controllers)
+
+  controller_address_api = '%{_ipaddress}'
+  controller_address_management = '%{_ipaddress}'
+  storage_address_api = '%{_ipaddress}'
+  storage_address_management = '%{_ipaddress}'
+
+  ######## Database
+
+  mysql_root_password = 'testmido'
+  mysql_service_password = 'testmido'
+  mysql_allowed_hosts = ['localhost', '127.0.0.1', '172.17.0.%']
+
+  mysql_keystone_user = 'keystone'
+  mysql_keystone_pass = 'testmido'
+
+  mysql_glance_user = 'glance'
+  mysql_glance_pass = 'testmido'
+  glance_api_servers = ['%{_ipaddress} =9292']
+
+  mysql_nova_user = 'nova'
+  mysql_nova_pass = 'testmido'
+
+  mysql_neutron_user = 'neutron'
+  mysql_neutron_pass = 'testmido'
+
+  ######## RabbitMQ
+
+  rabbitmq_user = 'openstack'
+  rabbitmq_password = 'testmido'
+  rabbitmq_hosts = ['%{_ipaddress} =5672']
+
+  ######## Keystone
+
+  keystone_admin_token = 'testmido'
+  keystone_admin_email = 'mido-dev@lists.midonet.org'
+  keystone_admin_password = 'testmido'
+
+  keystone_tenants = {
+  'midokura':
+      {
+        'description': 'Test Tenant'
+      }
+
+  }
+
+  keystone_users = {
+
+      'midogod': {
+          'password': 'midogod',
+          'tenant': 'midokura',
+          'email': 'foo@midokura.com',
+          'admin': true
+
+        },
+      'midoguy': {
+          'password': 'midoguy',
+          'tenant': 'midokura',
+          'email': 'bar@midokura.com',
+          'admin': false
+
+      },
+       'midonet': {
+          'password': 'testmido',
+          'tenant': 'services',
+          'email': 'midonet@midokura.com',
+          'admin': true
+
+      }
+
+
+    }
+
+  ######## Glance
+
+  glance_password = 'midokura'
+
+  ######## Cinder
+
+  cinder_password = 'testmido'
+  cinder_volume_size = '8G'
+
+  ######## Swift
+
+  swift_password = 'dexc-flo'
+  swift_hash_suffix = 'pop-bang'
+
+  ######## Nova
+
+  nova_libvirt_type = 'qemu'
+  nova_password = 'testmido'
+
+  ######## Neutron
+
+  neutron_password = 'testmido'
+  neutron_shared_secret = 'testmido'
+  neutron_core_plugin = 'midonet'
+  neutron_service_plugins = []
+
+  ######## Ceilometer
+  ceilometer_address_management = '%{_ipaddress}'
+  ceilometer_mongo_username = 'mongo'
+  ceilometer_mongo_password = 'mongosecretkey123'
+  ceilometer_password = 'whi-truz'
+  ceilometer_meteringsecret = 'ceilometersecretkey'
+
+  ######## Heat
+  heat_password = 'zap-bang'
+  heat_encryption_key = 'heatsecretkey123'
+
+  ######## Horizon
+
+  horizon_secret_key = 'testmido'
+
+  ######## Tempest
+
+  tempest_configure_images     = true
+  tempest_image_name           = 'Cirros'
+  tempest_image_name_alt       = 'Cirros'
+  tempest_username             = 'demo'
+  tempest_username_alt         = 'demo2'
+  tempest_username_admin       = 'test'
+  tempest_configure_network    = true
+  tempest_public_network_name  = 'public'
+  tempest_cinder_available     = false
+  tempest_glance_available     = true
+  tempest_horizon_available    = true
+  tempest_nova_available       = true
+  tempest_neutron_available    = true
+  tempest_heat_available       = false
+  tempest_swift_available      = false
+
+  ######## Log levels
+  verbose = 'True'
+  debug = 'True'
 }
