@@ -14,6 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class midonet_openstack::role {
+class midonet_openstack::role inherits midonet_openstack::params{
   include midonet_openstack::profile::base
 }
