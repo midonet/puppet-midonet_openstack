@@ -2,8 +2,6 @@ forge "http://forge.puppetlabs.com"
 
 # use dependencies defined in metadata.json
 mod 'puppetlabs/stdlib'
-mod 'midonet',
-  :git => 'https://github.com/openstack/puppet-midonet'
 mod 'puppet_openstack_integration',
   :git => 'https://github.com/openstack/puppet-openstack-integration',
   :ref => 'stable/mitaka'
@@ -38,3 +36,15 @@ mod 'openstack_extras',
 mod 'ceph',
   :git => 'https://git.openstack.org/openstack/puppet-ceph',
   :ref => 'master'
+
+mod 'duritong/sysctl'
+mod 'cinder',
+  :git => 'https://github.com/openstack/puppet-cinder',
+  :ref => 'stable/mitaka'
+
+mod 'glance',
+  :git => 'https://github.com/openstack/puppet-glance',
+  :ref => 'stable/mitaka'
+
+  mod 'puppet/corosync' , '0.8.0'
+  mod 'puppetlabs/postgresql'
