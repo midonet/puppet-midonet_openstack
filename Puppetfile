@@ -18,8 +18,8 @@ mod 'mysql',
   :git => 'https://github.com/puppetlabs/puppetlabs-mysql',
   :branch => '3.6.x'
 mod 'nanliu/staging'
-mod 'openstack-nova'
-  :git => 'https://github.com/openstack/puppet-nova'
+mod 'openstack-nova',
+  :git => 'https://github.com/openstack/puppet-nova',
   :ref => 'stable/mitaka'
 
 mod 'keystone',
