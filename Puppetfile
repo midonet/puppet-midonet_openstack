@@ -2,7 +2,7 @@ forge "http://forge.puppetlabs.com"
 
 # use dependencies defined in metadata.json
 mod 'puppetlabs/stdlib'
-mod 'puppet_openstack_integration',
+mod 'openstack_integration',
   :git => 'https://github.com/openstack/puppet-openstack-integration',
   :ref => 'stable/mitaka'
 
