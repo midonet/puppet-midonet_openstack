@@ -445,6 +445,9 @@ class midonet_openstack::params {
   ######## Glance
 
   $glance_password = 'midokura'
+  $glance_debug = true
+  $glance_rabbitmq_user = 'glance'
+  $glance_rabbitmq_password = 'safe_password'
 
   ######## Cinder
 
