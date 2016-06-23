@@ -19,6 +19,9 @@ mod 'nanliu/staging'
 mod 'openstack-nova',
   :git => 'https://github.com/openstack/puppet-nova',
   :ref => 'stable/mitaka'
+mod 'puppet-neutron',
+  :git => 'https://github.com/openstack/puppet-neutron',
+  :ref => 'stable/mitaka'
 mod 'puppet-glance',
   :git => 'https://github.com/openstack/puppet-glance',
   :ref => 'stable/mitaka'
