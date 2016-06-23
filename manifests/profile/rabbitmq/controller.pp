@@ -10,7 +10,7 @@ class midonet_openstack::profile::rabbitmq::controller {
     apt::key { 'rabbitmq':
       key          => '0A9AF2115F4687BD29803A206B73A36E6026DFCA',
       key_source   => 'https://www.rabbitmq.com/rabbitmq-release-signing-key.asc',
-      before => Class['::rabbitmq']
+      before       => Class['::rabbitmq']
       } ->
       exec { 'update_apt_for_rabbitmq':
           command     => "/usr/bin/apt-get update",
@@ -20,7 +20,6 @@ class midonet_openstack::profile::rabbitmq::controller {
 
   if $::openstack_integration::config::ssl {
 
-
     file { '/etc/rabbitmq/ssl/private':
       ensure                  => directory,
       owner                   => 'root',
@@ -28,11 +27,13 @@ class midonet_openstack::profile::rabbitmq::controller {
       selinux_ignore_defaults => true,
       before                  => File["/etc/rabbitmq/ssl/private/${::fqdn}.pem"],
     }
+
     openstack_integration::ssl_key { 'rabbitmq':
       key_path => "/etc/rabbitmq/ssl/private/${::fqdn}.pem",
       require  => File['/etc/rabbitmq/ssl/private'],
       notify   => Service['rabbitmq-server'],
     }
+
     class { '::rabbitmq':
       package_provider      => $::package_provider,
       delete_guest_user     => $midonet_openstack::params::rabbitmq_delete_guest_user,
@@ -52,8 +53,10 @@ class midonet_openstack::profile::rabbitmq::controller {
       repos_ensure          => $midonet_openstack::params::rabbitmq_repos_ensure,
     }
   }
+
   rabbitmq_vhost { '/':
   provider => 'rabbitmqctl',
   require  => Class['::rabbitmq'],
   }
+
 }
