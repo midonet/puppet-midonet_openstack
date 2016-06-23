@@ -24,7 +24,7 @@ class midonet_openstack::profile::nova::compute {
 
     $user                = $::midonet_openstack::params::mysql_nova_user
     $pass                = $::midonet_openstack::params::mysql_nova_pass
-    $database_connection = "mysql://${user}:${pass}@${controller_management_address}/nova"
+    $database_connection = "mysql://${user}:${pass}@127.0.0.1/nova"
     class { '::nova':
       database_connection     => $database_connection,
       rabbit_hosts            => $::midonet_openstack::params::rabbitmq_hosts,
