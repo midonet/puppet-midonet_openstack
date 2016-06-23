@@ -94,7 +94,7 @@
 #
 # [*mysql_allowed_hosts*]
 #   Array of hosts that are allowed to access the MySQL database. Should include all of the network_management CIDR.
-#   Example configuration = ['localhost' '127.0.0.1' '172.16.33.%']
+#   Example configuration = ['localhost' '127.0.0.1' '172.16.33.$']
 #
 # [*mysql_user_keystone*]
 #   The database username for keystone service.
@@ -361,8 +361,8 @@ class midonet_openstack::params {
 
   $network_external_ippool_start = '172.17.0.100'
   $network_external_ippool_end = '172.17.0.200'
-  $network_external_gateway = '%{::ipaddress}'
-  $network_external_dns = '%{::ipaddress}'
+  $network_external_gateway = "${::ipaddress}"
+  $network_external_dns = "${::ipaddress}"
 
   ######## Private Neutron Network
 
@@ -370,26 +370,29 @@ class midonet_openstack::params {
 
   ######## Fixed IPs (controllers)
 
-  $controller_address_api = '%{::ipaddress}'
-  $controller_address_management = '%{::ipaddress}'
-  $storage_address_api = '%{::ipaddress}'
-  $storage_address_management = '%{::ipaddress}'
+  $controller_address_api = "${::ipaddress}"
+  $controller_address_management = "${::ipaddress}"
+  $storage_address_api = "${::ipaddress}"
+  $storage_address_management = "${::ipaddress}"
 
   ######## Database
 
   $mysql_root_password = 'testmido'
   $mysql_service_password = 'testmido'
-  $mysql_allowed_hosts = ['localhost', '127.0.0.1', '172.17.0.%']
+  $mysql_allowed_hosts = ['localhost', '127.0.0.1', '172.17.0.$']
 
   $mysql_keystone_user = 'keystone'
   $mysql_keystone_pass = 'testmido'
 
   $mysql_glance_user = 'glance'
   $mysql_glance_pass = 'testmido'
-  $glance_api_servers = ['%{::ipaddress}:9292']
+  $glance_api_servers = ["${::ipaddress}:9292"]
 
   $mysql_nova_user = 'nova'
   $mysql_nova_pass = 'testmido'
+
+  $mysql_nova_api_user = 'nova_api'
+  $mysql_nova_api_pass = 'testmido'
 
   $mysql_neutron_user = 'neutron'
   $mysql_neutron_pass = 'testmido'
@@ -398,10 +401,11 @@ class midonet_openstack::params {
 
   $rabbitmq_user = 'openstack'
   $rabbitmq_password = 'testmido'
-  $rabbitmq_hosts = ['%{::ipaddress}:5672']
+  $rabbitmq_hosts = ["${::ipaddress}:5672"]
   $rabbitmq_delete_guest_user = true
   $rabbitmq_ssl = true
   $rabbitmq_ssl_only = true
+  $rabbitmq_repos_ensure = true
 
   ######## Keystone
 
@@ -463,6 +467,9 @@ class midonet_openstack::params {
 
   $nova_libvirt_type = 'qemu'
   $nova_password = 'testmido'
+  $nova_rabbitmq_user = 'nova'
+  $nova_rabbitmq_password = 'safe_password'
+  $nova_debug = true
 
   ######## Neutron
 
@@ -472,7 +479,7 @@ class midonet_openstack::params {
   $neutron_service_plugins = []
 
   ######## Ceilometer
-  $ceilometer_address_management = '%{::ipaddress}'
+  $ceilometer_address_management = "${::ipaddress}"
   $ceilometer_mongo_username = 'mongo'
   $ceilometer_mongo_password = 'mongosecretkey123'
   $ceilometer_password = 'whi-truz'
