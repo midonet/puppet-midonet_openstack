@@ -56,6 +56,7 @@ class midonet_openstack::profile::nova::api {
     admin_url       => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v2/%(tenant_id)s",
     admin_url_v3    => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v3/%(tenant_id)s",
     password        => "${::midonet_openstack::params::nova_password}",
+    region          => "${::midonet_openstack::params::region}"
   }
 
 
