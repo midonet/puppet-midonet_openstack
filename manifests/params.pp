@@ -477,6 +477,8 @@ class midonet_openstack::params {
   $neutron_shared_secret = 'testmido'
   $neutron_core_plugin = 'midonet'
   $neutron_service_plugins = []
+  $neutron_rabbitmq_user = 'neutron'
+  $neutron_rabbitmq_password = 'safe_password'
 
   ######## Ceilometer
   $ceilometer_address_management = "${::ipaddress}"
