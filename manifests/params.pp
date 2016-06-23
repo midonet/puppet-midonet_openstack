@@ -379,7 +379,7 @@ class midonet_openstack::params {
 
   $mysql_root_password = 'testmido'
   $mysql_service_password = 'testmido'
-  $mysql_allowed_hosts = ['localhost', '127.0.0.1', '172.17.0.$']
+  $mysql_allowed_hosts = ['localhost', '127.0.0.1', '172.17.0.%']
 
   $mysql_keystone_user = 'keystone'
   $mysql_keystone_pass = 'testmido'
