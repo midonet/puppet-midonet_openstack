@@ -15,12 +15,21 @@
 # limitations under the License.
 #
 class midonet_openstack::role::controller inherits ::midonet_openstack::role {
-  class { 'midonet_openstack::profile::firewall::firewall': }
+class { 'midonet_openstack::profile::firewall::firewall': }
+
+if $::osfamily == 'RedHat' {
+  package { 'openstack-selinux':
+      ensure => 'latest'
+  }
+  # temporary hack to make sure RabbitMQ does not steal UID
+  # of Keystone
+  Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
+}
   class { '::midonet_openstack::profile::keystone::controller': }
   class { '::midonet_openstack::profile::mysql::controller': }
   class { '::midonet_openstack::profile::repos': }
   class { '::midonet_openstack::profile::rabbitmq::controller': }
-  class { '::midonet_openstack::profile::glance::controller': }
-  class { '::midonet_openstack::profile::nova::api':}
+  #class { '::midonet_openstack::profile::glance::controller': }
+  #class { '::midonet_openstack::profile::neutron::controller': }
 
 }
