@@ -55,3 +55,4 @@ mod 'glance',
   mod 'puppet/corosync' , '0.8.0'
   mod 'puppetlabs/postgresql'
   mod 'puppetlabs/firewall'
+  mod 'saz/memcached'
