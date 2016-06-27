@@ -5,7 +5,8 @@ define midonet_openstack::resources::firewall ( $port ) {
       proto  => 'tcp',
       state  => ['NEW'],
       action => 'accept',
-      port   => $port,
+      dport   => $port,
+      sport   => $port,
       before => Firewall['8999 - Accept all management network traffic'],
     }
   } else {
@@ -13,7 +14,8 @@ define midonet_openstack::resources::firewall ( $port ) {
       proto  => 'tcp',
       state  => ['NEW'],
       action => 'accept',
-      port   => $port,
+      sport   => $port,
+      dport   => $port,
       before => Firewall['8999 - Accept all management network traffic'],
     }
   }
