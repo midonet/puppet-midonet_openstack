@@ -78,6 +78,7 @@ class midonet_openstack::profile::nova::api {
     neutron_region_name    => $::midonet_openstack::params::region,
     neutron_auth_url => "http://${controller_management_address}:35357/v3",
   }
+  
   class { '::nova::api':
     admin_password                       => $::midonet_openstack::params::nova_password,
     auth_uri                             => "http://${controller_management_address}:5000",
