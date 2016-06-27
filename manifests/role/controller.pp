@@ -31,5 +31,6 @@ if $::osfamily == 'RedHat' {
   class { '::midonet_openstack::profile::rabbitmq::controller': }
   #class { '::midonet_openstack::profile::glance::controller': }
   #class { '::midonet_openstack::profile::neutron::controller': }
+  class {'::midonet_openstack::profile::nova::api':}
 
 }
