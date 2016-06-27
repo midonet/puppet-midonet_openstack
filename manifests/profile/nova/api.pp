@@ -22,22 +22,6 @@ class midonet_openstack::profile::nova::api {
   midonet_openstack::resources::firewall { 'Nova S3': port => '3333', }
   midonet_openstack::resources::firewall { 'Nova novnc': port => '6080', }
 
-  rabbitmq_user { "user":
-    name => "${::midonet_openstack::params::nova_rabbitmq_user}",
-    admin    => true,
-    password => "$::midonet_openstack::params::nova_rabbitmq_password",
-    provider => 'rabbitmqctl',
-    require  => Class['::rabbitmq'],
-  }
-  rabbitmq_user_permissions { 'nova@/':
-    name => "${::midonet_openstack::params::nova_rabbitmq_user}@/",
-    configure_permission => '.*',
-    write_permission     => '.*',
-    read_permission      => '.*',
-    provider             => 'rabbitmqctl',
-    require              => Class['::rabbitmq'],
-  }
-
   class { '::nova::db::mysql':
     user => "${::midonet_openstack::params::mysql_nova_user}",
     password => "${::midonet_openstack::params::mysql_nova_pass}",
@@ -59,13 +43,27 @@ class midonet_openstack::profile::nova::api {
     region          => "${::midonet_openstack::params::region}"
   }
 
+  rabbitmq_user { "${midonet_openstack::params::nova_rabbitmq_user}":
+    admin    => true,
+    password => "${midonet_openstack::params::glance_rabbitmq_password}",
+    provider => 'rabbitmqctl',
+    require  => Class['::rabbitmq'],
+  }
+
+  rabbitmq_user_permissions { 'nova@/':
+    configure_permission => '.*',
+    write_permission     => '.*',
+    read_permission      => '.*',
+    provider             => 'rabbitmqctl',
+    require              => Class['::rabbitmq'],
+  }
 
   class { '::nova':
     database_connection     => $database_connection,
     api_database_connection => $api_database_connection,
     rabbit_hosts            => $::midonet_openstack::params::rabbitmq_hosts,
-    rabbit_userid           => $::midonet_openstack::params::rabbitmq_user,
-    rabbit_password         => $::midonet_openstack::params::rabbitmq_password,
+    rabbit_userid           => $::midonet_openstack::params::nova_rabbitmq_user,
+    rabbit_password         => $::midonet_openstack::params::nova_rabbitmq_password,
     glance_api_servers      => join($::midonet_openstack::params::glance_api_servers, ','),
     memcached_servers       => ["$::midonet_openstack::params::controller_address_management:11211"],
     verbose                 => $::midonet_openstack::params::verbose,
@@ -103,4 +101,6 @@ class midonet_openstack::profile::nova::api {
   ]:
     enabled => true
   }
+
+
 }
