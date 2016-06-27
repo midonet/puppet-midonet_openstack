@@ -494,6 +494,8 @@ class midonet_openstack::params {
   ######## Horizon
 
   $horizon_secret_key = 'testmido'
+  $horizon_allowed_hosts = ["*",]
+
 
   ######## Tempest
 
