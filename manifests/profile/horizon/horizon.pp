@@ -3,9 +3,7 @@ class midonet_openstack::profile::horizon::horizon {
   include ::openstack_integration::params
   include ::openstack_integration::config
   $vhost_params = { add_listen => false }
-
-  notice("The value is $::midonet_openstack::params::controller_address_management")
-
+  
   class { '::horizon':
     server_aliases        => [$::fqdn,
                               $::midonet_openstack::params::controller_address_management,
