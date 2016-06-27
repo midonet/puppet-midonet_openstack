@@ -31,7 +31,7 @@ mod 'keystone',
   :ref => 'stable/mitaka'
 mod 'puppetlabs/inifile'
 mod 'puppetlabs/apache'
-mod 'puppetlabs/concat'
+mod 'puppetlabs/concat' , '1.2.5'
 mod 'puppet-openstacklib',
   :git => 'https://git.openstack.org/openstack/puppet-openstacklib',
   :ref => 'stable/mitaka'
@@ -56,3 +56,6 @@ mod 'glance',
   mod 'puppetlabs/postgresql'
   mod 'puppetlabs/firewall'
   mod 'saz/memcached'
+  mod 'horizon',
+    :git => 'https://github.com/openstack/puppet-horizon',
+    :ref => 'stable/mitaka'
