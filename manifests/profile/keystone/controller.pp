@@ -91,8 +91,8 @@ class midonet_openstack::profile::keystone::controller (
   public_url     => $::openstack_integration::config::keystone_auth_uri,
   admin_url      => $::openstack_integration::config::keystone_admin_uri,
   region         => $::midonet_openstack::params::region,
+  require        => Class['keystone', 'keystone::wsgi::apache'],
   }
-  class { '::keystone::disable_admin_token_auth': }
 
   class { '::openstack_extras::auth_file':
   password       => $midonet_openstack::params::keystone_admin_password,
