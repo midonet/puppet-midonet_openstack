@@ -4,13 +4,13 @@ class midonet_openstack::profile::firewall::post {
     proto  => 'all',
     state  => ['NEW'],
     action => 'accept',
-    source => $::openstack::config::network_management,
+    source => $::midonet_openstack::params::network_management,
   } ->
   firewall { '9100 - Accept all vm network traffic':
     proto  => 'all',
     state  => ['NEW'],
     action => 'accept',
-    source => $::openstack::config::network_data,
+    source => $::midonet_openstack::params::network_data,
   } ->
   firewall { '9999 - Reject remaining traffic':
     proto  => 'all',
