@@ -25,6 +25,7 @@ if $::osfamily == 'RedHat' {
   # of Keystone
   Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
 }
+  class { '::midonet_openstack::profile::memcached::memcached':}
   class { '::midonet_openstack::profile::keystone::controller': }
   class { '::midonet_openstack::profile::mysql::controller': }
   class { '::midonet_openstack::profile::repos': }
