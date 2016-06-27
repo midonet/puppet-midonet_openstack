@@ -42,6 +42,7 @@ class midonet_openstack::profile::glance::controller (
       internal_url => "${::openstack_integration::config::base_url}:9292",
       admin_url    => "${::openstack_integration::config::base_url}:9292",
       password     => $midonet_openstack::params::glance_password,
+      region       => $midonet_openstack::params::region,
     }
     case $backend {
       'file': {
@@ -90,6 +91,7 @@ class midonet_openstack::profile::glance::controller (
       registry_host             => $::openstack_integration::config::host,
       cert_file                 => $crt_file,
       key_file                  => $key_file,
+      os_region_name            => $midonet_openstack::params::region,
     }
     class { '::glance::registry':
       debug               => $midonet_openstack::params::glance_debug,
@@ -101,6 +103,7 @@ class midonet_openstack::profile::glance::controller (
       identity_uri        => $::openstack_integration::config::keystone_admin_uri,
       cert_file           => $crt_file,
       key_file            => $key_file,
+      os_region_name      => $midonet_openstack::params::region,
     }
     class { '::glance::notify::rabbitmq':
       rabbit_userid       => $midonet_openstack::params::glance_rabbitmq_user,
