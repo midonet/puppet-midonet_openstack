@@ -25,13 +25,16 @@ class midonet_openstack::profile::nova::compute {
     $user                = $::midonet_openstack::params::mysql_nova_user
     $pass                = $::midonet_openstack::params::mysql_nova_pass
     $database_connection = "mysql://${user}:${pass}@127.0.0.1/nova"
+
+
+
     class { '::nova':
       database_connection     => $database_connection,
       rabbit_hosts            => $::midonet_openstack::params::rabbitmq_hosts,
-      rabbit_userid           => $::midonet_openstack::params::rabbitmq_user,
-      rabbit_password         => $::midonet_openstack::params::rabbitmq_password,
+      rabbit_userid           => $::midonet_openstack::params::nova_rabbitmq_user,
+      rabbit_password         => $::midonet_openstack::params::nova_rabbitmq_password,
       glance_api_servers      => join($::midonet_openstack::params::glance_api_servers, ','),
-      memcached_servers   => ["$::midonet_openstack::params::controller_address_management:11211"],
+      memcached_servers       => ["$::midonet_openstack::params::controller_address_management:11211"],
       verbose                 => $::midonet_openstack::params::verbose,
       debug                   => $::midonet_openstack::params::debug,
     }
