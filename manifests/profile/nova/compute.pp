@@ -48,6 +48,8 @@ class midonet_openstack::profile::nova::compute {
       neutron_url            => "http://${controller_management_address}:9696",
       vif_plugging_is_fatal  => false,
       vif_plugging_timeout   => '0',
+      neutron_project_name => 'admin',
+      neutron_auth_plugin => 'password'
     }
 
 
