@@ -34,13 +34,11 @@ class midonet_openstack::profile::glance::controller (
 
     class { '::glance::db::mysql':
       password => $midonet_openstack::params::mysql_glance_pass,
+      allowed_hosts => '%',
     }
     include ::glance
     include ::glance::client
     class { '::glance::keystone::auth':
-      public_url   => "${::openstack_integration::config::base_url}:9292",
-      internal_url => "${::openstack_integration::config::base_url}:9292",
-      admin_url    => "${::openstack_integration::config::base_url}:9292",
       password     => $midonet_openstack::params::glance_password,
       region       => $midonet_openstack::params::region,
     }
@@ -77,7 +75,7 @@ class midonet_openstack::profile::glance::controller (
     $glance_stores = concat($http_store, $backend_store)
     class { '::glance::api':
       debug                     => $midonet_openstack::params::glance_debug,
-      database_connection       => "mysql+pymysql://${mysql_glance_user}:${mysql_glance_pass}@127.0.0.1/glance?charset=utf8",
+      database_connection       => "mysql+pymysql://${::midonet_openstack::params::mysql_glance_user}:${midonet_openstack::params::mysql_glance_pass}@127.0.0.1/glance?charset=utf8",
       keystone_password         => $midonet_openstack::params::glance_password,
       workers                   => 2,
       stores                    => $glance_stores,
@@ -95,7 +93,7 @@ class midonet_openstack::profile::glance::controller (
     }
     class { '::glance::registry':
       debug               => $midonet_openstack::params::glance_debug,
-      database_connection => "mysql+pymysql://${mysql_glance_user}:${mysql_glance_pass}@127.0.0.1/glance?charset=utf8",
+      database_connection => "mysql+pymysql://${midonet_openstack::params::mysql_glance_user}:${midonet_openstack::params::mysql_glance_pass}@127.0.0.1/glance?charset=utf8",
       keystone_password   => $midonet_openstack::params::glance_password,
       bind_host           => $::openstack_integration::config::host,
       workers             => 2,
