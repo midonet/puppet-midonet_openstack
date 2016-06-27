@@ -33,7 +33,7 @@ if $::osfamily == 'RedHat' {
   class { '::midonet_openstack::profile::glance::controller':
     require => Class['::midonet_openstack::profile::keystone::controller'],
   }
-  #class { '::midonet_openstack::profile::neutron::controller': }
+  class { '::midonet_openstack::profile::neutron::controller': }
   class {'::midonet_openstack::profile::nova::api':}
   class {'::midonet_openstack::profile::horizon::horizon':}
 
