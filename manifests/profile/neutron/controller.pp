@@ -38,7 +38,11 @@ class { '::neutron':
   rabbit_use_ssl        => $::openstack_integration::config::ssl,
   allow_overlapping_ips => true,
   core_plugin           => 'midonet.neutron.plugin_v2.MidonetPluginV2',
-  service_plugins       => ['midonet.neutron.services.firewall.plugin.MidonetFirewallPlugin','lbaas','neutron.services.l3.l3_midonet.MidonetL3ServicePlugin'],
+  service_plugins       => [
+    'midonet.neutron.services.firewall.plugin.MidonetFirewallPlugin',
+    'lbaas',
+    'neutron.services.l3.l3_midonet.MidonetL3ServicePlugin'
+    ],
   debug                 => true,
   verbose               => true,
 }
