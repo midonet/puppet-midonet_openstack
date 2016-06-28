@@ -9,9 +9,9 @@ class midonet_openstack::profile::neutron::controller {
   package { 'python-neutron-fwaas': ensure => installed }
   package { 'openstack-neutron-ml2': ensure => absent }
 
-rabbitmq_user { "${::midonet_openstack::params::neutron_rabbitmq_user}":
+rabbitmq_user { $::midonet_openstack::params::neutron_rabbitmq_user:
   admin    => true,
-  password => "${::midonet_openstack::params::neutron_password}",
+  password => $::midonet_openstack::params::neutron_password,
   provider => 'rabbitmqctl',
   require  => Class['::rabbitmq'],
 }
@@ -23,16 +23,16 @@ rabbitmq_user_permissions { 'neutron@/':
   require              => Class['::rabbitmq'],
 }
 class { '::neutron::db::mysql':
-  password => "${::midonet_openstack::params::mysql_neutron_pass}",
+  password      => $::midonet_openstack::params::mysql_neutron_pass,
   allowed_hosts => '%',
 }
 class { '::neutron::keystone::auth':
-  password => "${::midonet_openstack::params::neutron_password}",
+  password => $::midonet_openstack::params::neutron_password,
 }
 
 class { '::neutron':
-  rabbit_user           => "${::midonet_openstack::params::neutron_rabbitmq_user}",
-  rabbit_password       => "${::midonet_openstack::params::neutron_rabbitmq_password}",
+  rabbit_user           => $::midonet_openstack::params::neutron_rabbitmq_user,
+  rabbit_password       => $::midonet_openstack::params::neutron_rabbitmq_password,
   rabbit_host           => $::openstack_integration::config::rabbit_host,
   rabbit_port           => $::openstack_integration::config::rabbit_port,
   rabbit_use_ssl        => $::openstack_integration::config::ssl,
@@ -45,13 +45,13 @@ class { '::neutron':
 class { '::neutron::client': }
 class { '::neutron::server':
   database_connection => "mysql+pymysql://${::midonet_openstack::params::mysql_neutron_user}:${::midonet_openstack::params::mysql_neutron_pass}@127.0.0.1/neutron?charset=utf8",
-  password            => "${::midonet_openstack::params::neutron_password}",
+  password            => $::midonet_openstack::params::neutron_password,
   sync_db             => false,
   api_workers         => 2,
   rpc_workers         => 2,
   auth_uri            => $::openstack_integration::config::keystone_auth_uri,
   auth_url            => $::openstack_integration::config::keystone_admin_uri,
-  service_providers     => ['LOADBALANCER:Midonet:midonet.neutron.services.loadbalancer.driver.MidonetLoadbalancerDriver:default'],
+  service_providers   => ['LOADBALANCER:Midonet:midonet.neutron.services.loadbalancer.driver.MidonetLoadbalancerDriver:default'],
 }
 
   # Populate the DB
@@ -59,7 +59,7 @@ class { '::neutron::server':
     extra_params => '--config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/midonet/midonet.ini',
   }
   exec { 'neutron-db-sync-2':
-    command     => "neutron-db-manage --subproject networking-midonet upgrade head",
+    command     => 'neutron-db-manage --subproject networking-midonet upgrade head',
     path        => '/usr/bin',
     refreshonly => true,
     logoutput   => on_failure,

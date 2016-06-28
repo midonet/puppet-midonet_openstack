@@ -32,7 +32,7 @@ class midonet_openstack::profile::firewall::pre {
     proto  => 'tcp',
     state  => ['NEW', 'ESTABLISHED', 'RELATED'],
     action => 'accept',
-    dport   => 22,
+    dport  => 22,
     before => [ Firewall['8999 - Accept all management network traffic'] ],
   }
 }

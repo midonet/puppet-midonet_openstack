@@ -24,6 +24,8 @@ class midonet_openstack::profile::nova::compute {
 
     $user                = $::midonet_openstack::params::mysql_nova_user
     $pass                = $::midonet_openstack::params::mysql_nova_pass
+    $api_user            = $::midonet_openstack::params::mysql_nova_api_user
+    $api_pass            = $::midonet_openstack::params::mysql_nova_api_pass
     $database_connection = "mysql://${user}:${pass}@127.0.0.1/nova"
     $api_database_connection = "mysql://${api_user}:${api_pass}@127.0.0.1/nova_api"
 
@@ -35,7 +37,7 @@ class midonet_openstack::profile::nova::compute {
         rabbit_userid           => $::midonet_openstack::params::nova_rabbitmq_user,
         rabbit_password         => $::midonet_openstack::params::nova_rabbitmq_password,
         glance_api_servers      => join($::midonet_openstack::params::glance_api_servers, ','),
-        memcached_servers       => ["$::midonet_openstack::params::controller_address_management:11211"],
+        memcached_servers       => ["${::midonet_openstack::params::controller_address_management}:11211"],
         verbose                 => $::midonet_openstack::params::verbose,
         debug                   => $::midonet_openstack::params::debug,
       }
@@ -44,14 +46,14 @@ class midonet_openstack::profile::nova::compute {
       nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
 
       class { '::nova::network::neutron':
-        neutron_password => $::midonet_openstack::params::neutron_password,
-        neutron_region_name    => $::midonet_openstack::params::region,
-        neutron_auth_url => "http://${controller_management_address}:35357/v3",
-        neutron_url            => "http://${controller_management_address}:9696",
-        vif_plugging_is_fatal  => false,
-        vif_plugging_timeout   => '0',
-        neutron_project_name => 'admin',
-        neutron_auth_plugin => 'password'
+        neutron_password      => $::midonet_openstack::params::neutron_password,
+        neutron_region_name   => $::midonet_openstack::params::region,
+        neutron_auth_url      => "http://${controller_management_address}:35357/v3",
+        neutron_url           => "http://${controller_management_address}:9696",
+        vif_plugging_is_fatal => false,
+        vif_plugging_timeout  => '0',
+        neutron_project_name  => 'admin',
+        neutron_auth_plugin   => 'password'
 
   }
 }

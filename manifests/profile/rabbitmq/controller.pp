@@ -8,13 +8,13 @@ class midonet_openstack::profile::rabbitmq::controller {
   if ($::osfamily == 'Debian') or ($::osfamily == 'Debian')
   {
     apt::key { 'rabbitmq':
-      key          => '0A9AF2115F4687BD29803A206B73A36E6026DFCA',
-      key_source   => 'https://www.rabbitmq.com/rabbitmq-release-signing-key.asc',
-      before       => Class['::rabbitmq']
+      key        => '0A9AF2115F4687BD29803A206B73A36E6026DFCA',
+      key_source => 'https://www.rabbitmq.com/rabbitmq-release-signing-key.asc',
+      before     => Class['::rabbitmq']
       } ->
       exec { 'update_apt_for_rabbitmq':
-          command     => "/usr/bin/apt-get update",
-          logoutput   => 'on_failure',
+          command   => '/usr/bin/apt-get update',
+          logoutput => 'on_failure',
         }
   }
 

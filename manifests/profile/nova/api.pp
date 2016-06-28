@@ -23,14 +23,14 @@ class midonet_openstack::profile::nova::api {
   midonet_openstack::resources::firewall { 'Nova novnc': port => '6080', }
 
   class { '::nova::db::mysql':
-    user => "${::midonet_openstack::params::mysql_nova_user}",
-    password => "${::midonet_openstack::params::mysql_nova_pass}",
+    user     => $::midonet_openstack::params::mysql_nova_user,
+    password => $::midonet_openstack::params::mysql_nova_pass,
   }
 
   class { '::nova::db::mysql_api':
-  user => "${::midonet_openstack::params::mysql_nova_api_user}",
-  password => "${::midonet_openstack::params::mysql_nova_api_pass}",
- }
+    user     => $::midonet_openstack::params::mysql_nova_api_user,
+    password => $::midonet_openstack::params::mysql_nova_api_pass,
+  }
 
   class { '::nova::keystone::auth':
     public_url      => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_api}:8774/v2/%(tenant_id)s",
@@ -39,13 +39,13 @@ class midonet_openstack::profile::nova::api {
     internal_url_v3 => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v3/%(tenant_id)s",
     admin_url       => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v2/%(tenant_id)s",
     admin_url_v3    => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v3/%(tenant_id)s",
-    password        => "${::midonet_openstack::params::nova_password}",
-    region          => "${::midonet_openstack::params::region}"
+    password        => $::midonet_openstack::params::nova_password,
+    region          => $::midonet_openstack::params::region
   }
 
-  rabbitmq_user { "${midonet_openstack::params::nova_rabbitmq_user}":
+  rabbitmq_user { $midonet_openstack::params::nova_rabbitmq_user:
     admin    => true,
-    password => "${midonet_openstack::params::glance_rabbitmq_password}",
+    password => $midonet_openstack::params::glance_rabbitmq_password,
     provider => 'rabbitmqctl',
     require  => Class['::rabbitmq'],
   }
@@ -65,7 +65,7 @@ class midonet_openstack::profile::nova::api {
     rabbit_userid           => $::midonet_openstack::params::nova_rabbitmq_user,
     rabbit_password         => $::midonet_openstack::params::nova_rabbitmq_password,
     glance_api_servers      => join($::midonet_openstack::params::glance_api_servers, ','),
-    memcached_servers       => ["$::midonet_openstack::params::controller_address_management:11211"],
+    memcached_servers       => ["${::midonet_openstack::params::controller_address_management}:11211"],
     verbose                 => $::midonet_openstack::params::verbose,
     debug                   => $::midonet_openstack::params::debug,
     require                 => Class['midonet_openstack::profile::memcached::memcached']
@@ -73,9 +73,9 @@ class midonet_openstack::profile::nova::api {
 
 
   class { '::nova::network::neutron':
-    neutron_password       => $::midonet_openstack::params::neutron_password,
-    neutron_region_name    => $::midonet_openstack::params::region,
-    neutron_auth_url       => "http://${controller_management_address}:35357/v3",
+    neutron_password    => $::midonet_openstack::params::neutron_password,
+    neutron_region_name => $::midonet_openstack::params::region,
+    neutron_auth_url    => "http://${controller_management_address}:35357/v3",
   }
 
   class { '::nova::api':

@@ -7,12 +7,12 @@ class midonet_openstack::profile::horizon::horizon {
   class { '::horizon':
     keystone_multidomain_support => true,
     server_aliases               => [$::fqdn,
-                                     $::midonet_openstack::params::controller_address_management,
-                                     $::midonet_openstack::params::controller_address_api,
-                                     "localhost",
-                                     "127.0.0.1"],
-    cache_backend                => "django.core.cache.backends.memcached.MemcachedCache",
-    cache_server_ip              => ["$::midonet_openstack::params::controller_address_management"],
+      $::midonet_openstack::params::controller_address_management,
+      $::midonet_openstack::params::controller_address_api,
+      'localhost',
+      '127.0.0.1'],
+    cache_backend                => 'django.core.cache.backends.memcached.MemcachedCache',
+    cache_server_ip              => [$::midonet_openstack::params::controller_address_management],
     cache_server_port            => '11211',
     keystone_url                 => "${::openstack_integration::config::keystone_auth_uri}/v3/",
     secret_key                   => $::midonet_openstack::params::horizon_secret_key,
@@ -20,7 +20,7 @@ class midonet_openstack::profile::horizon::horizon {
     keystone_default_role        => 'user',
     allowed_hosts                => $::midonet_openstack::params::horizon_allowed_hosts,
     neutron_options              => {
-                                      "enable_lb" => true,
+                                      'enable_lb' => true,
                                     },
     # need to disable offline compression due to
     # https://bugs.launchpad.net/ubuntu/+source/horizon/+bug/1424042

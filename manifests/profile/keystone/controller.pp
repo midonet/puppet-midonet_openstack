@@ -62,7 +62,7 @@ class midonet_openstack::profile::keystone::controller (
     manage_policyrcd    => true,
     token_provider      => $token_provider,
     enable_fernet_setup => $enable_fernet_setup,
-    memcache_servers   => ["$::midonet_openstack::params::controller_address_management:11211"],
+    memcache_servers    => ["${::midonet_openstack::params::controller_address_management}:11211"],
     require             => Class['midonet_openstack::profile::memcached::memcached']
   }
 

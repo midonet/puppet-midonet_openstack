@@ -362,8 +362,8 @@ class midonet_openstack::params {
 
   $network_external_ippool_start = '172.17.0.100'
   $network_external_ippool_end = '172.17.0.200'
-  $network_external_gateway = "${::ipaddress}"
-  $network_external_dns = "${::ipaddress}"
+  $network_external_gateway = $::ipaddress
+  $network_external_dns = $::ipaddress
 
   ######## Private Neutron Network
 
@@ -371,10 +371,10 @@ class midonet_openstack::params {
 
   ######## Fixed IPs (controllers)
 
-  $controller_address_api = "${::ipaddress}"
-  $controller_address_management = "${::ipaddress}"
-  $storage_address_api = "${::ipaddress}"
-  $storage_address_management = "${::ipaddress}"
+  $controller_address_api = $::ipaddress
+  $controller_address_management = $::ipaddress
+  $storage_address_api = $::ipaddress
+  $storage_address_management = $::ipaddress
 
   ######## Database
 
@@ -439,7 +439,7 @@ class midonet_openstack::params {
           'email' => 'bar@midokura.com',
           'admin' => false
       },
-       'midonet' => {
+      'midonet' => {
           'password' => 'testmido',
           'tenant' => 'services',
           'email' => 'midonet@midokura.com',
@@ -482,7 +482,7 @@ class midonet_openstack::params {
   $neutron_rabbitmq_password = 'safe_password'
 
   ######## Ceilometer
-  $ceilometer_address_management = "${::ipaddress}"
+  $ceilometer_address_management = $::ipaddress
   $ceilometer_mongo_username = 'mongo'
   $ceilometer_mongo_password = 'mongosecretkey123'
   $ceilometer_password = 'whi-truz'
@@ -495,7 +495,7 @@ class midonet_openstack::params {
   ######## Horizon
 
   $horizon_secret_key = 'testmido'
-  $horizon_allowed_hosts = ["*",]
+  $horizon_allowed_hosts = ['*',]
 
 
   ######## Tempest

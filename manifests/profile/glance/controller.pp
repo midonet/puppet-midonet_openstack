@@ -18,9 +18,9 @@ class midonet_openstack::profile::glance::controller (
       $crt_file  = undef
     }
 
-    rabbitmq_user { "${midonet_openstack::params::glance_rabbitmq_user}":
+    rabbitmq_user { $midonet_openstack::params::glance_rabbitmq_user:
       admin    => true,
-      password => "${midonet_openstack::params::glance_rabbitmq_password}",
+      password => $midonet_openstack::params::glance_rabbitmq_password,
       provider => 'rabbitmqctl',
       require  => Class['::rabbitmq'],
     }
@@ -33,14 +33,14 @@ class midonet_openstack::profile::glance::controller (
     }
 
     class { '::glance::db::mysql':
-      password => $midonet_openstack::params::mysql_glance_pass,
+      password      => $midonet_openstack::params::mysql_glance_pass,
       allowed_hosts => '%',
     }
     include ::glance
     include ::glance::client
     class { '::glance::keystone::auth':
-      password     => $midonet_openstack::params::glance_password,
-      region       => $midonet_openstack::params::region,
+      password => $midonet_openstack::params::glance_password,
+      region   => $midonet_openstack::params::region,
     }
     case $backend {
       'file': {

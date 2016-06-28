@@ -26,9 +26,9 @@ class midonet_openstack::setup::sharednetwork {
   $private_network = $::openstack::config::network_neutron_private
 
   neutron_network { 'public':
-    tenant_name              => 'services',
-    router_external          => true,
-    shared                   => false,
+    tenant_name     => 'services',
+    router_external => true,
+    shared          => false,
   } ->
 
   neutron_subnet { $external_network:
@@ -43,9 +43,9 @@ class midonet_openstack::setup::sharednetwork {
   }
 
   neutron_network { 'private':
-    tenant_name              => 'midokura',
-    router_external          => false,
-    shared                   => false,
+    tenant_name     => 'midokura',
+    router_external => false,
+    shared          => false,
   } ->
 
   neutron_subnet { $private_network:
