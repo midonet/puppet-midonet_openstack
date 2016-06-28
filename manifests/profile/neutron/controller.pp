@@ -1,6 +1,10 @@
 class midonet_openstack::profile::neutron::controller {
   include ::openstack_integration::config
 
+  class { 'midonet_openstack::profile::neutron::midonet':
+    before => Service['neutron-server'],
+  }
+
   package { 'python-neutron-lbaas': ensure => installed }
   package { 'python-neutron-fwaas': ensure => installed }
   package { 'openstack-neutron-ml2': ensure => absent }
@@ -73,5 +77,5 @@ class { '::neutron::server':
     'nova/project_name':               value => 'admin';
     'nova/username':                   value => 'nova';
     'nova/password':                   value => $::midonet_openstack::params::nova_password;
-}
+  }
 }

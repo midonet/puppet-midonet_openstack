@@ -59,3 +59,6 @@ mod 'glance',
   mod 'horizon',
     :git => 'https://github.com/openstack/puppet-horizon',
     :ref => 'stable/mitaka'
+  mod 'vswitch',
+    :git => 'https://git.openstack.org/openstack/puppet-vswitch',
+    :ref => 'stable/mitaka'
