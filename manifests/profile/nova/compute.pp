@@ -42,14 +42,14 @@ class midonet_openstack::profile::nova::compute {
     nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
 
     class { '::nova::network::neutron':
-      neutron_password => $::midonet_openstack::params::neutron_password,
+      neutron_password       => $::midonet_openstack::params::neutron_password,
       neutron_region_name    => $::midonet_openstack::params::region,
-      neutron_auth_url => "http://${controller_management_address}:35357/v2.0",
+      neutron_auth_url       => "http://${controller_management_address}:35357/v2.0",
       neutron_url            => "http://${controller_management_address}:9696",
       vif_plugging_is_fatal  => false,
       vif_plugging_timeout   => '0',
-      neutron_project_name => 'admin',
-      neutron_auth_plugin => 'password'
+      neutron_project_name   => 'admin',
+      neutron_auth_plugin    => 'password'
     }
 
 
