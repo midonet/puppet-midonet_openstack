@@ -1,3 +1,12 @@
+# == Class: midonet_openstack::profile::glance::controller
+#
+#  Configure the Glance image service on a controller node
+#
+# === Parameters
+#
+# [*backend*]
+#   Backend to be used by Glance.
+#   (Optional) Defaults to 'file'.
 class midonet_openstack::profile::glance::controller (
   $backend = 'file',
   ) {

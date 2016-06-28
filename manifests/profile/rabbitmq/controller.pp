@@ -1,3 +1,6 @@
+# == Class: midonet_openstack::profile::rabbitmq::controller
+#
+#  Configure RabbitMQ on a controller node
 class midonet_openstack::profile::rabbitmq::controller {
 
   include ::openstack_integration::params

@@ -1,4 +1,7 @@
 
+# == Class: midonet_openstack::profile::horizon::horizon
+#
+#  Configure Horizon on a node
 class midonet_openstack::profile::horizon::horizon {
   include ::openstack_integration::params
   include ::openstack_integration::config

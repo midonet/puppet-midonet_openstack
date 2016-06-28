@@ -1,3 +1,6 @@
+# == Class: midonet_openstack::profile::repos
+#
+#  Configure OpenStack Mitaka repositories on a given node
 class midonet_openstack::profile::repos{
   case $::osfamily {
     'Debian': {
