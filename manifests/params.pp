@@ -352,6 +352,7 @@
 #
 class midonet_openstack::params {
   $region = 'openstack'
+  $allinone = true
 
   ######## Networks
   $network_api = '172.17.0.0/24'
