@@ -23,7 +23,7 @@ class midonet_openstack::profile::keystone::controller (
     # Leave this included as these have some logic
     include ::openstack_integration::params
     include ::openstack_integration::config
-  include ::apache
+    include ::apache
 
 
   if $::openstack_integration::config::ssl {
@@ -41,7 +41,9 @@ class midonet_openstack::profile::keystone::controller (
   }
 
   class { '::keystone::client': }
+
   class { '::keystone::cron::token_flush': }
+
   class { '::keystone::db::mysql':
     password => $midonet_openstack::params::mysql_keystone_pass,
   }
@@ -63,6 +65,7 @@ class midonet_openstack::profile::keystone::controller (
     memcache_servers   => ["$::midonet_openstack::params::controller_address_management:11211"],
     require             => Class['midonet_openstack::profile::memcached::memcached']
   }
+
   class { '::keystone::wsgi::apache':
     bind_host       => $::openstack_integration::config::ip_for_url,
     admin_bind_host => $::openstack_integration::config::ip_for_url,
@@ -84,10 +87,12 @@ class midonet_openstack::profile::keystone::controller (
   Package['keystone'] -> File['/etc/apache2/sites-available/keystone.conf']
   -> File['/etc/apache2/sites-enabled/keystone.conf'] ~> Anchor['keystone::install::end']
   }
+
   class { '::keystone::roles::admin':
   email    => $midonet_openstack::params::keystone_admin_email,
   password => $midonet_openstack::params::keystone_admin_password,
   }
+
   class { '::keystone::endpoint':
   default_domain => $default_domain,
   public_url     => $::openstack_integration::config::keystone_auth_uri,
@@ -102,4 +107,16 @@ class midonet_openstack::profile::keystone::controller (
   user_domain    => 'default',
   auth_url       => "${::openstack_integration::config::keystone_auth_uri}/v3/",
   }
+
+  $tenants = $::midonet_openstack::params::keystone_tenants
+  $users   = $::midonet_openstack::params::keystone_users
+  create_resources('keystone_tenant', $tenants)
+
+  # Create the 'user' role so we can assign it later to the the users
+  keystone_role { 'user':
+                  ensure => present,
+                }
+
+  create_resources('midonet_openstack::resources::keystone_user', $users)
+
 }
