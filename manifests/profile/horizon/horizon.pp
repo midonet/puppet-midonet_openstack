@@ -17,6 +17,7 @@ class midonet_openstack::profile::horizon::horizon {
     keystone_url                 => "${::openstack_integration::config::keystone_auth_uri}/v3/",
     secret_key                   => $::midonet_openstack::params::horizon_secret_key,
     vhost_extra_params           => $vhost_params,
+    keystone_default_role        => 'user',
     allowed_hosts                => $::midonet_openstack::params::horizon_allowed_hosts,
     neutron_options              => {
                                       "enable_lb" => true,
