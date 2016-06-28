@@ -1,3 +1,8 @@
+# The midonet_openstack::profile::neutron::controller_vanilla
+# configures neutron in controller node , preparing it for midonet
+#
+#
+
 class midonet_openstack::profile::neutron::controller {
   include ::openstack_integration::config
 

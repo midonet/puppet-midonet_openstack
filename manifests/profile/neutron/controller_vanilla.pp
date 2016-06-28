@@ -1,3 +1,19 @@
+# The midonet_openstack::profile::neutron::controller_vanilla
+# configures neutron in controller node , vanilla openstack ( no midonet )
+# assigns it to a tenant and role
+#
+# == Parameters
+#
+#  [*password*]
+#    User password
+#  [*tenant*]
+#    Tenant
+#  [*email*]
+#    User email
+#  [*enabled*]
+#    User enabled
+
+
 class midonet_openstack::profile::neutron::controller_vanilla {
   include ::openstack_integration::config
 

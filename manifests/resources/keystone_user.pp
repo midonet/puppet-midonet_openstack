@@ -1,3 +1,17 @@
+# The midonet_openstack::resources::keystone_user creates a user in keystone and
+# assigns it to a tenant and role
+#
+# == Parameters
+#
+#  [*password*]
+#    User password
+#  [*tenant*]
+#    Tenant
+#  [*email*]
+#    User email
+#  [*enabled*]
+#    User enabled
+
 define midonet_openstack::resources::keystone_user (
   $password,
   $tenant,

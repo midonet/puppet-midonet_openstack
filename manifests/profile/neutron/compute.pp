@@ -1,3 +1,8 @@
+# The midonet_openstack::profile::neutron::compute
+# configures neutron in compute node
+#
+# Suitable for both Vanilla and Midonet OpenStack installations
+
 class midonet_openstack::profile::neutron::compute {
   include ::openstack_integration::config
 

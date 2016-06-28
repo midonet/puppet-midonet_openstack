@@ -1,3 +1,12 @@
+# The midonet_openstack::resources::firewall grants access to a port on the
+# management network
+#
+# == Parameters
+#
+#  [*port*]
+#    Port to open
+
+
 define midonet_openstack::resources::firewall ( $port ) {
   # The firewall module can not handle managed rules with a leading 9 properly
   if $port =~ /9[0-9]+/ {
