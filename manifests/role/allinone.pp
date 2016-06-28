@@ -15,27 +15,15 @@
 # limitations under the License.
 #
 class midonet_openstack::role::allinone inherits ::midonet_openstack::role {
-  class { '::openstack::profile::firewall': }
-  class { '::openstack::profile::rabbitmq': }
-  class { '::openstack::profile::mysql': }
-  class { '::openstack::profile::keystone': }
-  class { '::midonet_openstack::profile::midonet::nsdb':}
-  class { '::midonet_openstack::profile::neutron::server':}
-  class { '::midonet_openstack::profile::neutron::router':}
-  class { '::midonet_openstack::profile::neutron::agent': }
-  class { '::openstack::profile::glance::api': } ->
-  class { '::openstack::profile::glance::auth': }
-  class { '::openstack::profile::cinder::volume': }
-  class { '::openstack::profile::cinder::api': }
-  class { '::midonet_openstack::profile::nova::compute': }
-  class { '::openstack::profile::nova::api': }
-  class { '::openstack::profile::horizon': }
-  class { '::openstack::profile::auth_file': }
-  class { '::midonet_openstack::setup::sharednetwork': }
-  class { '::openstack::setup::cirros': }
-
-  Class['::midonet_openstack::profile::neutron::agent'] -> Class['::midonet_openstack::profile::midonet::nsdb']
-  Class['::midonet_openstack::setup::sharednetwork'] -> Class['::midonet_openstack::profile::neutron::server']
-  Class['::midonet_openstack::setup::sharednetwork'] -> Class['::apache::service']
-  Class['::openstack::profile::keystone'] -> Class['::openstack::setup::cirros']
+  class { '::midonet_openstack::profile::repos': } ->
+  class { '::midonet_openstack::profile::firewall::firewall': } ->
+  class { '::midonet_openstack::profile::rabbitmq::controller': } ->
+  class { '::midonet_openstack::profile::mysql::controller': } ->
+  class { '::midonet_openstack::profile::memcached::memcached': } ->
+  class { '::midonet_openstack::profile::keystone::controller': }
+  class { '::midonet_openstack::profile::neutron::controller_vanilla':}
+  class { '::midonet_openstack::profile::glance::controller': }
+  class { '::midonet_openstack::profile::nova::api': } ->
+  class { '::midonet_openstack::profile::nova::compute_vanilla': }
+  class { '::midonet_openstack::profile::horizon::horizon': }
 }
