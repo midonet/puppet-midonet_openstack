@@ -22,6 +22,7 @@ class midonet_openstack::profile::repos{
       release           => 'mitaka',
       manage_epel       => false,
       centos_mirror_url => $::nodepool_mirror_host,
+      manage_priorities => false,
     }
   }
   default: {
