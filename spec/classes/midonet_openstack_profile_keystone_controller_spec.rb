@@ -63,6 +63,32 @@ describe 'midonet_openstack::profile::keystone::controller' do
         'workers'             => '2',
       )
     end
+
+    it 'should create the role admin in keystone' do
+      is_expected.to contain_class('keystone::roles::admin').with(
+        'email'                => 'mido-dev@lists.midonet.org',
+        'password'             => 'testmido',
+      )
+    end
+
+    it 'should register the keystone endpoint in openstack' do
+      is_expected.to contain_class('keystone::endpoint').with(
+        'default_domain' => nil,
+        'public_url'     => 'http://127.0.0.1:5000',
+        'admin_url'      => 'http://127.0.0.1:35357',
+        'region'         => 'openstack',
+        'require'        => '[Class[Keystone]{:name=>"Keystone"}, Class[Keystone::Wsgi::Apache]{:name=>"Keystone::Wsgi::Apache"}]',
+      )
+    end
+
+    it 'should create an adminrc.sh file' do
+      is_expected.to contain_class('openstack_extras::auth_file').with(
+        'password'        => 'testmido',
+        'project_domain'  => 'default',
+        'user_domain'     => 'default',
+        'auth_url'        => 'http://127.0.0.1:5000/v3/',
+      )
+    end
   end
 
   context 'on Ubuntu 14.04' do
