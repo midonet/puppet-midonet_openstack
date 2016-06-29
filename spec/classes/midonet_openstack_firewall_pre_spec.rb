@@ -1,6 +1,6 @@
 
 #
-# Unit tests for midonet_openstack::profile::firewall::firewall
+# Unit tests for midonet_openstack::profile::firewall::pre
 #
 
 require 'spec_helper'
