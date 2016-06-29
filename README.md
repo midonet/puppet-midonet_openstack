@@ -2,11 +2,13 @@
 
 NOW UNDER HEAVY DEVELOPMENT!
 
+
 # midonet-midonet_openstack
 
 MidoNet Reference and Testing Deployment Module for OpenStack.
 
 Version 5.0 / 2014.2 / Juno
+
 
 ####Table of Contents
 
@@ -24,11 +26,13 @@ Version 5.0 / 2014.2 / Juno
 6. [Limitations - OS compatibility, etc.](#limitations)
 7. [License](#license)
 
+
 ##Overview
 
 The puppetlabs-openstack module is used to deploy a multi-node, all-in-one, or swift-only installation of
 OpenStack Juno. This module superseeds [puppetlabs-openstack](http://github.com/puppetlabs/puppetlabs-openstack)
 by defining roles and profiles that configure OpenStack with MidoNet as Neutron driver
+
 
 ##Versioning
 
@@ -55,6 +59,7 @@ types of nodes are created for the deployment:
 * A coordination node for the nsdb (network state database) for clusterized services.
 
 You can still use the storage and tempest nodes defined in [puppetlabs-openstack](https://github.com/puppetlabs/puppetlabs-openstack/blob/master/README.md#module-description)
+
 
 ##Setup
 
