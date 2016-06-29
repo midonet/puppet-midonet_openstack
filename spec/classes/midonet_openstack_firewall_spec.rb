@@ -11,7 +11,7 @@ describe 'midonet_openstack::profile::firewall::firewall' do
     { }
   end
 
-  shared_examples_for 'neutron firewall' do
+  shared_examples_for 'firewall basic rules' do
 
     context 'with default params' do
       let :params do
@@ -29,7 +29,7 @@ end
     let :facts do
       @default_facts.merge({
         :osfamily  => 'Debian',
-        :kernel => 'Linux'
+        :kernel    => 'Linux'
       })
     end
 
@@ -37,7 +37,7 @@ end
       {}
     end
 
-    it_configures 'neutron firewall'
+    it_configures 'firewall basic rules'
   end
 
   context 'on Red Hat platforms' do
@@ -45,7 +45,7 @@ end
       @default_facts.merge({
         :osfamily => 'RedHat',
         :operatingsystemrelease => '7',
-        :kernel => 'Linux'
+        :kernel   => 'Linux'
       })
     end
 
@@ -53,6 +53,6 @@ end
       {}
     end
 
-    it_configures 'neutron firewall'
+    it_configures 'firewall basic rules'
   end
 end
