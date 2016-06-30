@@ -89,6 +89,39 @@ describe 'midonet_openstack::profile::keystone::controller' do
         'auth_url'        => 'http://127.0.0.1:5000/v3/',
       )
     end
+
+    it 'should create an initial set of keystone tenants' do
+      is_expected.to contain_keystone_tenant('midokura').with(
+      'description' => 'Test Tenant',
+      )
+    end
+
+    it 'should create a "user" keystone role' do
+      is_expected.to contain_keystone_role('user').with(
+      'ensure' => 'present',
+      )
+    end
+
+    it 'should create an initial set of keystone users' do
+      is_expected.to contain_midonet_openstack__resources__keystone_user('midogod').with(
+      'password' => 'midogod',
+      'tenant'   => 'midokura',
+      'email'    => 'foo@midokura.com',
+      'admin'    => 'true',
+      )
+      is_expected.to contain_midonet_openstack__resources__keystone_user('midoguy').with(
+      'password' => 'midoguy',
+      'tenant'   => 'midokura',
+      'email'    => 'bar@midokura.com',
+      'admin'    => 'false',
+      )
+      is_expected.to contain_midonet_openstack__resources__keystone_user('midonet').with(
+      'password' => 'testmido',
+      'tenant'   => 'services',
+      'email'    => 'midonet@midokura.com',
+      'admin'    => 'true',
+      )
+    end
   end
 
   context 'on Ubuntu 14.04' do
