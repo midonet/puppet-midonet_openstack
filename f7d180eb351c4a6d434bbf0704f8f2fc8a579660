@@ -1,0 +1,9 @@
+Code-Review+2: Alejandro Andreu <alejandroandreu@openmailbox.org>
+Verified+1: Midokura Bot <Monitor@midokura.com>
+Code-Review+2: Alex Ruiz <ahharu@ahharu.com>
+Verified+1: Alex Ruiz <ahharu@ahharu.com>
+Submitted-by: Alex Ruiz <ahharu@ahharu.com>
+Submitted-at: Thu, 30 Jun 2016 12:38:58 -0400
+Reviewed-on: https://review.gerrithub.io/282477
+Project: midonet/puppet-midonet_openstack
+Branch: refs/heads/master
