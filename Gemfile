@@ -10,3 +10,6 @@ gem 'puppet-syntax'
 gem 'beaker'
 gem 'beaker-rspec'
 gem 'beaker-puppet_install_helper'
+gem 'puppet-openstack_spec_helper',
+  :git => 'https://git.openstack.org/openstack/puppet-openstack_spec_helper',
+  :require => false
