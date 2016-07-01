@@ -6,11 +6,12 @@ mod 'openstack_integration',
   :git => 'https://github.com/openstack/puppet-openstack-integration',
   :ref => 'stable/mitaka'
 
+mod 'puppetlabs/apt' , '2.2.2'
 mod 'rabbitmq',
   :git => 'https://github.com/puppetlabs/puppetlabs-rabbitmq',
   :tag => '5.3.1'
 mod 'puppetlabs/stdlib'
-mod 'puppetlabs/apt'
+
 
 mod 'mysql',
   :git => 'https://github.com/puppetlabs/puppetlabs-mysql',
