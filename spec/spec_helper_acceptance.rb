@@ -24,6 +24,29 @@ RSpec.configure do |c|
     hosts.each do |host|
       # install git
       install_package host, 'git'
+
+      # Check what Puppet version are we using
+      puppet_major_version = on(host, "puppet --version").stdout.split(".")[0]
+      if puppet_major_version >= "4"
+        puppet_module_dir = "/opt/puppetlabs/puppet/modules"
+      elsif puppet_major_version == "3"
+        puppet_module_dir = "/etc/puppet/modules"
+      else
+        raise "Your Puppet version is unsupported"
+      end
+      
+      on host, "rm -rf #{puppet_module_dir}/*"
+      on host, "cd /tmp/ && git clone https://github.com/midonet/puppet-midonet_openstack.git"
+      on host, "cd /tmp/puppet-midonet_openstack && puppet module build"
+      on host, "cd /tmp/puppet-midonet_openstack && puppet module install pkg/*.tar.gz"
+      on host, "bash -x #{puppet_module_dir}/#{module_name}/spec/files/all-in-one.sh"
+      on host, "gem install bundler --no-rdoc --no-ri --verbose"
+      on host, "gem install r10k --no-rdoc --no-ri --verbose"
+      on host, "r10k puppetfile install --puppetfile /#{puppet_module_dir}/#{module_name}/Puppetfile -v debug --moduledir #{puppet_module_dir}"
+
+      # List modules installed to help with debugging
+      on host, "puppet module list", { :acceptable_exit_codes => 0 }
+
     end
   end
 end
