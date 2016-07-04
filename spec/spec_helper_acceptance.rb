@@ -9,6 +9,8 @@ RSpec.configure do |c|
   # Project root
   proj_root = File.expand_path(File.join(Dir.getwd))
   module_name = JSON.parse(open('metadata.json').read)['name'].split('-')[1]
+  module_full_name = JSON.parse(open('metadata.json').read)['name']
+  module_version = JSON.parse(open('metadata.json').read)['version']
 
   # Make sure proj_root is the real project root
   unless File.exists?("#{proj_root}/metadata.json")
@@ -34,18 +36,17 @@ RSpec.configure do |c|
       else
         raise "Your Puppet version is unsupported"
       end
-      
+
       on host, "rm -rf #{puppet_module_dir}/*"
       on host, "cd /tmp/ && git clone https://github.com/midonet/puppet-midonet_openstack.git"
       on host, "cd /tmp/puppet-midonet_openstack && puppet module build"
-      on host, "cd /tmp/puppet-midonet_openstack && puppet module install pkg/*.tar.gz"
-      on host, "bash -x #{puppet_module_dir}/#{module_name}/spec/files/all-in-one.sh"
       on host, "gem install bundler --no-rdoc --no-ri --verbose"
       on host, "gem install r10k --no-rdoc --no-ri --verbose"
-      on host, "r10k puppetfile install --puppetfile /#{puppet_module_dir}/#{module_name}/Puppetfile -v debug --moduledir #{puppet_module_dir}"
-
+      on host, "r10k puppetfile install --puppetfile /tmp/puppet-#{module_name}/Puppetfile -v debug --moduledir #{puppet_module_dir}"
+      on host, "cd /tmp/puppet-midonet_openstack/pkg && puppet module install #{module_full_name}-#{module_version}.tar.gz"
+      on host, "bash -x #{puppet_module_dir}/#{module_name}/spec/files/all-in-one.sh"
       # List modules installed to help with debugging
-      on host, "puppet module list", { :acceptable_exit_codes => 0 }
+      on host, "puppet module list"
 
     end
   end

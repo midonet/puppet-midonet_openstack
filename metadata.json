@@ -6,9 +6,5 @@
   "license": "Apache-2.0",
   "source": "http://github.com/midonet/arrakis",
   "project_page": "http://github.com/midonet/arrakis/tree/master/modules/midonet-midonet_openstack",
-  "issues_url": "https://midonet.atlassian.net/projects/MDT",
-  "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"},
-    {"name":"midonet-midonet", "version_requirement": ">=2015.1.0"}
-  ]
+  "issues_url": "https://midonet.atlassian.net/projects/MDT"
 }
