@@ -15,15 +15,15 @@
 # limitations under the License.
 #
 class midonet_openstack::role::allinone inherits ::midonet_openstack::role {
-  class { '::midonet_openstack::profile::repos': } ->
-  class { '::midonet_openstack::profile::firewall::firewall': } ->
-  class { '::midonet_openstack::profile::rabbitmq::controller': } ->
-  class { '::midonet_openstack::profile::mysql::controller': } ->
-  class { '::midonet_openstack::profile::memcached::memcached': } ->
-  class { '::midonet_openstack::profile::keystone::controller': }
-  class { '::midonet_openstack::profile::neutron::controller_vanilla':}
-  class { '::midonet_openstack::profile::glance::controller': }
-  class { '::midonet_openstack::profile::nova::api': } ->
-  class { '::midonet_openstack::profile::nova::compute_vanilla': }
-  class { '::midonet_openstack::profile::horizon::horizon': }
+  class { 'midonet_openstack::profile::repos': } ->
+  class { 'midonet_openstack::profile::firewall::firewall': } ->
+  class { 'midonet_openstack::profile::rabbitmq::controller': } ->
+  class { 'midonet_openstack::profile::mysql::controller': } ->
+  class { 'midonet_openstack::profile::memcache::memcache': } ->
+  class { 'midonet_openstack::profile::keystone::controller': }
+  class { 'midonet_openstack::profile::neutron::controller_vanilla':}
+  class { 'midonet_openstack::profile::glance::controller': }
+  class { 'midonet_openstack::profile::nova::api': } ->
+  class { 'midonet_openstack::profile::nova::compute_vanilla': }
+  class { 'midonet_openstack::profile::horizon::horizon': }
 }

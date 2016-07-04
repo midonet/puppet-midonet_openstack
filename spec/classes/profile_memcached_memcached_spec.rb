@@ -1,11 +1,11 @@
 
 #
-# Unit tests for midonet_openstack::profile::memcached::memcached
+# Unit tests for midonet_openstack::profile::memcache::memcache
 #
 
 require 'spec_helper'
 
-describe 'midonet_openstack::profile::memcached::memcached' do
+describe 'midonet_openstack::profile::memcache::memcache' do
 
   let :pre_condition do
     "include ::midonet_openstack::params"

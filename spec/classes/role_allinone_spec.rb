@@ -15,7 +15,7 @@ describe 'midonet_openstack::role::allinone' do
     it { is_expected.to contain_class('midonet_openstack::profile::firewall::firewall') }
     it { is_expected.to contain_class('midonet_openstack::profile::rabbitmq::controller') }
     it { is_expected.to contain_class('midonet_openstack::profile::mysql::controller') }
-    it { is_expected.to contain_class('midonet_openstack::profile::memcached::memcached') }
+    it { is_expected.to contain_class('midonet_openstack::profile::memcache::memcache') }
     it { is_expected.to contain_class('midonet_openstack::profile::keystone::controller') }
     it { is_expected.to contain_class('midonet_openstack::profile::neutron::controller_vanilla') }
     it { is_expected.to contain_class('midonet_openstack::profile::glance::controller') }

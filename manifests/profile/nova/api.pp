@@ -68,7 +68,7 @@ class midonet_openstack::profile::nova::api {
     memcached_servers       => ["${::midonet_openstack::params::controller_address_management}:11211"],
     verbose                 => $::midonet_openstack::params::verbose,
     debug                   => $::midonet_openstack::params::debug,
-    require                 => Class['midonet_openstack::profile::memcached::memcached']
+    require                 => Class['midonet_openstack::profile::memcache::memcache']
   }
 
 

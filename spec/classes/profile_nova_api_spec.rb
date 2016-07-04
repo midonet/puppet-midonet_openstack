@@ -103,7 +103,7 @@ describe 'midonet_openstack::profile::nova::api' do
         'memcached_servers'       => ["172.17.0.3:11211"],
         'verbose'                 => 'True',
         'debug'                   => 'True',
-        'require'                 => 'Class[Midonet_openstack::Profile::Memcached::Memcached]'
+        'require'                 => 'Class[Midonet_openstack::Profile::Memcache::Memcache]'
       )
       end
 

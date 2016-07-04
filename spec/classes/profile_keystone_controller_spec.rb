@@ -51,7 +51,7 @@ describe 'midonet_openstack::profile::keystone::controller' do
         'token_provider'      => 'uuid',
         'enable_fernet_setup' => 'false',
         'memcache_servers'    => '["127.0.0.1:11211"]',
-        'require'             => 'Class[Midonet_openstack::Profile::Memcached::Memcached]',
+        'require'             => 'Class[Midonet_openstack::Profile::Memcache::Memcache]',
       )
     end
 

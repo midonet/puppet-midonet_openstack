@@ -63,7 +63,7 @@ class midonet_openstack::profile::keystone::controller (
     token_provider      => $token_provider,
     enable_fernet_setup => $enable_fernet_setup,
     memcache_servers    => ["${::midonet_openstack::params::controller_address_management}:11211"],
-    require             => Class['midonet_openstack::profile::memcached::memcached']
+    require             => Class['midonet_openstack::profile::memcache::memcache']
   }
 
   class { '::keystone::wsgi::apache':
