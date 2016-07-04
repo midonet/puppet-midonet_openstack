@@ -39,7 +39,7 @@ print_header 'Preparing environment'
 
 if is_fedora; then
     print_header 'Setup (RedHat based)'
-    sudo yum -y install libxml2-devel libxslt-devel ruby-devel rubygems wget
+    sudo yum -y install libxml2-devel libxslt-devel ruby-devel rubygems wget tar
     sudo yum -y groupinstall "Development Tools"
 elif uses_debs; then
     print_header 'Setup (Debian based)'
