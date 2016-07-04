@@ -37,7 +37,7 @@ source $SCRIPT_DIR/functions
 
 print_header 'Preparing environment'
 
-if [ -f /etc/redhat-relase ]; then
+if [ -f /etc/redhat-release ]; then
     print_header 'Setup (RedHat based)'
     sudo yum -y install libxml2-devel libxslt-devel ruby-devel rubygems wget tar
     sudo yum -y groupinstall "Development Tools"
