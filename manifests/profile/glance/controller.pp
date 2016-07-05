@@ -13,6 +13,9 @@ class midonet_openstack::profile::glance::controller (
     include ::openstack_integration::config
     include ::openstack_integration::params
 
+    midonet_openstack::resources::firewall { 'Glance API': port => '9292', }
+    midonet_openstack::resources::firewall { 'Glance Registry': port => '9191', }
+
     if $::openstack_integration::config::ssl {
       openstack_integration::ssl_key { 'glance':
         notify => [Service['glance-api'], Service['glance-registry']],

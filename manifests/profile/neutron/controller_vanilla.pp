@@ -17,6 +17,8 @@
 class midonet_openstack::profile::neutron::controller_vanilla {
   include ::openstack_integration::config
 
+  midonet_openstack::resources::firewall { 'Neutron': port => '9696', }
+
   rabbitmq_user { $::midonet_openstack::params::neutron_rabbitmq_user:
     admin    => true,
     password => $::midonet_openstack::params::neutron_rabbitmq_password,

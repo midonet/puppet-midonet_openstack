@@ -6,6 +6,8 @@ class midonet_openstack::profile::rabbitmq::controller {
   include ::openstack_integration::params
   include ::openstack_integration::config
 
+  midonet_openstack::resources::firewall { 'Rabbitmq': port => '5672', }
+
   ## Dirty workaround until the guys from puppetlabs make new release
   ## with correct apt key for rabbitmq..
   if ($::osfamily == 'Debian') or ($::osfamily == 'Debian')

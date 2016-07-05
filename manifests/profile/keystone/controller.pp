@@ -25,6 +25,10 @@ class midonet_openstack::profile::keystone::controller (
     include ::openstack_integration::config
     include ::apache
 
+    midonet_openstack::resources::firewall { 'Keystone Public': port => '5000', }
+    midonet_openstack::resources::firewall { 'Keystone Private': port => '35357', }
+
+
 
   if $::openstack_integration::config::ssl {
     openstack_integration::ssl_key { 'keystone':

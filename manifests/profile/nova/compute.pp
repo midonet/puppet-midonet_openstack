@@ -29,6 +29,8 @@ class midonet_openstack::profile::nova::compute {
     $database_connection = "mysql://${user}:${pass}@127.0.0.1/nova"
     $api_database_connection = "mysql://${api_user}:${api_pass}@127.0.0.1/nova_api"
 
+    midonet_openstack::resources::firewall { 'Nova Endpoint': port => '8774', }
+
     unless $::midonet_openstack::params::allinone {
       class { '::nova':
         api_database_connection => $api_database_connection,
