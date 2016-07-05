@@ -87,6 +87,98 @@ describe 'midonet_openstack class' do
       it { should be_enabled }
       it { should be_running }
     end
+    describe service('nova-consoleauth') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('neutron-dhcp-agent') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('neutron-l3-agent') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('neutron-lbaas-agent') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('neutron-metadata-agent') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('neutron-metering-agent') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('neutron-openvswitch-agent') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('neutron-ovs-cleanup') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('neutron-server') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('rabbitmq-server') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('memcached') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('libvirt-bin') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('qemu-kvm') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('openvswitch-switch') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('glance-api') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('glance-registry') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('mysql') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    if os[:family] == 'ubuntu'
+      describe service('apache2') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+    end
+
 
   end
 end
