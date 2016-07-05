@@ -13,6 +13,10 @@ describe 'midonet_openstack class' do
       expect(apply_manifest(pp).exit_code).to eq(0)
     end
 
+    # **************************************************************************
+    # PORT TESTING
+    # **************************************************************************
+
     # Keystone
     describe port(5000) do
       it { is_expected.to be_listening }
@@ -53,6 +57,35 @@ describe 'midonet_openstack class' do
     # Memcached
     describe port(11211) do
       it { is_expected.to be_listening }
+    end
+
+
+    # **************************************************************************
+    # SERVICE TESTING
+    # **************************************************************************
+    describe service('nova-api') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+    describe service('nova-compute') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+    describe service('nova-cert') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+    describe service('nova-novncproxy') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+    describe service('nova-conductor') do
+      it { should be_enabled }
+      it { should be_running }
+    end
+    describe service('nova-scheduler') do
+      it { should be_enabled }
+      it { should be_running }
     end
 
   end
