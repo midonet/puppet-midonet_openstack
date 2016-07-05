@@ -11,6 +11,8 @@
 #    User email
 #  [*enabled*]
 #    User enabled
+#  [*admin*]
+#    Is Admin?
 
 define midonet_openstack::resources::keystone_user (
   $password,

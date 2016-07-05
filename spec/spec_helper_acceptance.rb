@@ -37,6 +37,7 @@ RSpec.configure do |c|
         raise "Your Puppet version is unsupported"
       end
 
+
       on host, "rm -rf #{puppet_module_dir}/*"
       on host, "cd /tmp/ && git clone https://github.com/midonet/puppet-midonet_openstack.git"
       on host, "bash -x /tmp/puppet-#{module_name}/spec/files/all-in-one.sh"
@@ -47,7 +48,8 @@ RSpec.configure do |c|
       on host, "cd /tmp/puppet-midonet_openstack/pkg && puppet module install #{module_full_name}-#{module_version}.tar.gz"
       # List modules installed to help with debugging
       on host, "puppet module list"
-
+      on host, "rm -rf /tmp/*"
+      #Cleanup!
     end
   end
 end

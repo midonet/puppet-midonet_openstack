@@ -73,7 +73,7 @@ class midonet_openstack::profile::nova::compute {
     vncserver_listen  => $management_address,
   }
 
-  class { 'nova::migration::libvirt':
+  class { '::nova::migration::libvirt':
   }
 
   file { '/etc/libvirt/qemu.conf':

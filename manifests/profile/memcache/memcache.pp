@@ -1,4 +1,10 @@
 # The profile to install a local instance of memcache
+
+# == Parameters
+#
+#  [*port*]
+#    Port where memcache listens
+
 class midonet_openstack::profile::memcache::memcache($port = '11211') {
 
   midonet_openstack::resources::firewall { 'Memcache': port => $port, }

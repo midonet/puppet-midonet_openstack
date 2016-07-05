@@ -43,9 +43,9 @@ node 'nsdb3.midokura.com' {
 }
 
 node 'controller.midokura.com' {
-    include midonet_openstack::role::controller
+    include ::midonet_openstack::role::controller
 }
 
 node /compute\d+\.midokura\.com/ {
-    include midonet_openstack::role::compute
+    include ::midonet_openstack::role::compute
 }

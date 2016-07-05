@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 class midonet_openstack::role inherits midonet_openstack::params{
-  include midonet_openstack::profile::base
+  include ::midonet_openstack::profile::base
 }

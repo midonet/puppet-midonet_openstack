@@ -8,7 +8,7 @@ class midonet_openstack::profile::neutron::controller {
 
   midonet_openstack::resources::firewall { 'Neutron': port => '9696', }
 
-  class { 'midonet_openstack::profile::neutron::midonet':
+  class { '::midonet_openstack::profile::neutron::midonet':
     before => Service['neutron-server'],
   }
 

@@ -94,10 +94,10 @@ class midonet_openstack::profile::nova::api {
   }
 
   class { [
-    'nova::scheduler',
-    'nova::cert',
-    'nova::consoleauth',
-    'nova::conductor'
+    '::nova::scheduler',
+    '::nova::cert',
+    '::nova::consoleauth',
+    '::nova::conductor'
   ]:
     enabled => true
   }
