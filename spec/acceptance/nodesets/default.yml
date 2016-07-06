@@ -7,6 +7,7 @@ HOSTS:
     box_url: https://vagrantcloud.com/puppetlabs/ubuntu-14.04-64-nocm
     vagrant_memsize: 3096
     hypervisor: vagrant
+    ip: 172.17.0.3
 CONFIG:
   log_level: debug
   type: foss

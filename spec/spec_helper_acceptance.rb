@@ -46,6 +46,9 @@ RSpec.configure do |c|
       on host, "gem install r10k --no-rdoc --no-ri --verbose"
       on host, "r10k puppetfile install --puppetfile /tmp/puppet-#{module_name}/Puppetfile -v debug --moduledir #{puppet_module_dir}"
       on host, "cd /tmp/puppet-midonet_openstack/pkg && puppet module install #{module_full_name}-#{module_version}.tar.gz"
+      # Override Params.pp
+      on host, "cp -f #{puppet_module_dir}/#{module_name}/spec/acceptance/params.pp #{puppet_module_dir}/#{module_name}/params.pp"
+
       # List modules installed to help with debugging
       on host, "puppet module list"
       on host, "rm -rf /tmp/*"
