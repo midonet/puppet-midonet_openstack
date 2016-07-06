@@ -106,6 +106,7 @@ class midonet_openstack::profile::keystone::controller (
   }
 
   class { '::openstack_extras::auth_file':
+  path           => '/etc/profile.d/openrc',
   password       => $midonet_openstack::params::keystone_admin_password,
   project_domain => 'default',
   user_domain    => 'default',
