@@ -9,7 +9,7 @@ describe 'midonet_openstack class' do
       EOS
 
       # Run it twice and test for idempotency
-      #expect(apply_manifest(pp).exit_code).to_not eq(1)
+      expect(apply_manifest(pp).exit_code).to_not eq(1)
       expect(apply_manifest(pp).exit_code).to eq(0)
     end
 
@@ -63,8 +63,6 @@ describe 'midonet_openstack class' do
     # **************************************************************************
     # SERVICE TESTING
     # **************************************************************************
-
-    # Nova
     describe service('nova-api') do
       it { should be_enabled }
       it { should be_running }
@@ -94,97 +92,154 @@ describe 'midonet_openstack class' do
       it { should be_running }
     end
 
-    # Neutron
     describe service('neutron-dhcp-agent') do
       it { should be_enabled }
       it { should be_running }
     end
+
     describe service('neutron-l3-agent') do
       it { should be_enabled }
       it { should be_running }
     end
+
     describe service('neutron-lbaas-agent') do
       it { should be_enabled }
       it { should be_running }
     end
+
     describe service('neutron-metadata-agent') do
       it { should be_enabled }
       it { should be_running }
     end
+
     describe service('neutron-metering-agent') do
       it { should be_enabled }
       it { should be_running }
     end
+
     describe service('neutron-openvswitch-agent') do
       it { should be_enabled }
       it { should be_running }
     end
+
     describe service('neutron-ovs-cleanup') do
       it { should be_enabled }
       it { should be_running }
     end
+
     describe service('neutron-server') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    # RabbitMQ
     describe service('rabbitmq-server') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    # Memcache
     describe service('memcached') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    # Libvirt
     describe service('libvirt-bin') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    # Qemu
     describe service('qemu-kvm') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    # OpenVSwitch
     describe service('openvswitch-switch') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    # Glance
     describe service('glance-api') do
       it { should be_enabled }
       it { should be_running }
     end
+
     describe service('glance-registry') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    # MySQL
     describe service('mysql') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    # Apache (for Horizon and Keystone)
     if os[:family] == 'ubuntu'
       describe service('apache2') do
         it { should be_enabled }
         it { should be_running }
       end
     end
-    if os[:family] == 'centos' or os[:family] == 'redhat'
-      describe service('httpd') do
-        it { should be_enabled }
-        it { should be_running }
+
+    # **************************************************************************
+    # OPENSTACK TESTING
+    # **************************************************************************
+
+    describe 'openstack keystone' do
+      it 'should issue a token' do
+        shell('source /etc/profile.d/openrc && openstack token issue') do |r|
+          expect(r.stdout).to match(/expires/)
+        end
+      end
+    end
+
+    describe 'openstack glance' do
+      it 'should connect to DB' do
+        shell('source /etc/profile.d/openrc && glance image-list') do |r|
+          expect(r.stdout).to match(/Name/)
+        end
+      end
+    end
+
+    describe 'openstack nova' do
+      it 'should connect to DB' do
+        shell('source /etc/profile.d/openrc && nova service-list') do |r|
+          expect(r.stdout).not_to match(/nova.*down/)
+        end
+      end
+
+      it 'should connect to glance from nova' do
+        shell('source /etc/profile.d/openrc && nova image-list') do |r|
+          expect(r.stdout).to match(/Status/)
+        end
+      end
+    end
+
+    describe 'openstack nova endpoints' do
+      it 'should have the endpoints on' do
+        shell('source /etc/profile.d/openrc && nova endpoints') do |r|
+          expect(r.stdout).to match(/Value/)
+        end
+      end
+    end
+
+    describe 'openstack neutron' do
+      it 'should launch neutron-server' do
+        shell('source /etc/profile.d/openrc && neutron ext-list') do |r|
+          expect(r.stdout).to match(/name/)
+        end
+      end
+
+      it 'should not have any agent down' do
+        shell('source /etc/profile.d/openrc && neutron agent-list') do |r|
+          expect(r.stdout).not_to match(/:-\(/)
+        end
+      end
+    end
+
+    describe 'openstack horizon' do
+      it 'should be available' do
+        shell('source /etc/profile.d/openrc && curl -v http://172.17.0.3/horizon') do |r|
+          expect(r.stderr).to match(/302/)
+        end
       end
     end
 
