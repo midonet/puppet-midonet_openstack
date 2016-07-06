@@ -14,7 +14,7 @@ Rake::Task[:lint].clear
 PuppetLint::RakeTask.new :lint do |config|
   config.ignore_paths = ["spec/**/*.pp", "vendor/**/*.pp"]
   config.fail_on_warnings = true
-  config.log_format = '%{path}:%{linenumber}:%{check}:%{KIND}: %{message}'
+  config.log_format = '%{path}:%{linenumber}:%{KIND}: %{message}'
   config.disable_checks = ["disable_autoloader_layout","80chars", "class_inherits_from_params_class", "only_variable_string"]
 end
 
@@ -42,7 +42,7 @@ task :spec_prep do
     r10k += ["PUPPETFILE_DIR=#{Dir.pwd}/spec/fixtures/modules"]
     r10k += ["#{gem_bin_dir}r10k"]
     r10k += ['puppetfile', 'install', '-v']
-    #sh(*r10k)
+    sh(*r10k)
   else
   # otherwise, use official OpenStack Puppetfile
     zuul_ref = ENV['ZUUL_REF']
@@ -70,7 +70,7 @@ task :spec_prep do
     sh(*script)
   end
   #rm_rf("spec/fixtures/modules/#{modname}")
-  ln_s(Dir.pwd, "spec/fixtures/modules/#{modname}", {:force => true})
+  ln_s(Dir.pwd, "spec/fixtures/modules/#{modname}")
   mkdir_p('spec/fixtures/manifests')
   touch('spec/fixtures/manifests/site.pp')
 end
