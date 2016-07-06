@@ -42,7 +42,7 @@ task :spec_prep do
     r10k += ["PUPPETFILE_DIR=#{Dir.pwd}/spec/fixtures/modules"]
     r10k += ["#{gem_bin_dir}r10k"]
     r10k += ['puppetfile', 'install', '-v']
-    #sh(*r10k)
+    sh(*r10k)
   else
   # otherwise, use official OpenStack Puppetfile
     zuul_ref = ENV['ZUUL_REF']
