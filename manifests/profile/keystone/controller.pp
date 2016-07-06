@@ -110,6 +110,7 @@ class midonet_openstack::profile::keystone::controller (
   project_domain => 'default',
   user_domain    => 'default',
   auth_url       => "${::openstack_integration::config::keystone_auth_uri}/v3/",
+  region_name    => $midonet_openstack::params::region,
   }
 
   $tenants = $::midonet_openstack::params::keystone_tenants
