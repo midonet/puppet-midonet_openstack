@@ -63,6 +63,8 @@ describe 'midonet_openstack class' do
     # **************************************************************************
     # SERVICE TESTING
     # **************************************************************************
+
+    # Nova
     describe service('nova-api') do
       it { should be_enabled }
       it { should be_running }
@@ -92,93 +94,99 @@ describe 'midonet_openstack class' do
       it { should be_running }
     end
 
+    # Neutron
     describe service('neutron-dhcp-agent') do
       it { should be_enabled }
       it { should be_running }
     end
-
     describe service('neutron-l3-agent') do
       it { should be_enabled }
       it { should be_running }
     end
-
     describe service('neutron-lbaas-agent') do
       it { should be_enabled }
       it { should be_running }
     end
-
     describe service('neutron-metadata-agent') do
       it { should be_enabled }
       it { should be_running }
     end
-
     describe service('neutron-metering-agent') do
       it { should be_enabled }
       it { should be_running }
     end
-
     describe service('neutron-openvswitch-agent') do
       it { should be_enabled }
       it { should be_running }
     end
-
     describe service('neutron-ovs-cleanup') do
       it { should be_enabled }
       it { should be_running }
     end
-
     describe service('neutron-server') do
       it { should be_enabled }
       it { should be_running }
     end
 
+    # RabbitMQ
     describe service('rabbitmq-server') do
       it { should be_enabled }
       it { should be_running }
     end
 
+    # Memcache
     describe service('memcached') do
       it { should be_enabled }
       it { should be_running }
     end
 
+    # Libvirt
     describe service('libvirt-bin') do
       it { should be_enabled }
       it { should be_running }
     end
 
+    # Qemu
     describe service('qemu-kvm') do
       it { should be_enabled }
       it { should be_running }
     end
 
+    # OpenVSwitch
     describe service('openvswitch-switch') do
       it { should be_enabled }
       it { should be_running }
     end
 
+    # Glance
     describe service('glance-api') do
       it { should be_enabled }
       it { should be_running }
     end
-
     describe service('glance-registry') do
       it { should be_enabled }
       it { should be_running }
     end
 
+    # MySQL
     describe service('mysql') do
       it { should be_enabled }
       it { should be_running }
     end
 
+    # Apache (for Horizon and Keystone)
     if os[:family] == 'ubuntu'
       describe service('apache2') do
         it { should be_enabled }
         it { should be_running }
       end
     end
-
+    if os[:family] == 'centos' or os[:family] == 'redhat'
+      describe service('httpd') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+    end
 
   end
 end
