@@ -1,0 +1,11 @@
+HOSTS:
+  centos-7-amd64:
+    platform: el-7-x86_64
+    box: centos/7
+    box_url: https://vagrantcloud.com/centos/7
+    hypervisor: vagrant
+    ip: 172.17.0.3
+    vagrant_memsize: 3096
+CONFIG:
+  log_level: debug
+  type: foss
