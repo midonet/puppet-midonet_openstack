@@ -355,15 +355,15 @@ class midonet_openstack::params {
   $allinone = true
 
   ######## Networks
-  $network_api = '172.17.0.0/24'
-  $network_external = '172.17.0.0/24'
+  $network_api        = '172.17.0.0/24'
+  $network_external   = '172.17.0.0/24'
   $network_management = '172.17.0.0/24'
-  $network_data = '172.17.0.0/24'
+  $network_data       = '172.17.0.0/24'
 
   $network_external_ippool_start = '172.17.0.100'
-  $network_external_ippool_end = '172.17.0.200'
-  $network_external_gateway = $::ipaddress
-  $network_external_dns = $::ipaddress
+  $network_external_ippool_end   = '172.17.0.200'
+  $network_external_gateway      = $::ipaddress
+  $network_external_dns          = $::ipaddress
 
   ######## Private Neutron Network
 
@@ -371,22 +371,22 @@ class midonet_openstack::params {
 
   ######## Fixed IPs (controllers)
 
-  $controller_address_api = $::ipaddress
+  $controller_address_api        = $::ipaddress
   $controller_address_management = $::ipaddress
-  $storage_address_api = $::ipaddress
-  $storage_address_management = $::ipaddress
+  $storage_address_api           = $::ipaddress
+  $storage_address_management    = $::ipaddress
 
   ######## Database
 
-  $mysql_root_password = 'testmido'
+  $mysql_root_password    = 'testmido'
   $mysql_service_password = 'testmido'
-  $mysql_allowed_hosts = ['localhost', '127.0.0.1', '172.17.0.%']
+  $mysql_allowed_hosts    = ['localhost', '127.0.0.1', '172.17.0.%']
 
   $mysql_keystone_user = 'keystone'
   $mysql_keystone_pass = 'testmido'
 
-  $mysql_glance_user = 'glance'
-  $mysql_glance_pass = 'testmido'
+  $mysql_glance_user  = 'glance'
+  $mysql_glance_pass  = 'testmido'
   $glance_api_servers = ["${::ipaddress}:9292"]
 
   $mysql_nova_user = 'nova'
@@ -400,22 +400,22 @@ class midonet_openstack::params {
 
   ######## RabbitMQ
 
-  $rabbitmq_user = 'openstack'
-  $rabbitmq_password = 'testmido'
-  $rabbitmq_hosts = ["${::ipaddress}:5672"]
+  $rabbitmq_user              = 'openstack'
+  $rabbitmq_password          = 'testmido'
+  $rabbitmq_hosts             = ["${::ipaddress}:5672"]
   $rabbitmq_delete_guest_user = true
-  $rabbitmq_ssl = true
-  $rabbitmq_ssl_only = true
-  $rabbitmq_repos_ensure = true
+  $rabbitmq_ssl               = true
+  $rabbitmq_ssl_only          = true
+  $rabbitmq_repos_ensure      = true
 
   ######## Keystone
 
-  $keystone_admin_token = 'testmido'
-  $keystone_admin_email = 'mido-dev@lists.midonet.org'
+  $keystone_admin_token    = 'testmido'
+  $keystone_admin_email    = 'mido-dev@lists.midonet.org'
   $keystone_admin_password = 'testmido'
-  $keystone_use_httpd = false
-  $keystone_debug = true
-  $keystone_enabled = true
+  $keystone_use_httpd      = false
+  $keystone_debug          = true
+  $keystone_enabled        = true
 
   $keystone_tenants = {
   'midokura' =>
@@ -428,73 +428,73 @@ class midonet_openstack::params {
 
       'midogod' => {
           'password' => 'midogod',
-          'tenant' => 'midokura',
-          'email' => 'foo@midokura.com',
-          'admin' => true
+          'tenant'   => 'midokura',
+          'email'    => 'foo@midokura.com',
+          'admin'    => true
 
         },
       'midoguy' => {
           'password' => 'midoguy',
-          'tenant' => 'midokura',
-          'email' => 'bar@midokura.com',
-          'admin' => false
+          'tenant'   => 'midokura',
+          'email'    => 'bar@midokura.com',
+          'admin'    => false
       },
       'midonet' => {
           'password' => 'testmido',
-          'tenant' => 'services',
-          'email' => 'midonet@midokura.com',
-          'admin' => true
+          'tenant'   => 'services',
+          'email'    => 'midonet@midokura.com',
+          'admin'    => true
       }
     }
 
   ######## Glance
 
-  $glance_password = 'midokura'
-  $glance_debug = true
-  $glance_rabbitmq_user = 'glance'
+  $glance_password          = 'midokura'
+  $glance_debug             = true
+  $glance_rabbitmq_user     = 'glance'
   $glance_rabbitmq_password = 'safe_password'
 
   ######## Cinder
 
-  $cinder_password = 'testmido'
+  $cinder_password    = 'testmido'
   $cinder_volume_size = '8G'
 
   ######## Swift
 
-  $swift_password = 'dexc-flo'
+  $swift_password    = 'dexc-flo'
   $swift_hash_suffix = 'pop-bang'
 
   ######## Nova
 
-  $nova_libvirt_type = 'qemu'
-  $nova_password = 'testmido'
-  $nova_rabbitmq_user = 'nova'
+  $nova_libvirt_type      = 'qemu'
+  $nova_password          = 'testmido'
+  $nova_rabbitmq_user     = 'nova'
   $nova_rabbitmq_password = 'safe_password'
-  $nova_debug = true
+  $nova_debug             = true
 
   ######## Neutron
 
-  $neutron_password = 'testmido'
-  $neutron_shared_secret = 'testmido'
-  $neutron_core_plugin = 'midonet'
-  $neutron_service_plugins = []
-  $neutron_rabbitmq_user = 'neutron'
+  $neutron_password          = 'testmido'
+  $neutron_shared_secret     = 'testmido'
+  $neutron_core_plugin       = 'midonet'
+  $neutron_service_plugins   = []
+  $neutron_rabbitmq_user     = 'neutron'
   $neutron_rabbitmq_password = 'safe_password'
 
   ######## Ceilometer
   $ceilometer_address_management = $::ipaddress
-  $ceilometer_mongo_username = 'mongo'
-  $ceilometer_mongo_password = 'mongosecretkey123'
-  $ceilometer_password = 'whi-truz'
-  $ceilometer_meteringsecret = 'ceilometersecretkey'
+  $ceilometer_mongo_username     = 'mongo'
+  $ceilometer_mongo_password     = 'mongosecretkey123'
+  $ceilometer_password           = 'whi-truz'
+  $ceilometer_meteringsecret     = 'ceilometersecretkey'
 
   ######## Heat
-  $heat_password = 'zap-bang'
+  $heat_password       = 'zap-bang'
   $heat_encryption_key = 'heatsecretkey123'
 
   ######## Horizon
 
-  $horizon_secret_key = 'testmido'
+  $horizon_secret_key    = 'testmido'
   $horizon_allowed_hosts = ['*',]
 
 
@@ -518,5 +518,5 @@ class midonet_openstack::params {
 
   ######## Log levels
   $verbose = 'True'
-  $debug = 'True'
+  $debug   = 'True'
 }
