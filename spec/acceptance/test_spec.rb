@@ -94,11 +94,6 @@ describe 'midonet_openstack class' do
       it { should be_running }
     end
 
-    describe service('neutron-ovs-cleanup') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-
     describe service('neutron-server') do
       it { should be_enabled }
       it { should be_running }
@@ -115,12 +110,15 @@ describe 'midonet_openstack class' do
     end
 
 
-    describe service('qemu-kvm') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-
     if os[:family] == 'ubuntu'
+      describe service('qemu-kvm') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('neutron-ovs-cleanup') do
+        it { should be_enabled }
+        it { should be_running }
+      end
       describe service('libvirt-bin') do
         it { should be_enabled }
         it { should be_running }
@@ -172,6 +170,13 @@ describe 'midonet_openstack class' do
       describe service('nova-consoleauth') do
         it { should be_enabled }
         it { should be_running }
+      end
+      describe 'openstack horizon' do
+        it 'should be available' do
+          shell('source /etc/profile.d/openrc && curl -v http://172.17.0.3/horizon') do |r|
+            expect(r.stderr).to match(/302/)
+          end
+        end
       end
     end
 
@@ -228,6 +233,13 @@ describe 'midonet_openstack class' do
         it { should be_enabled }
         it { should be_running }
       end
+    describe 'openstack horizon' do
+      it 'should be available' do
+        shell('source /etc/profile.d/openrc && curl -v http://172.17.0.3/dashboard') do |r|
+          expect(r.stderr).to match(/302/)
+        end
+      end
+    end
     end
 
     # **************************************************************************
@@ -286,13 +298,6 @@ describe 'midonet_openstack class' do
       end
     end
 
-    describe 'openstack horizon' do
-      it 'should be available' do
-        shell('source /etc/profile.d/openrc && curl -v http://172.17.0.3/horizon') do |r|
-          expect(r.stderr).to match(/302/)
-        end
-      end
-    end
 
   end
 end
