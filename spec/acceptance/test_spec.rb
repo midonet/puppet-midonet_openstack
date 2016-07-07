@@ -63,34 +63,6 @@ describe 'midonet_openstack class' do
     # **************************************************************************
     # SERVICE TESTING
     # **************************************************************************
-    describe service('nova-api') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-    describe service('nova-compute') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-    describe service('nova-cert') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-    describe service('nova-novncproxy') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-    describe service('nova-conductor') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-    describe service('nova-scheduler') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-    describe service('nova-consoleauth') do
-      it { should be_enabled }
-      it { should be_running }
-    end
 
     describe service('neutron-dhcp-agent') do
       it { should be_enabled }
@@ -142,38 +114,117 @@ describe 'midonet_openstack class' do
       it { should be_running }
     end
 
-    describe service('libvirt-bin') do
-      it { should be_enabled }
-      it { should be_running }
-    end
 
     describe service('qemu-kvm') do
       it { should be_enabled }
       it { should be_running }
     end
 
-    describe service('openvswitch-switch') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-
-    describe service('glance-api') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-
-    describe service('glance-registry') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-
-    describe service('mysql') do
-      it { should be_enabled }
-      it { should be_running }
-    end
-
     if os[:family] == 'ubuntu'
+      describe service('libvirt-bin') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openvswitch-switch') do
+        it { should be_enabled }
+        it { should be_running }
+      end
       describe service('apache2') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('mysql') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('glance-api') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('glance-registry') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('nova-api') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('nova-compute') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('nova-cert') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('nova-novncproxy') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('nova-conductor') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('nova-scheduler') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('nova-consoleauth') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+    end
+
+    if os[:family] == 'redhat'
+      describe service('libvirtd') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openvswitch') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('httpd') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('mariadb') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-glance-api') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-glance-registry') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-nova-api') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-nova-compute') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-nova-cert') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-nova-novncproxy') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-nova-conductor') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-nova-scheduler') do
+        it { should be_enabled }
+        it { should be_running }
+      end
+      describe service('openstack-nova-consoleauth') do
         it { should be_enabled }
         it { should be_running }
       end
