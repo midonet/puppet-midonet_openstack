@@ -8,6 +8,9 @@
   "project_page": "http://github.com/midonet/arrakis/tree/master/modules/midonet-midonet_openstack",
   "issues_url": "https://midonet.atlassian.net/projects/MDT",
   "dependencies": [
-    { "name":"puppetlabs-stdlib","version_requirement":">= 4.2.0 < 5.0.0" }
+    { "name":"puppetlabs-stdlib","version_requirement":">= 4.2.0 < 5.0.0" },
+    { "name":"puppetlabs-java","version_requirement":">= 1.5.0 < 2.0.0" },
+    { "name":"locp-cassandra","version_requirement":">= 1.24.0 < 2.0.0" },
+    { "name":"deric-zookeeper","version_requirement":">= 0.5.0 < 0.6.0" }
   ]
 }
