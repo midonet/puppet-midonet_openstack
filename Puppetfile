@@ -63,3 +63,7 @@ mod 'glance',
   mod 'vswitch',
     :git => 'https://git.openstack.org/openstack/puppet-vswitch',
     :ref => 'stable/mitaka'
+
+  mod 'puppetlabs/java',
+  mod 'deric/zookeeper',
+  mod 'locp/cassandra'
