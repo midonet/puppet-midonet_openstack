@@ -32,15 +32,15 @@ task :spec_prep do
   if ENV['PUPPETFILE']
     puppetfile = ENV['PUPPETFILE']
     if ENV['GEM_HOME']
-      gem_home    = ENV['GEM_HOME']
-      gem_bin_dir = "#{gem_home}" + '/bin/'
+      r10k_path = "#{ENV['GEM_HOME']}/bin:" + ENV['PATH']
     else
-      gem_bin_dir = ''
+      r10k_path = ENV['PATH']
     end
     r10k = ['env']
     r10k += ["PUPPETFILE=#{puppetfile}"]
     r10k += ["PUPPETFILE_DIR=#{Dir.pwd}/spec/fixtures/modules"]
-    r10k += ["#{gem_bin_dir}r10k"]
+    r10k += ["PATH=#{r10k_path}"]
+    r10k += ["r10k"]
     r10k += ['puppetfile', 'install', '-v']
     sh(*r10k)
   else
