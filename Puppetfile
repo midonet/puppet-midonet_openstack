@@ -67,3 +67,7 @@ mod 'glance',
   mod 'puppetlabs/java'
   mod 'deric/zookeeper'
   mod 'locp/cassandra'
+  mod 'puppet/archive'
+  mod 'midonet',
+    :git => 'https://github.com/openstack/puppet-midonet.git',
+    :ref => 'master'
