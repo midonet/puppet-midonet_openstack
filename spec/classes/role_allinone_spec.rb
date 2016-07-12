@@ -34,6 +34,7 @@ describe 'midonet_openstack::role::allinone' do
         :concat_basedir            => '/var/packages',
         :fqdn                      => 'tests.midokura.com',
         :operatingsystemrelease    => '14.04',
+        :lsbdistrelease            => '14.04',
         :memorysize                => '2048',
         :interfaces                => 'eth0',
         :ipaddress_eth0            => '172.17.0.3',
@@ -61,6 +62,7 @@ describe 'midonet_openstack::role::allinone' do
         :concat_basedir            => '/var/packages',
         :fqdn                      => 'tests.midokura.com',
         :operatingsystemrelease    => '16.04',
+        :lsbdistrelease            => '16.04',
         :memorysize                => '2048',
         :interfaces                => 'eth0',
         :ipaddress_eth0            => '172.17.0.3',
@@ -82,6 +84,7 @@ describe 'midonet_openstack::role::allinone' do
     let :facts do
       @default_facts.merge({
         :osfamily                  => 'RedHat',
+        :operatingsystem           => 'CentOS',
         :operatingsystemrelease    => '7',
         :kernel                    => 'Linux',
         :ipaddress                 => '172.17.0.3',
