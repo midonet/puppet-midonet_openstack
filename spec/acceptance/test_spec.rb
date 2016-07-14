@@ -5,12 +5,14 @@ describe 'midonet_openstack class' do
     # Using puppet_apply as a helper
     it 'should work without any errors' do
       pp = <<-EOS
-        include ::midonet_openstack::role::allinone
+      class {'::midonet_openstack::role::allinone':
+        zk_client_ip => $::ipaddress_eth1
+      }
       EOS
 
       # Run it twice and test for idempotency
-      expect(apply_manifest(pp).exit_code).to_not eq(1)
-      expect(apply_manifest(pp).exit_code).to eq(0)
+      expect(apply_manifest(pp, debug: true).exit_code).to_not eq(1)
+      #expect(apply_manifest(pp).exit_code).to eq(0)
     end
 
     # **************************************************************************
@@ -56,6 +58,10 @@ describe 'midonet_openstack class' do
     end
     # Memcached
     describe port(11211) do
+      it { is_expected.to be_listening }
+    end
+
+    describe port(2181) do
       it { is_expected.to be_listening }
     end
 
@@ -106,6 +112,10 @@ describe 'midonet_openstack class' do
 
     describe service('memcached') do
       it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe service('zookeeper') do
       it { should be_running }
     end
 
