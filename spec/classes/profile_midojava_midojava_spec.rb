@@ -1,55 +1,97 @@
 require 'spec_helper'
 
-describe 'midonet_openstack::profile::zookeeper::zookeeper' do
+describe 'midonet_openstack::profile::midojava::midojava' do
 
   let :pre_condition do
     "include ::midonet_openstack::params"
-    "include ::midonet_openstack::profile::midojava::midojava"
     "include ::midonet::repository"
   end
 
   let :default_params do
     {
-      :client_ip  => '172.17.0.3',
-      :zk_servers => ['localhost']
     }
   end
 
-  shared_examples_for 'set up zookeeper on Debian' do
+  shared_examples_for 'set up java on Debian' do
     context 'with default params' do
       let :params do
         default_params
       end
+
+
      it { is_expected.to contain_class(
-       'zookeeper').with(
-         'servers'          => ["localhost"],
-         'id'               => 1,
-         'cfg_dir'          => '/etc/zookeeper',
-         'client_ip'        => '172.17.0.3',
-         'packages'         => ['zookeeper','zookeeperd'],
-         'service_name'     => 'zookeeper',
-       ).that_requires('Class[midonet::repository]')
+       'java').with(
+         'package'               => 'openjdk-8-jdk-headless',
+         'java_alternative'      => 'java-1.8.0-openjdk-amd64',
+         'java_alternative_path' => '/usr/lib/jvm/java-1.8.0-openjdk-amd64'
+       )
       }
+
+      it { is_expected.to contain_file(
+        '/usr/java/default').with(
+          'ensure'                => 'link',
+          'target'                => '/etc/alternatives/java',
+        ).that_requires('File[/usr/java]')
+       }
+
+       it { is_expected.to contain_file(
+         '/usr/java').with(
+           'ensure'                => 'directory',
+         ).that_requires('Class[java]')
+        }
+
    end
 
   end
 
-  shared_examples_for 'set up zookeeper on RedHat' do
+  shared_examples_for 'set up java on RedHat' do
     context 'with default params' do
       let :params do
         default_params
       end
-     it { is_expected.to contain_class(
-       'zookeeper').with(
-         'servers'          => ["localhost"],
-         'id'               => 1,
-         'cfg_dir'          => '/etc/zookeeper',
-         'client_ip'        => '172.17.0.3',
-         'packages'         => ['zookeeper'],
-         'service_name'     => 'zookeeper',
-         'service_provider' => 'init'
-       ).that_requires('Class[midonet::repository]')
-      }
+
+      it { is_expected.to contain_file(
+        '/usr/java/default').with(
+          'ensure'                => 'link',
+          'target'                => '/etc/alternatives/jre_1.8.0',
+        ).that_requires('File[/usr/java]')
+       }
+
+       it { is_expected.to contain_class(
+         'java').with(
+           'package'               => 'java-1.8.0-openjdk-headless',
+         )
+        }
+   end
+
+  end
+
+
+  shared_examples_for 'Ubuntu 14.04 extra config' do
+    context 'with default params' do
+      let :params do
+        default_params
+      end
+      it { is_expected.to contain_apt__key(
+        'openjdk-r').with(
+          'id' => 'DA1A4A13543B466853BAF164EB9B1D8886F44E2A',
+        )
+       }
+
+       it { is_expected.to contain_apt__source(
+         'openjdk-r').with(
+             'comment'  => 'OpenJDK Repository',
+             'location' => 'http://ppa.launchpad.net/openjdk-r/ppa/ubuntu',
+             'release'  => 'trusty',
+             'key'      => {
+                 'id'     => 'DA1A4A13543B466853BAF164EB9B1D8886F44E2A',
+                 'server' => 'subkeys.pgp.net',
+               },
+               'include' => {
+                 'src' => false,
+               }
+          )
+        }
    end
 
   end
@@ -79,7 +121,8 @@ describe 'midonet_openstack::profile::zookeeper::zookeeper' do
       {}
     end
 
-    it_configures 'set up zookeeper on Debian'
+    it_configures 'set up java on Debian'
+    it_configures 'Ubuntu 14.04 extra config'
   end
 
   context 'on Ubuntu 16.04' do
@@ -107,7 +150,7 @@ describe 'midonet_openstack::profile::zookeeper::zookeeper' do
       {}
     end
 
-    it_configures 'set up zookeeper on Debian'
+    it_configures 'set up java on Debian'
   end
 
   context 'on Red Hat platforms' do
@@ -132,6 +175,6 @@ describe 'midonet_openstack::profile::zookeeper::zookeeper' do
       {}
     end
 
-    it_configures 'set up zookeeper on RedHat'
+    it_configures 'set up java on RedHat'
   end
 end
