@@ -362,8 +362,8 @@ class midonet_openstack::params {
 
   $network_external_ippool_start = '172.17.0.100'
   $network_external_ippool_end = '172.17.0.200'
-  $network_external_gateway = $::ipaddress_eth1
-  $network_external_dns = $::ipaddress_eth1
+  $network_external_gateway = '172.17.0.3'
+  $network_external_dns = '172.17.0.3'
 
   ######## Private Neutron Network
 
@@ -371,10 +371,10 @@ class midonet_openstack::params {
 
   ######## Fixed IPs (controllers)
 
-  $controller_address_api = $::ipaddress_eth1
-  $controller_address_management = $::ipaddress_eth1
-  $storage_address_api = $::ipaddress_eth1
-  $storage_address_management = $::ipaddress_eth1
+  $controller_address_api = '172.17.0.3'
+  $controller_address_management = '172.17.0.3'
+  $storage_address_api = '172.17.0.3'
+  $storage_address_management = '172.17.0.3'
 
   ######## Database
 
@@ -387,7 +387,7 @@ class midonet_openstack::params {
 
   $mysql_glance_user = 'glance'
   $mysql_glance_pass = 'testmido'
-  $glance_api_servers = ["${::ipaddress_eth1}:9292"]
+  $glance_api_servers = ["172.17.0.3:9292"]
 
   $mysql_nova_user = 'nova'
   $mysql_nova_pass = 'testmido'
@@ -402,7 +402,7 @@ class midonet_openstack::params {
 
   $rabbitmq_user = 'openstack'
   $rabbitmq_password = 'testmido'
-  $rabbitmq_hosts = ["${::ipaddress_eth1}:5672"]
+  $rabbitmq_hosts = ["172.17.0.3:5672"]
   $rabbitmq_delete_guest_user = true
   $rabbitmq_ssl = true
   $rabbitmq_ssl_only = true
@@ -482,7 +482,7 @@ class midonet_openstack::params {
   $neutron_rabbitmq_password = 'safe_password'
 
   ######## Ceilometer
-  $ceilometer_address_management = $::ipaddress_eth1
+  $ceilometer_address_management = '172.17.0.3'
   $ceilometer_mongo_username = 'mongo'
   $ceilometer_mongo_password = 'mongosecretkey123'
   $ceilometer_password = 'whi-truz'
@@ -515,6 +515,15 @@ class midonet_openstack::params {
   $tempest_neutron_available    = true
   $tempest_heat_available       = false
   $tempest_swift_available      = false
+
+  ######## zookeeper
+
+  $zookeeper_servers = [
+     {
+        'id'     => '1',
+        'host'   => 'localhost',
+      },
+  ]
 
   ######## Log levels
   $verbose = 'True'
