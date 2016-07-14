@@ -39,13 +39,18 @@ RSpec.configure do |c|
 
 
       on host, "rm -rf #{puppet_module_dir}/*"
-      on host, "cd /tmp/ && git clone https://github.com/midonet/puppet-midonet_openstack.git"
-      on host, "bash -x /tmp/puppet-#{module_name}/spec/files/all-in-one.sh"
-      on host, "cd /tmp/puppet-#{module_name} && puppet module build"
+      rsync_to(host,File.expand_path("..",File.dirname(__FILE__)), '/tmp/midonet')
+      #on host, "cd /tmp/ && git clone https://github.com/midonet/puppet-midonet_openstack.git"
+      #on host, "bash -x /tmp/puppet-#{module_name}/spec/files/all-in-one.sh"
+      #on host, "cd /tmp/puppet-#{module_name} && puppet module build"
+      on host, "bash -x /tmp/midonet/spec/files/all-in-one.sh"
       on host, "gem install bundler --no-rdoc --no-ri --verbose"
       on host, "gem install r10k --no-rdoc --no-ri --verbose"
-      on host, "r10k puppetfile install --puppetfile /tmp/puppet-#{module_name}/Puppetfile -v debug --moduledir #{puppet_module_dir}"
-      on host, "cd /tmp/puppet-midonet_openstack/pkg && puppet module install #{module_full_name}-#{module_version}.tar.gz"
+      on host, "cp -R /tmp/midonet  #{puppet_module_dir}/#{module_name}"
+      on host, "r10k puppetfile install --puppetfile #{puppet_module_dir}/#{module_name}/Puppetfile -v debug --moduledir #{puppet_module_dir}"
+      on host, "cp -R /tmp/midonet  #{puppet_module_dir}/#{module_name}"
+
+      #on host, "cd /tmp/puppet-midonet_openstack/pkg && puppet module install #{module_full_name}-#{module_version}.tar.gz"
       # Override Params.pp
       on host, "cp -f #{puppet_module_dir}/#{module_name}/spec/acceptance/params.pp #{puppet_module_dir}/#{module_name}/manifests/params.pp"
 

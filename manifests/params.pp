@@ -516,6 +516,15 @@ class midonet_openstack::params {
   $tempest_heat_available       = false
   $tempest_swift_available      = false
 
+  ######## zookeeper
+
+  $zookeeper_servers = [
+  {
+    'id'     => '1',
+    'host'   => 'localhost',
+  },
+  ]
+
   ######## Log levels
   $verbose = 'True'
   $debug   = 'True'
