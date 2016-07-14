@@ -4,13 +4,10 @@ puppetversion = ENV.key?('PUPPET_VERSION') ? "#{ENV['PUPPET_VERSION']}" : ['>= 3
 gem 'puppet', puppetversion
 gem 'r10k'
 gem 'puppetlabs_spec_helper', '>= 0.8.2'
-gem 'puppet-lint', '>= 1.0.0'
+gem 'puppet-lint', '>= 2.0.0'
 gem 'facter', '>= 1.7.0'
 gem 'puppet-syntax'
 gem 'beaker'
 gem 'beaker-rspec'
 gem 'beaker-puppet_install_helper'
-gem 'puppet-openstack_spec_helper',
-  :git => 'https://git.openstack.org/openstack/puppet-openstack_spec_helper',
-  :require => false
 gem 'rspec_junit_formatter'
