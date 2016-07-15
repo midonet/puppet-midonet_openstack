@@ -27,12 +27,13 @@
 #    List of zookeeper servers
 class midonet_openstack::role::nsdb (
     $id                   = 1,
-    $client_ip            = $::ipaddress_eth0,
+    $client_ip            = $::ipaddress,
     $manage_midonet_repos = true,
     $manage_java          = true,
     $zk_servers           = $midonet_openstack::params::zookeeper_servers
   ) inherits ::midonet_openstack::role {
 
+    include ::midonet_openstack::profile::firewall::firewall
     if $manage_midonet_repos {
       class { '::midonet::repository': }
     }
@@ -46,6 +47,16 @@ class midonet_openstack::role::nsdb (
       id         => $id,
       client_ip  => $client_ip,
       require    => Class['::midonet_openstack::profile::midojava::midojava']
+    }
+
+    class {'::midonet_openstack::profile::cassandra::midocassandra':
+      seeds              => $::midonet_openstack::params::cassandra_seeds,
+      seed_address       => $client_ip,
+      storage_port       => '7000',
+      ssl_storage_port   => '7001',
+      client_port        => '9042',
+      client_port_thrift => '9160',
+      require            => Class['::midonet_openstack::profile::midojava::midojava']
     }
 
 

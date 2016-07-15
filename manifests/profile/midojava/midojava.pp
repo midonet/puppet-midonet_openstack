@@ -34,7 +34,8 @@ class midonet_openstack::profile::midojava::midojava(
               include  => {
                     'src' => false,
               },
-              before   => Class['java']
+              before   => Class['java'],
+              notify   => Class['::apt::update']
           }
         }
         else {
@@ -63,6 +64,7 @@ class midonet_openstack::profile::midojava::midojava(
           require => File['/usr/java']
         }
 
+        Class['::apt::update'] -> Package <||>
       }
       'RedHat': {
         class {'::java':

@@ -525,6 +525,10 @@ class midonet_openstack::params {
   },
   ]
 
+  ######## Cassandra
+
+  $cassandra_seeds = $::ipaddress
+
   ######## Log levels
   $verbose = 'True'
   $debug   = 'True'

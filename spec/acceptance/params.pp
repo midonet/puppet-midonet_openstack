@@ -525,6 +525,10 @@ class midonet_openstack::params {
   },
   ]
 
+  ######## Cassandra
+
+  $cassandra_seeds = '172.17.0.3'
+
   ######## Log levels
   $verbose = 'True'
   $debug = 'True'
