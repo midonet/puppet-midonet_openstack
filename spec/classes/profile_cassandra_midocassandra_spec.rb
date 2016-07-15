@@ -1,32 +1,25 @@
 require 'spec_helper'
 
-describe 'midonet_openstack::role::nsdb' do
+describe 'midonet_openstack::profile::cassandra::midocassandra' do
 
   let :pre_condition do
     "include ::midonet_openstack::params"
+    "include ::midonet_openstack::profile::midojava::midojava"
+    "include ::midonet::repository"
   end
 
   let :default_params do
     {
-      :client_ip => '172.17.0.3'
+      :seeds        => '172.17.0.3',
+      :seed_address => '172.17.0.3'
     }
   end
 
-  shared_examples_for 'set up the nsdb node' do
+  shared_examples_for 'set up cassandra on Debian' do
     context 'with default params' do
       let :params do
         default_params
       end
-    it { is_expected.to contain_class(
-      'midonet_openstack::profile::zookeeper::zookeeper').with(
-      'zk_servers'   => ["localhost"],
-      'id'           => 1,
-      'client_ip'    => '172.17.0.3',
-      )
-     }
-     it { is_expected.to contain_class(
-       'midonet::repository')
-      }
 
       it { is_expected.to contain_class('midonet_openstack::profile::cassandra::midocassandra').with(
         'seeds'               => '172.17.0.3',
@@ -36,32 +29,33 @@ describe 'midonet_openstack::role::nsdb' do
         'client_port'         => '9042',
         'client_port_thrift'  => '9160',
         ) }
+
+        it { is_expected.to contain_class('cassandra::firewall_ports').with(
+        'client_ports'        => ['9042','9160']
+          ) }
    end
 
-   context 'with no manage midonet repos' do
-     let :params do
-       {
-         :client_ip         => '172.17.0.3',
-         :manage_midonet_repos => false
-       }
-     end
-   it { is_expected.to contain_class(
-     'midonet_openstack::profile::zookeeper::zookeeper').with(
-     'zk_servers'   => ["localhost"],
-     'id'           => 1,
-     'client_ip'    => '172.17.0.3',
-     )
-    }
-
-    it { is_expected.to contain_class('midonet_openstack::profile::cassandra::midocassandra').with(
-      'seeds'               => '172.17.0.3',
-      'seed_address'        => '172.17.0.3',
-      'storage_port'        => '7000',
-      'ssl_storage_port'    => '7001',
-      'client_port'         => '9042',
-      'client_port_thrift'  => '9160',
-      ) }    
   end
+
+  shared_examples_for 'set up cassandra on RedHat' do
+    context 'with default params' do
+      let :params do
+        default_params
+      end
+
+      it { is_expected.to contain_class('midonet_openstack::profile::cassandra::midocassandra').with(
+        'seeds'               => '172.17.0.3',
+        'seed_address'        => '172.17.0.3',
+        'storage_port'        => '7000',
+        'ssl_storage_port'    => '7001',
+        'client_port'         => '9042',
+        'client_port_thrift'  => '9160',
+        )}
+
+        it { is_expected.to contain_class('cassandra::firewall_ports').with(
+        'client_ports'        => ['9042','9160']
+          ) }
+   end
 
   end
 
@@ -90,7 +84,7 @@ describe 'midonet_openstack::role::nsdb' do
       {}
     end
 
-    it_configures 'set up the nsdb node'
+    it_configures 'set up cassandra on Debian'
   end
 
   context 'on Ubuntu 16.04' do
@@ -118,7 +112,7 @@ describe 'midonet_openstack::role::nsdb' do
       {}
     end
 
-    it_configures 'set up the nsdb node'
+    it_configures 'set up cassandra on Debian'
   end
 
   context 'on Red Hat platforms' do
@@ -143,6 +137,6 @@ describe 'midonet_openstack::role::nsdb' do
       {}
     end
 
-    it_configures 'set up the nsdb node'
+    it_configures 'set up cassandra on RedHat'
   end
 end

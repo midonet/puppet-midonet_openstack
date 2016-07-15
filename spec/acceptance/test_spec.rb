@@ -61,7 +61,25 @@ describe 'midonet_openstack class' do
       it { is_expected.to be_listening }
     end
 
+    # Zookeeper
     describe port(2181) do
+      it { is_expected.to be_listening }
+    end
+
+    # Cassandra
+    describe port(9160) do
+      it { is_expected.to be_listening }
+    end
+
+    describe port(7000) do
+      it { is_expected.to be_listening }
+    end
+
+    describe port(7199) do
+      it { is_expected.to be_listening }
+    end
+
+    describe port(9042) do
       it { is_expected.to be_listening }
     end
 
@@ -119,6 +137,9 @@ describe 'midonet_openstack class' do
       it { should be_running }
     end
 
+    describe service('cassandra') do
+      it { should be_running }
+    end
 
     if os[:family] == 'ubuntu'
       describe service('qemu-kvm') do

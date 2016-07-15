@@ -19,15 +19,24 @@
 #  [*zookeeper_client_ip*]
 #    Zookeeper Host Ip
 class midonet_openstack::role::allinone (
-  $zk_client_ip = $::midonet_openstack::params::controller_address_management
+  $client_ip = $::midonet_openstack::params::controller_address_management
   ) inherits ::midonet_openstack::role {
   class { '::midonet_openstack::profile::firewall::firewall': } ->
   class { '::midonet_openstack::profile::repos': } ->
   class { '::midonet::repository': } ->
-  class { '::midonet_openstack::role::nsdb':
-    client_ip            => $zk_client_ip,
-    manage_midonet_repos => false,
-    manage_java          => true
+  class { '::midonet_openstack::profile::midojava::midojava':} ->
+  class { '::midonet_openstack::profile::zookeeper::zookeeper':
+    zk_servers => zookeeper_servers($midonet_openstack::params::zookeeper_servers),
+    id         => 1,
+    client_ip  => $client_ip,
+  } ->
+  class {'::midonet_openstack::profile::cassandra::midocassandra':
+    seeds              => $::midonet_openstack::params::cassandra_seeds,
+    seed_address       => $client_ip,
+    storage_port       => '7000',
+    ssl_storage_port   => '7001',
+    client_port        => '9042',
+    client_port_thrift => '9160',
   }
 
   if $::osfamily == 'RedHat' {

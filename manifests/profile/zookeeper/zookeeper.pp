@@ -13,10 +13,8 @@ class midonet_openstack::profile::zookeeper::zookeeper(
   $id                   = 1,
   $client_ip            = $::ipaddress_eth0,
   $zk_servers           = zookeeper_servers($midonet_openstack::params::zookeeper_servers)
-  ) {
-    
-    midonet_openstack::resources::firewall { 'Zookeeper': port => '2181', }
-
+  ){
+    midonet_openstack::resources::firewall { 'Zookeeper': port => '2181'}
     if $::osfamily == 'RedHat'
     {
       $zk_packages = ['zookeeper']
@@ -49,5 +47,4 @@ class midonet_openstack::profile::zookeeper::zookeeper(
     else {
       fail("Unsupported Operating System Family ${::osfamily}")
     }
-
-}
+  }

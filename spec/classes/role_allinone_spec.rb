@@ -22,6 +22,21 @@ describe 'midonet_openstack::role::allinone' do
     it { is_expected.to contain_class('midonet_openstack::profile::nova::api') }
     it { is_expected.to contain_class('midonet_openstack::profile::nova::compute_vanilla') }
     it { is_expected.to contain_class('midonet_openstack::profile::horizon::horizon') }
+    it { is_expected.to contain_class('midonet_openstack::profile::midojava::midojava') }
+    it { is_expected.to contain_class('midonet_openstack::profile::zookeeper::zookeeper').with(
+      'zk_servers' => ['localhost'],
+      'id'         => 1,
+      'client_ip'  => '172.17.0.3',
+      ) }
+    it { is_expected.to contain_class('midonet_openstack::profile::cassandra::midocassandra').with(
+      'seeds'               => '172.17.0.3',
+      'seed_address'        => '172.17.0.3',
+      'storage_port'        => '7000',
+      'ssl_storage_port'    => '7001',
+      'client_port'         => '9042',
+      'client_port_thrift'  => '9160',
+      ) }
+
   end
 
   context 'on Ubuntu 14.04' do
