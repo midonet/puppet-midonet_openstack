@@ -14,6 +14,8 @@ class midonet_openstack::profile::zookeeper::zookeeper(
   $client_ip            = $::ipaddress_eth0,
   $zk_servers           = zookeeper_servers($midonet_openstack::params::zookeeper_servers)
   ) {
+    
+    midonet_openstack::resources::firewall { 'Zookeeper': port => '2181', }
 
     if $::osfamily == 'RedHat'
     {
