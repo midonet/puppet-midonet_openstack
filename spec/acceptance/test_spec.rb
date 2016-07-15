@@ -6,7 +6,7 @@ describe 'midonet_openstack class' do
     it 'should work without any errors' do
       pp = <<-EOS
       class {'::midonet_openstack::role::allinone':
-        zk_client_ip => $::ipaddress_eth1
+        client_ip => '172.17.0.3'
       }
       EOS
 
