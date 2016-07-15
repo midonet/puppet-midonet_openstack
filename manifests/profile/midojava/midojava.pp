@@ -17,9 +17,10 @@ class midonet_openstack::profile::midojava::midojava(
           # Placeholder so the default case does not fail
         }
         elsif $::lsbdistrelease == '14.04' {
-
+          notice ( 'Ubuntu 14.04 Installation. Adding OpenJDK keys')
           apt::key { 'openjdk-r':
             id     => 'DA1A4A13543B466853BAF164EB9B1D8886F44E2A',
+            before => Class['java']
           }
 
           apt::source {'openjdk-r':
@@ -32,7 +33,8 @@ class midonet_openstack::profile::midojava::midojava(
               },
               include  => {
                     'src' => false,
-            }
+              },
+              before   => Class['java']
           }
         }
         else {
