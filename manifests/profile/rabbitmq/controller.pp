@@ -23,7 +23,7 @@ class midonet_openstack::profile::rabbitmq::controller {
         }
   }
 
-  if $::openstack_integration::config::ssl {
+  if $::midonet_openstack::params::rabbitmq_ssl {
 
     file { '/etc/rabbitmq/ssl/private':
       ensure                  => directory,

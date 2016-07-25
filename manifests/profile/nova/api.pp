@@ -7,6 +7,7 @@ class midonet_openstack::profile::nova::api {
 
   $storage_management_address = $::midonet_openstack::params::storage_address_management
   $controller_management_address = $::midonet_openstack::params::controller_address_management
+  $controller_api_address        = $::midonet_openstack::params::controller_address_api
 
   $user                = $::midonet_openstack::params::mysql_nova_user
   $pass                = $::midonet_openstack::params::mysql_nova_pass
@@ -80,7 +81,7 @@ class midonet_openstack::profile::nova::api {
 
   class { '::nova::api':
     admin_password                       => $::midonet_openstack::params::nova_password,
-    auth_uri                             => "http://${controller_management_address}:5000",
+    auth_uri                             => "http://${controller_api_address}:5000",
     identity_uri                         => "http://${controller_management_address}:35357",
     neutron_metadata_proxy_shared_secret => $::midonet_openstack::params::neutron_shared_secret,
     enabled                              => true,

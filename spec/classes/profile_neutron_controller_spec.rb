@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'midonet_openstack::profile::neutron::controller_vanilla' do
+describe 'midonet_openstack::profile::neutron::controller' do
 
   let :default_params do
     { }
@@ -54,8 +54,12 @@ describe 'midonet_openstack::profile::neutron::controller_vanilla' do
       'rabbit_hosts' => ['172.17.0.3:5672'],
       'rabbit_use_ssl' => 'false',
       'allow_overlapping_ips' => 'true',
-      'core_plugin' => 'ml2',
-      'service_plugins' => '["router", "metering", "firewall"]',
+      'core_plugin' => 'midonet.neutron.plugin_v2.MidonetPluginV2',
+      'service_plugins' => [
+        'midonet.neutron.services.firewall.plugin.MidonetFirewallPlugin',
+        'lbaas',
+        'neutron.services.l3.l3_midonet.MidonetL3ServicePlugin'
+        ],
       'debug' => 'true',
       'verbose' => 'true',
       )
@@ -69,7 +73,7 @@ describe 'midonet_openstack::profile::neutron::controller_vanilla' do
       is_expected.to contain_class('neutron::server').with(
       'database_connection' => 'mysql+pymysql://neutron:testmido@172.17.0.3/neutron?charset=utf8',
       'password' => 'testmido',
-      'sync_db' => 'true',
+      'sync_db' => 'false',
       'api_workers' => '2',
       'rpc_workers' => '2',
       'auth_uri' => 'http://172.17.0.3:5000',
@@ -79,62 +83,19 @@ describe 'midonet_openstack::profile::neutron::controller_vanilla' do
       )
     end
 
-    it 'should configure the ml2 plugin' do
-      is_expected.to contain_class('neutron::plugins::ml2').with(
-      'type_drivers' => '["vxlan"]',
-      'tenant_network_types' => '["vxlan"]',
-      'mechanism_drivers' => '["openvswitch"]',
-      )
-      is_expected.to contain_class('neutron::agents::ml2::ovs').with(
-      'enable_tunneling' => 'true',
-      'local_ip' => '127.0.0.1',
-      'tunnel_types' => '["vxlan"]',
+    it 'should install the neutron lbaas python client' do
+      is_expected.to contain_package('python-neutron-lbaas').with(
+      'ensure' => 'installed',
       )
     end
 
-
-    it 'should configure the neutron lbaas agent' do
-      is_expected.to contain_class('neutron::agents::lbaas').with(
-      'debug' => 'true',
+    it 'should configure the neutron lbaas python package' do
+      is_expected.to contain_package('python-neutron-fwaas').with(
+      'ensure' => 'installed',
       )
     end
 
-    it 'should configure the neutron l3 agent' do
-      is_expected.to contain_class('neutron::agents::l3').with(
-      'debug' => 'true',
-      )
-    end
 
-    it 'should configure the neutron dhcp agent' do
-      is_expected.to contain_class('neutron::agents::dhcp').with(
-      'debug' => 'true',
-      )
-    end
-
-    it 'should configure the neutron metering agent' do
-      is_expected.to contain_class('neutron::agents::metering').with(
-      'debug' => 'true',
-      )
-    end
-
-    it 'should configure the notification system options' do
-      is_expected.to contain_class('neutron::server::notifications').with(
-      'auth_url' => 'http://172.17.0.3:35357',
-      'password' => 'testmido',
-      'region_name' => 'openstack',
-      )
-    end
-
-    it 'should configure the neutron fwaas service' do
-      is_expected.to contain_class('neutron::services::fwaas').with(
-      'enabled' => 'true',
-      'driver' => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
-      )
-    end
-
-    it 'should include the openvswitch ovs puppet class' do
-      is_expected.to contain_class('vswitch::ovs')
-    end
   end
 
   context 'on Debian based platforms' do

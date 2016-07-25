@@ -25,6 +25,9 @@ class midonet_openstack::profile::keystone::controller (
     include ::openstack_integration::config
     include ::apache
 
+    $controller_management_address = $::midonet_openstack::params::controller_address_management
+    $controller_api_address        = $::midonet_openstack::params::controller_address_api
+
     midonet_openstack::resources::firewall { 'Keystone Public': port => '5000', }
     midonet_openstack::resources::firewall { 'Keystone Private': port => '35357', }
 
@@ -61,8 +64,8 @@ class midonet_openstack::profile::keystone::controller (
     default_domain      => $default_domain,
     using_domain_config => $using_domain_config,
     enable_ssl          => $::openstack_integration::config::ssl,
-    public_bind_host    => $::openstack_integration::config::host,
-    admin_bind_host     => $::openstack_integration::config::host,
+    public_bind_host    => $midonet_openstack::params::controller_address_api,
+    admin_bind_host     => $midonet_openstack::params::controller_address_management,
     manage_policyrcd    => true,
     token_provider      => $token_provider,
     enable_fernet_setup => $enable_fernet_setup,
@@ -71,8 +74,8 @@ class midonet_openstack::profile::keystone::controller (
   }
 
   class { '::keystone::wsgi::apache':
-    bind_host       => $::openstack_integration::config::ip_for_url,
-    admin_bind_host => $::openstack_integration::config::ip_for_url,
+    bind_host       => $midonet_openstack::params::controller_address_api,
+    admin_bind_host => $midonet_openstack::params::controller_address_management,
     ssl             => $::openstack_integration::config::ssl,
     ssl_key         => "/etc/keystone/ssl/private/${::fqdn}.pem",
     ssl_cert        => $::openstack_integration::params::cert_path,
@@ -99,8 +102,8 @@ class midonet_openstack::profile::keystone::controller (
 
   class { '::keystone::endpoint':
   default_domain => $default_domain,
-  public_url     => $::openstack_integration::config::keystone_auth_uri,
-  admin_url      => $::openstack_integration::config::keystone_admin_uri,
+  public_url     => "http://${controller_api_address}:5000",
+  admin_url      => "http://${controller_management_address}:35357",
   region         => $::midonet_openstack::params::region,
   require        => Class['keystone', 'keystone::wsgi::apache'],
   }
@@ -110,7 +113,7 @@ class midonet_openstack::profile::keystone::controller (
   password       => $midonet_openstack::params::keystone_admin_password,
   project_domain => 'default',
   user_domain    => 'default',
-  auth_url       => "${::openstack_integration::config::keystone_auth_uri}/v3/",
+  auth_url       => "http://${controller_api_address}:5000/v3/",
   region_name    => $midonet_openstack::params::region,
   }
 

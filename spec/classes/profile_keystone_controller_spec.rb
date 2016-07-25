@@ -45,20 +45,20 @@ describe 'midonet_openstack::profile::keystone::controller' do
         'default_domain'      => nil,
         'using_domain_config' => 'false',
         'enable_ssl'          => 'false',
-        'public_bind_host'    => '0.0.0.0',
-        'admin_bind_host'     => '0.0.0.0',
+        'public_bind_host'    => '172.17.0.3',
+        'admin_bind_host'     => '172.17.0.3',
         'manage_policyrcd'    => 'true',
         'token_provider'      => 'uuid',
         'enable_fernet_setup' => 'false',
-        'memcache_servers'    => '["127.0.0.1:11211"]',
+        'memcache_servers'    => '["172.17.0.3:11211"]',
         'require'             => 'Class[Midonet_openstack::Profile::Memcache::Memcache]',
       )
     end
 
     it 'should configure httpd for keystone' do
       is_expected.to contain_class('keystone::wsgi::apache').with(
-        'bind_host'           => nil,
-        'admin_bind_host'     => nil,
+        'bind_host'           => '172.17.0.3',
+        'admin_bind_host'     => '172.17.0.3',
         'ssl'                 => 'false',
         'workers'             => '2',
       )
@@ -74,8 +74,8 @@ describe 'midonet_openstack::profile::keystone::controller' do
     it 'should register the keystone endpoint in openstack' do
       is_expected.to contain_class('keystone::endpoint').with(
         'default_domain' => nil,
-        'public_url'     => 'http://127.0.0.1:5000',
-        'admin_url'      => 'http://127.0.0.1:35357',
+        'public_url'     => 'http://172.17.0.3:5000',
+        'admin_url'      => 'http://172.17.0.3:35357',
         'region'         => 'openstack',
         'require'        => '[Class[Keystone]{:name=>"Keystone"}, Class[Keystone::Wsgi::Apache]{:name=>"Keystone::Wsgi::Apache"}]',
       )
@@ -86,7 +86,7 @@ describe 'midonet_openstack::profile::keystone::controller' do
         'password'        => 'testmido',
         'project_domain'  => 'default',
         'user_domain'     => 'default',
-        'auth_url'        => 'http://127.0.0.1:5000/v3/',
+        'auth_url'        => 'http://172.17.0.3:5000/v3/',
       )
     end
 
@@ -133,7 +133,7 @@ describe 'midonet_openstack::profile::keystone::controller' do
         :operatingsystemrelease => '14.04',
         :operatingsystem => 'Ubuntu',
         :operatingsystemmajrelease => '14',
-        :ipaddress         => '127.0.0.1',
+        :ipaddress         => '172.17.0.3',
         :fqdn         => '',
         })
       end
@@ -150,7 +150,7 @@ describe 'midonet_openstack::profile::keystone::controller' do
         :operatingsystemrelease => '14.04',
         :operatingsystem => 'Ubuntu',
         :operatingsystemmajrelease => '16',
-        :ipaddress         => '127.0.0.1',
+        :ipaddress         => '172.17.0.3',
         :fqdn         => '',
         })
       end
@@ -165,7 +165,7 @@ describe 'midonet_openstack::profile::keystone::controller' do
           :operatingsystemrelease => '7',
           :kernel => 'Linux',
           :concat_basedir         => '/var/packages',
-          :ipaddress         => '127.0.0.1',
+          :ipaddress         => '172.17.0.3',
           :fqdn         => '',
           })
         end

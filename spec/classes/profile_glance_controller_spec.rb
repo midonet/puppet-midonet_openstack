@@ -91,8 +91,8 @@ describe 'midonet_openstack::profile::glance::controller' do
       'keystone_password'         => 'midokura',
       'workers'                   => '2',
       'bind_host'                 => '0.0.0.0',
-      'auth_uri'                  => 'http://127.0.0.1:5000',
-      'identity_uri'              => 'http://127.0.0.1:35357',
+      'auth_uri'                  => 'http://172.17.0.3:5000',
+      'identity_uri'              => 'http://172.17.0.3:35357',
       'cert_file'                 => 'false',
       'key_file'                  => 'false',
       'os_region_name'            => 'openstack',
@@ -114,8 +114,9 @@ describe 'midonet_openstack::profile::glance::controller' do
   context 'on Debian based platforms' do
     let :facts do
       @default_facts.merge({
-        :osfamily  => 'Debian',
-        :kernel => 'Linux'
+        :osfamily    => 'Debian',
+        :kernel      => 'Linux',
+        :ipaddress   => '172.17.0.3',
         })
       end
 
@@ -125,9 +126,10 @@ describe 'midonet_openstack::profile::glance::controller' do
     context 'on RHEL based platforms' do
       let :facts do
         @default_facts.merge({
-          :osfamily => 'RedHat',
+          :osfamily               => 'RedHat',
           :operatingsystemrelease => '7',
-          :kernel => 'Linux'
+          :kernel                 => 'Linux',
+          :ipaddress              => '172.17.0.3',
           })
         end
 

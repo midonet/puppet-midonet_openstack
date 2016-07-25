@@ -34,7 +34,7 @@ describe 'midonet_openstack::profile::horizon::horizon' do
         'cache_backend'                => 'django.core.cache.backends.memcached.MemcachedCache',
         'cache_server_ip'              => ['172.17.0.3'],
         'cache_server_port'            => '11211',
-        'keystone_url'                 => 'http://127.0.0.1:5000/v3/',
+        'keystone_url'                 => 'http://172.17.0.3:5000/v3/',
         'secret_key'                   => 'testmido',
         'vhost_extra_params'           => { 'add_listen' => false },
         'keystone_default_role'        => 'user',
