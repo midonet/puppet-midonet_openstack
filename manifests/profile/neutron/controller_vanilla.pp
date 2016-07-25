@@ -47,7 +47,7 @@ class midonet_openstack::profile::neutron::controller_vanilla {
   }
   class { '::neutron::client': }
   class { '::neutron::server':
-    database_connection => "mysql+pymysql://${::midonet_openstack::params::mysql_neutron_user}:${::midonet_openstack::params::mysql_neutron_pass}@${controller_management_address}/neutron?charset=utf8",
+    database_connection => "mysql+pymysql://${::midonet_openstack::params::mysql_neutron_user}:${::midonet_openstack::params::mysql_neutron_pass}@127.0.0.1/neutron?charset=utf8",
     password            => $::midonet_openstack::params::neutron_password,
     sync_db             => true,
     api_workers         => 2,
