@@ -13,10 +13,13 @@ class midonet_openstack::profile::glance::controller (
     include ::openstack_integration::config
     include ::openstack_integration::params
 
+    $controller_management_address = $::midonet_openstack::params::controller_address_management
+    $controller_api_address        = $::midonet_openstack::params::controller_address_api
+
     midonet_openstack::resources::firewall { 'Glance API': port => '9292', }
     midonet_openstack::resources::firewall { 'Glance Registry': port => '9191', }
 
-    if $::openstack_integration::config::ssl {
+    if $::midonet_openstack::params::glance_ssl {
       openstack_integration::ssl_key { 'glance':
         notify => [Service['glance-api'], Service['glance-registry']],
       }
@@ -109,8 +112,8 @@ class midonet_openstack::profile::glance::controller (
       keystone_password   => $midonet_openstack::params::glance_password,
       bind_host           => $::openstack_integration::config::host,
       workers             => 2,
-      auth_uri            => $::openstack_integration::config::keystone_auth_uri,
-      identity_uri        => $::openstack_integration::config::keystone_admin_uri,
+      auth_uri            => "http://${controller_api_address}:5000",
+      identity_uri        => "http://${controller_management_address}:35357",
       cert_file           => $crt_file,
       key_file            => $key_file,
       os_region_name      => $midonet_openstack::params::region,
@@ -118,9 +121,8 @@ class midonet_openstack::profile::glance::controller (
     class { '::glance::notify::rabbitmq':
       rabbit_userid       => $midonet_openstack::params::glance_rabbitmq_user,
       rabbit_password     => $midonet_openstack::params::glance_rabbitmq_password,
-      rabbit_host         => $::openstack_integration::config::ip_for_url,
-      rabbit_port         => $::openstack_integration::config::rabbit_port,
+      rabbit_hosts        => $midonet_openstack::params::rabbitmq_hosts,
       notification_driver => 'messagingv2',
-      rabbit_use_ssl      => $::openstack_integration::config::ssl,
+      rabbit_use_ssl      => $midonet_openstack::params::rabbitmq_ssl
   }
 }

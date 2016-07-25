@@ -404,8 +404,8 @@ class midonet_openstack::params {
   $rabbitmq_password          = 'testmido'
   $rabbitmq_hosts             = ["${::ipaddress}:5672"]
   $rabbitmq_delete_guest_user = true
-  $rabbitmq_ssl               = true
-  $rabbitmq_ssl_only          = true
+  $rabbitmq_ssl               = false
+  $rabbitmq_ssl_only          = false
   $rabbitmq_repos_ensure      = true
 
   ######## Keystone
@@ -453,6 +453,7 @@ class midonet_openstack::params {
   $glance_debug             = true
   $glance_rabbitmq_user     = 'glance'
   $glance_rabbitmq_password = 'safe_password'
+  $glance_ssl               = false
 
   ######## Cinder
 

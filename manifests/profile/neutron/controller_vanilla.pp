@@ -1,22 +1,15 @@
 # The midonet_openstack::profile::neutron::controller_vanilla
 # configures neutron in controller node , vanilla openstack ( no midonet )
-# assigns it to a tenant and role
-#
-# == Parameters
-#
-#  [*password*]
-#    User password
-#  [*tenant*]
-#    Tenant
-#  [*email*]
-#    User email
-#  [*enabled*]
-#    User enabled
+
+
+
 
 
 class midonet_openstack::profile::neutron::controller_vanilla {
   include ::openstack_integration::config
 
+  $controller_management_address = $::midonet_openstack::params::controller_address_management
+  $controller_api_address        = $::midonet_openstack::params::controller_address_api
   midonet_openstack::resources::firewall { 'Neutron': port => '9696', }
 
   rabbitmq_user { $::midonet_openstack::params::neutron_rabbitmq_user:
@@ -44,9 +37,8 @@ class midonet_openstack::profile::neutron::controller_vanilla {
   class { '::neutron':
     rabbit_user           => $::midonet_openstack::params::neutron_rabbitmq_user,
     rabbit_password       => $::midonet_openstack::params::neutron_rabbitmq_password,
-    rabbit_host           => $::openstack_integration::config::rabbit_host,
-    rabbit_port           => $::openstack_integration::config::rabbit_port,
-    rabbit_use_ssl        => $::openstack_integration::config::ssl,
+    rabbit_hosts          => $::midonet_openstack::params::rabbitmq_hosts,
+    rabbit_use_ssl        => $::midonet_openstack::params::rabbitmq_ssl,
     allow_overlapping_ips => true,
     core_plugin           => 'ml2',
     service_plugins       => ['router', 'metering', 'firewall'],
@@ -55,13 +47,13 @@ class midonet_openstack::profile::neutron::controller_vanilla {
   }
   class { '::neutron::client': }
   class { '::neutron::server':
-    database_connection => "mysql+pymysql://${::midonet_openstack::params::mysql_neutron_user}:${::midonet_openstack::params::mysql_neutron_pass}@127.0.0.1/neutron?charset=utf8",
+    database_connection => "mysql+pymysql://${::midonet_openstack::params::mysql_neutron_user}:${::midonet_openstack::params::mysql_neutron_pass}@${controller_management_address}/neutron?charset=utf8",
     password            => $::midonet_openstack::params::neutron_password,
     sync_db             => true,
     api_workers         => 2,
     rpc_workers         => 2,
-    auth_uri            => $::openstack_integration::config::keystone_auth_uri,
-    auth_url            => $::openstack_integration::config::keystone_admin_uri,
+    auth_uri            => "http://${controller_api_address}:5000",
+    auth_url            => "http://${controller_management_address}:35357",
     region_name         => $::midonet_openstack::params::region,
     auth_region         => $::midonet_openstack::params::region
   }
@@ -94,7 +86,7 @@ class midonet_openstack::profile::neutron::controller_vanilla {
     debug => true,
   }
   class { '::neutron::server::notifications':
-    auth_url    => $::openstack_integration::config::keystone_admin_uri,
+    auth_url    => "http://${controller_management_address}:35357",
     password    => $::midonet_openstack::params::nova_password,
     region_name => $::midonet_openstack::params::region
   }
