@@ -1,4 +1,4 @@
-# == Class: midonet_openstack::role::allinone
+# == Class: midonet_openstack::role::allinone_vanilla
 #
 # Copyright (c) 2015 Midokura SARL, All Rights Reserved.
 #
@@ -18,7 +18,7 @@
 #
 #  [*zookeeper_client_ip*]
 #    Zookeeper Host Ip
-class midonet_openstack::role::allinone (
+class midonet_openstack::role::allinone_vanilla (
   $client_ip = $::midonet_openstack::params::controller_address_management
   ) inherits ::midonet_openstack::role {
   class { '::midonet_openstack::profile::firewall::firewall': } ->
