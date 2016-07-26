@@ -47,7 +47,6 @@ describe 'midonet_openstack::profile::zookeeper::zookeeper' do
          'client_ip'        => '172.17.0.3',
          'packages'         => ['zookeeper'],
          'service_name'     => 'zookeeper',
-         'service_provider' => 'init'
        ).that_requires('Class[midonet::repository]')
       }
    end

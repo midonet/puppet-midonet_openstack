@@ -76,6 +76,8 @@ class midonet_openstack::profile::keystone::controller (
   class { '::keystone::wsgi::apache':
     bind_host       => $midonet_openstack::params::controller_address_api,
     admin_bind_host => $midonet_openstack::params::controller_address_management,
+    public_port     => '5000',
+    admin_port      => '35357',
     ssl             => $::openstack_integration::config::ssl,
     ssl_key         => "/etc/keystone/ssl/private/${::fqdn}.pem",
     ssl_cert        => $::openstack_integration::params::cert_path,
