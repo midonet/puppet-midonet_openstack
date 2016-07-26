@@ -1,0 +1,16 @@
+[Unit]
+Description=Zookeeper
+Want=network-online.target
+After=network-online.target
+
+[Service]
+Type=forking
+User=root
+Environment=ZOO_LOG_DIR=/var/log/zookeeper
+ExecStart=/usr/sbin/zkServer.sh start
+ExecStop=/usr/sbin/zkServer.sh stop
+ExecRestart=/usr/sbin/zkServer.sh restart
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
