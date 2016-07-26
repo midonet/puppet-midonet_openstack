@@ -19,16 +19,29 @@ class midonet_openstack::profile::zookeeper::zookeeper(
     {
       $zk_packages = ['zookeeper']
       class {'::zookeeper':
-        servers          => $zk_servers,
-        id               => $id,
-        cfg_dir          => '/etc/zookeeper',
-        client_ip        => $client_ip,
-        packages         => $zk_packages,
-        service_name     => 'zookeeper',
-        require          => [ File['/usr/java/default'], Class['midonet::repository'] ],
-        service_provider => 'init'
+        servers        => $zk_servers,
+        id             => $id,
+        cfg_dir        => '/etc/zookeeper',
+        client_ip      => $client_ip,
+        packages       => $zk_packages,
+        service_name   => 'zookeeper',
+        require        => [ File['/usr/java/default'], Class['midonet::repository'] ],
+        manage_service => false
 
       }
+
+      file { '/var/log/zookeeper':
+        ensure  => directory,
+        mode    => '0755',
+        require => Class['zookeeper']
+      }
+
+      file { '/etc/systemd/system/multi-user.target.wants/zookeeper.service':
+        ensure  => file,
+        content => template('zookeeper/zookeeper.service.erb'),
+        require => [Class['zookeeper'], File['/var/log/zookeeper']]
+      }
+
     }
     elsif $::osfamily == 'Debian'
     {
