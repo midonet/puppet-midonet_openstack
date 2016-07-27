@@ -30,8 +30,10 @@ class midonet_openstack::profile::neutron::controller_vanilla {
     allowed_hosts => '%',
   }
   class { '::neutron::keystone::auth':
-    password => $::midonet_openstack::params::neutron_password,
-    region   => $::midonet_openstack::params::region
+    password   => $::midonet_openstack::params::neutron_password,
+    region     => $::midonet_openstack::params::region,
+    public_url => $controller_api_address
+    admin_url  => $controller_management_address
   }
 
   class { '::neutron':
