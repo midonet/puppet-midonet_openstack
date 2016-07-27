@@ -54,8 +54,10 @@ class midonet_openstack::profile::glance::controller (
     include ::glance
     include ::glance::client
     class { '::glance::keystone::auth':
-      password => $midonet_openstack::params::glance_password,
-      region   => $midonet_openstack::params::region,
+      password   => $midonet_openstack::params::glance_password,
+      region     => $midonet_openstack::params::region,
+      public_url => $controller_api_address,
+      admin_url  => $controller_management_address,
     }
     case $backend {
       'file': {
@@ -95,13 +97,13 @@ class midonet_openstack::profile::glance::controller (
       workers                   => 2,
       stores                    => $glance_stores,
       default_store             => $backend,
-      bind_host                 => $::openstack_integration::config::host,
-      auth_uri                  => $::openstack_integration::config::keystone_auth_uri,
-      identity_uri              => $::openstack_integration::config::keystone_admin_uri,
+      bind_host                 => $controller_management_address,
+      auth_uri                  => "http://${controller_api_address}:5000",
+      identity_uri              => "http://${controller_api_address}:35537",
       registry_client_protocol  => $::openstack_integration::config::proto,
       registry_client_cert_file => $crt_file,
       registry_client_key_file  => $key_file,
-      registry_host             => $::openstack_integration::config::host,
+      registry_host             => ${controller_management_address},
       cert_file                 => $crt_file,
       key_file                  => $key_file,
       os_region_name            => $midonet_openstack::params::region,
