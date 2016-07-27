@@ -41,7 +41,9 @@ class { '::neutron::db::mysql':
 }
 class { '::neutron::keystone::auth':
   password => $::midonet_openstack::params::neutron_password,
-  region   => $::midonet_openstack::params::region
+  region   => $::midonet_openstack::params::region,
+  public_url => "http://$controller_api_address:9696",
+  admin_url  => "http://$controller_management_address:9696"
 }
 
 
