@@ -54,8 +54,10 @@ class midonet_openstack::profile::glance::controller (
     include ::glance
     include ::glance::client
     class { '::glance::keystone::auth':
-      password => $midonet_openstack::params::glance_password,
-      region   => $midonet_openstack::params::region,
+      password   => $midonet_openstack::params::glance_password,
+      region     => $midonet_openstack::params::region,
+      public_url => "http://${controller_api_address}:9292",
+      admin_url  => "http://${controller_management_address}:9292"
     }
     case $backend {
       'file': {
@@ -95,13 +97,13 @@ class midonet_openstack::profile::glance::controller (
       workers                   => 2,
       stores                    => $glance_stores,
       default_store             => $backend,
-      bind_host                 => $::openstack_integration::config::host,
-      auth_uri                  => $::openstack_integration::config::keystone_auth_uri,
-      identity_uri              => $::openstack_integration::config::keystone_admin_uri,
+      bind_host                 => $controller_management_address,
+      auth_uri                  => "http://${controller_api_address}:5000",
+      identity_uri              => "http://${controller_api_address}:35357",
       registry_client_protocol  => $::openstack_integration::config::proto,
       registry_client_cert_file => $crt_file,
       registry_client_key_file  => $key_file,
-      registry_host             => $::openstack_integration::config::host,
+      registry_host             => $controller_management_address,
       cert_file                 => $crt_file,
       key_file                  => $key_file,
       os_region_name            => $midonet_openstack::params::region,
@@ -110,7 +112,7 @@ class midonet_openstack::profile::glance::controller (
       debug               => $midonet_openstack::params::glance_debug,
       database_connection => "mysql+pymysql://${midonet_openstack::params::mysql_glance_user}:${midonet_openstack::params::mysql_glance_pass}@127.0.0.1/glance?charset=utf8",
       keystone_password   => $midonet_openstack::params::glance_password,
-      bind_host           => $::openstack_integration::config::host,
+      bind_host           => $controller_management_address,
       workers             => 2,
       auth_uri            => "http://${controller_api_address}:5000",
       identity_uri        => "http://${controller_management_address}:35357",

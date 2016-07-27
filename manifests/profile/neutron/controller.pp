@@ -40,8 +40,10 @@ class { '::neutron::db::mysql':
   allowed_hosts => '%',
 }
 class { '::neutron::keystone::auth':
-  password => $::midonet_openstack::params::neutron_password,
-  region   => $::midonet_openstack::params::region
+  password   => $::midonet_openstack::params::neutron_password,
+  region     => $::midonet_openstack::params::region,
+  public_url => "http://${controller_api_address}:9696",
+  admin_url  => "http://${controller_management_address}:9696"
 }
 
 
