@@ -1,8 +1,0 @@
----
-:backends:
-  - yaml
-  - module_data
-:yaml:
-  :datadir: /etc/puppet/hieradata
-:hierarchy:
-  - common
