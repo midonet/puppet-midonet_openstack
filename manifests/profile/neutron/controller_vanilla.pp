@@ -75,9 +75,6 @@ class midonet_openstack::profile::neutron::controller_vanilla {
     metadata_workers => 2,
     auth_region      => $::midonet_openstack::params::region,
   }
-  class { '::neutron::agents::lbaas':
-    debug => true,
-  }
   class { '::neutron::agents::l3':
     debug => true,
   }
