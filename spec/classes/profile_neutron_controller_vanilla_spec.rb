@@ -92,13 +92,6 @@ describe 'midonet_openstack::profile::neutron::controller_vanilla' do
       )
     end
 
-
-    it 'should configure the neutron lbaas agent' do
-      is_expected.to contain_class('neutron::agents::lbaas').with(
-      'debug' => 'true',
-      )
-    end
-
     it 'should configure the neutron l3 agent' do
       is_expected.to contain_class('neutron::agents::l3').with(
       'debug' => 'true',
