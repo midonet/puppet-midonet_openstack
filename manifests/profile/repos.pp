@@ -4,10 +4,15 @@
 class midonet_openstack::profile::repos{
   case $::osfamily {
     'Debian': {
-      include ::apt
-      class { '::openstack_extras::repo::debian::ubuntu':
-      release         => 'mitaka',
-      package_require => true,
+      if $::lsbdistrelease == '16.04' {
+        # Placeholder so the default case does not fail
+      }
+      else {
+        include ::apt
+        class { '::openstack_extras::repo::debian::ubuntu':
+        release         => 'mitaka',
+        package_require => true,
+        }
     }
     # Ceph is both packaged on UCA & ceph.com
     # Official packages are on ceph.com so we want to make sure
