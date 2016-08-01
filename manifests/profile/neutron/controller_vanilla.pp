@@ -59,15 +59,19 @@ class midonet_openstack::profile::neutron::controller_vanilla {
     region_name         => $::midonet_openstack::params::region,
     auth_region         => $::midonet_openstack::params::region
   }
+  class { '::vswitch::ovs':
+    dkms_ensure          => false} ->
   class { '::neutron::plugins::ml2':
     type_drivers         => ['vxlan'],
     tenant_network_types => ['vxlan'],
     mechanism_drivers    => ['openvswitch'],
-  }
+
+  } ->
   class { '::neutron::agents::ml2::ovs':
     enable_tunneling => true,
     local_ip         => '127.0.0.1',
     tunnel_types     => ['vxlan'],
+    manage_vswitch   => false,
   }
   class { '::neutron::agents::metadata':
     debug            => true,
@@ -93,5 +97,5 @@ class midonet_openstack::profile::neutron::controller_vanilla {
     enabled => true,
     driver  => 'neutron_fwaas.services.firewall.drivers.linux.iptables_fwaas.IptablesFwaasDriver',
   }
-  include ::vswitch::ovs
+
 }
