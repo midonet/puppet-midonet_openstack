@@ -10,7 +10,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box       = 'allinone'
-  config.ssh.username = 'ubuntu'
+  config.ssh.username = 'centos'
   config.vm.hostname  = "allinone"
   config.vm.provider :openstack do |os|
     os.meta_args_support  = true
@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     os.password           = ''
     os.tenant_name        = ''
     os.flavor             = 'm2.xlarge'
-    os.image              = 'Ubuntu 14.04.4 20160331'
+    os.image              = 'CentOS7 - notty'
     os.networks           = 'Internal-ahharu'
     os.floating_ip_pool   = 'external'
   end
@@ -27,7 +27,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "allinone" do |allinone|
     allinone.vm.synced_folder ".", "/vagrant"
     allinone.vm.synced_folder "../..", "/openstack"
-    allinone.vm.provision :shell, path: "run_allinone_ubuntu.sh", args:['@@ssh_ip@@']
+    allinone.vm.provision :shell, path: "run_allinone_centos.sh", args:['@@ssh_ip@@']
+
   end
 
 end

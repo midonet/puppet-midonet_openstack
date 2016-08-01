@@ -19,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     os.password           = ''
     os.tenant_name        = ''
     os.flavor             = 'm2.xlarge'
-    os.image              = 'Ubuntu 14.04.4 20160331'
+    os.image              = 'Ubuntu 16.04.1'
     os.networks           = 'Internal-ahharu'
     os.floating_ip_pool   = 'external'
   end
