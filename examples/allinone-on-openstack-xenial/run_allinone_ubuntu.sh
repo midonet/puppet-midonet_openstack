@@ -13,14 +13,14 @@ sudo hostname allinone
 apt-get remove puppet -y
 sudo apt-get update -y
 apt-get install git -y
-apt-get install build-essential -y
+apt-get install build-essential htop -y
 apt-get install g++ -y
 apt-get install lsb lsb-core lsb-release -y
 sudo apt-get autoremove puppet
 sudo apt-get install ruby-dev vim -y
-wget https://apt.puppetlabs.com/puppetlabs-release-pc1-trusty.deb
-sudo dpkg -i puppetlabs-release-pc1-trusty.deb
-rm -rf puppetlabs-release-pc1-trusty.deb
+wget https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+sudo dpkg -i puppetlabs-release-pc1-xenial.deb
+rm -rf puppetlabs-release-pc1-xenial.deb
 sudo apt-get update
 apt-get install puppetserver -y
 sudo echo "export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/puppetlabs/bin'" > ~/.bashrc

@@ -1,0 +1,75 @@
+#!/bin/bash
+set -x
+set -e
+
+# Variables
+TMP_DIR="/tmp"
+OPENSTACK_AIO_DIR="/openstack"
+PUPPET_MAJ_VERSION=4
+PUPPET_RELEASE_FILE=puppetlabs-release-pc1
+PUPPET_BASE_PATH=/etc/puppetlabs/code
+PUPPET_PKG=puppet-agent
+PUPPET_MODULEDIR="${PUPPET_BASE_PATH}/modules"
+
+# Prerequisites
+sudo yum -y remove facter puppet rdo-release epel-release
+sudo yum -y install libxml2-devel libxslt-devel ruby-devel rubygems wget vim
+sudo yum -y groupinstall "Development Tools"
+
+# Puppet
+cd ${TMP_DIR}
+wget http://yum.puppetlabs.com/${PUPPET_RELEASE_FILE}-el-7.noarch.rpm
+if [ $(rpm -qa|grep -c ${PUPPET_RELEASE_FILE}) -le 0 ]; then
+  rpm -ivh ${PUPPET_RELEASE_FILE}-el-7.noarch.rpm
+fi
+yum install -y ${PUPPET_PKG}
+
+# Gems
+gem install bundler --no-rdoc --no-ri --verbose
+cd ${OPENSTACK_AIO_DIR}
+
+# Hack the module 'openstack'
+IP=$(ip -4 a | grep inet | grep -e '192.168.1\.' | sed 's/^[[:space:]]*//' | cut -d' ' -f2 | cut -d'/' -f1)
+sed -i "s/bridged_ip/${IP}/" examples/allinone-on-openstack-centos7/params.pp
+
+# get the network of the bridged interface and replace some variables
+NETWORK=$(ip r | grep -v default | grep -e '^192.168.1\.' | cut -d' ' -f1)
+sed -i "s%bridged_network%${NETWORK}%" examples/allinone-on-openstack-centos7/params.pp
+
+ALLOWED_HOST_NETWORK=$(ip r | grep -v default | grep -e '^192.168.1\.' | cut -d' ' -f1 | cut -d'/' -f1 | cut -d'.' -f1,2,3).%
+sed -i "s,allowed_host_network,${ALLOWED_HOST_NETWORK}," examples/allinone-on-openstack-centos7/params.pp
+
+#Override the params.pp
+cp examples/allinone-on-openstack-centos7/params.pp params.pp
+
+sudo echo "export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/puppetlabs/bin'" > ~/.bashrc
+source ~/.bashrc
+
+bundle install
+
+# Puppet modules
+r10k puppetfile install --puppetfile ${OPENSTACK_AIO_DIR}/Puppetfile \
+  --moduledir ${PUPPET_MODULEDIR}
+
+
+
+# Copy this repository to $moduledir
+mkdir -p ${PUPPET_MODULEDIR}/midonet_openstack
+cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
+
+# Run the puppet manifest. Comment this line if you want to perform
+# some changes in the manifest
+
+# Fuck the iptables
+iptables -F
+
+puppet apply -e "include ::midonet_openstack::role::allinone_vanilla"
+
+# Fuck the iptables
+iptables -F
+# Add the FIP to Horizon Vhost
+# We do a sed because centos7 was screwing with the echo solution.
+sed -i "\|</VirtualHost>|i ServerAlias $1" /etc/httpd/conf.d/15-horizon_vhost.conf
+# Restart the Apache service.
+service httpd stop
+service httpd start
