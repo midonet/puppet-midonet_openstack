@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 puppetversion = ENV.key?('PUPPET_VERSION') ? "#{ENV['PUPPET_VERSION']}" : ['>= 3.3']
 gem 'json_pure' , '2.0.1'
+gem 'fast_gettext' , '1.1.0'
 gem 'puppet', puppetversion
 gem 'r10k'
 gem 'puppetlabs_spec_helper', '>= 0.8.2'
