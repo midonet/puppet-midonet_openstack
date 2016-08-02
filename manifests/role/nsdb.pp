@@ -19,7 +19,7 @@
 #    Id of zookeeper node
 #  [*client_ip*]
 #    client ip of zookeeper node
-#  [*manage_midonet_repos*]
+#  [*manage_repos*]
 #    Should install midonet repos?
 #  [*manage_java*]
 #    Should install java?
@@ -28,17 +28,17 @@
 class midonet_openstack::role::nsdb (
     $id                   = 1,
     $client_ip            = $::ipaddress,
-    $manage_midonet_repos = true,
+    $manage_repos = true,
     $manage_java          = true,
     $zk_servers           = $midonet_openstack::params::zookeeper_servers
   ) inherits ::midonet_openstack::role {
 
     include ::midonet_openstack::profile::firewall::firewall
-    if $manage_midonet_repos {
+    if $manage_repos and !defined(Class['midonet::repository']){
       class { '::midonet::repository': }
     }
 
-    if $manage_java {
+    if $manage_java and !defined(Class['::midonet_openstack::profile::midojava::midojava']) {
       class { '::midonet_openstack::profile::midojava::midojava':}
     }
 

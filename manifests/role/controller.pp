@@ -14,17 +14,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class midonet_openstack::role::controller inherits ::midonet_openstack::role {
-class { '::midonet_openstack::profile::firewall::firewall': }
+# == Parameters
+#
+# [*is_mem*]
+#   Using MEM installation?
+# [*manage_repos*]
+#   should manage repositories?
+# [*mem_username*]
+#   Midonet MEM username
+# [*mem_password*]
+#   Midonet MEM password
+class midonet_openstack::role::controller (
+  $is_mem                  = false,
+  $manage_repos             = false,
+  $mem_username            = undef,
+  $mem_password            = undef,
+  ) inherits ::midonet_openstack::role {
+  class { '::midonet_openstack::profile::firewall::firewall': }
 
-if $::osfamily == 'RedHat' {
-  package { 'openstack-selinux':
-      ensure => 'latest'
+  if $::osfamily == 'RedHat' {
+    package { 'openstack-selinux':
+        ensure => 'latest'
+    }
+    # temporary hack to make sure RabbitMQ does not steal UID
+    # of Keystone
+    Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
   }
-  # temporary hack to make sure RabbitMQ does not steal UID
-  # of Keystone
-  Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
-}
+
+  if $manage_repos and !defined(Class['midonet::repository']){
+    class { '::midonet::repository':
+      is_mem            => $is_mem,
+      midonet_version   => undef,
+      midonet_stage     => undef,
+      openstack_release => undef,
+      mem_version       => undef,
+      mem_username      => $mem_username,
+      mem_password      => $mem_password
+    }
+  }
+
   class { '::midonet_openstack::profile::memcache::memcache':}
   class { '::midonet_openstack::profile::keystone::controller': }
   class { '::midonet_openstack::profile::mysql::controller': }
