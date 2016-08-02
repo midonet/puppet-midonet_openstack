@@ -34,11 +34,11 @@ class midonet_openstack::role::nsdb (
   ) inherits ::midonet_openstack::role {
 
     include ::midonet_openstack::profile::firewall::firewall
-    if $manage_midonet_repos {
+    if $manage_midonet_repos and !defined(Class['midonet::repository']){
       class { '::midonet::repository': }
     }
 
-    if $manage_java {
+    if $manage_java and !defined(Class['::midonet_openstack::profile::midojava::midojava']) {
       class { '::midonet_openstack::profile::midojava::midojava':}
     }
 
