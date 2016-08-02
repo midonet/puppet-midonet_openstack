@@ -81,8 +81,8 @@ describe 'midonet_openstack::profile::neutron::controller_vanilla' do
 
     it 'should configure the ml2 plugin' do
       is_expected.to contain_class('neutron::plugins::ml2').with(
-      'type_drivers' => '["vxlan"]',
-      'tenant_network_types' => '["vxlan"]',
+      'type_drivers' => ["vxlan","flat"],
+      'tenant_network_types' => ["vxlan","flat"],
       'mechanism_drivers' => '["openvswitch"]',
       )
       is_expected.to contain_class('neutron::agents::ml2::ovs').with(

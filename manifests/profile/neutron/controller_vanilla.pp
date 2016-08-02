@@ -62,8 +62,8 @@ class midonet_openstack::profile::neutron::controller_vanilla {
   class { '::vswitch::ovs':
     dkms_ensure          => false} ->
   class { '::neutron::plugins::ml2':
-    type_drivers         => ['vxlan'],
-    tenant_network_types => ['vxlan'],
+    type_drivers         => ['vxlan','flat'],
+    tenant_network_types => ['vxlan','flat'],
     mechanism_drivers    => ['openvswitch'],
   } ->
   class { '::neutron::agents::ml2::ovs':

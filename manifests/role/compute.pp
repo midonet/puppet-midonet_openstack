@@ -14,7 +14,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class midonet_openstack::role::compute inherits ::midonet_openstack::role {
+# == Parameters
+#
+# [*is_mem*]
+#   Using MEM installation?
+# [*manage_repos*]
+#   should manage repositories?
+# [*mem_username*]
+#   Midonet MEM username
+# [*mem_password*]
+#   Midonet MEM password
+class midonet_openstack::role::compute (
+  $is_mem                  = false,
+  $manage_repos             = false,
+  $mem_username            = undef,
+  $mem_password            = undef,
+  ) inherits ::midonet_openstack::role {
+  if $manage_repos and !defined(Class['midonet::repository']){
+    class { '::midonet::repository':
+      is_mem            => $is_mem,
+      midonet_version   => undef,
+      midonet_stage     => undef,
+      openstack_release => undef,
+      mem_version       => undef,
+      mem_username      => $mem_username,
+      mem_password      => $mem_password
+    }
+  }
   class { '::midonet_openstack::profile::firewall::firewall': }
   class { '::midonet_openstack::profile::repos': }
   class { '::midonet_openstack::profile::neutron::compute': }

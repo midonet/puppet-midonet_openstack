@@ -42,7 +42,7 @@ describe 'midonet_openstack::role::nsdb' do
      let :params do
        {
          :client_ip         => '172.17.0.3',
-         :manage_midonet_repos => false
+         :manage_repos => false
        }
      end
    it { is_expected.to contain_class(
@@ -60,7 +60,7 @@ describe 'midonet_openstack::role::nsdb' do
       'ssl_storage_port'    => '7001',
       'client_port'         => '9042',
       'client_port_thrift'  => '9160',
-      ) }    
+      ) }
   end
 
   end
