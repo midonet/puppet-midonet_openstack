@@ -25,7 +25,8 @@ class midonet_openstack::profile::horizon::horizon {
     keystone_default_role        => 'user',
     allowed_hosts                => $::midonet_openstack::params::horizon_allowed_hosts,
     neutron_options              => {
-                                      'enable_lb' => true,
+                                      'enable_lb'       => true,
+                                      'enable_firewall' => true
                                     },
     # need to disable offline compression due to
     # https://bugs.launchpad.net/ubuntu/+source/horizon/+bug/1424042
