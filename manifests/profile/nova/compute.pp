@@ -69,6 +69,12 @@ class midonet_openstack::profile::nova::compute {
     vncproxy_host                 => $::midonet_openstack::params::controller_address_api,
   }
 
+  if $::osfamily == 'RedHat' {
+    package { 'lvm2':
+      ensure => latest,
+      before => Class['::nova::compute::libvirt']
+    }
+  }
   class { '::nova::compute::libvirt':
     libvirt_virt_type => $::midonet_openstack::params::nova_libvirt_type,
     vncserver_listen  => $management_address,
