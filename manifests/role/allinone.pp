@@ -24,7 +24,6 @@
 #   Midonet MEM username
 # [*mem_password*]
 #   Midonet MEM password
-
 class midonet_openstack::role::allinone (
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $is_mem                  = false,
@@ -56,7 +55,6 @@ class midonet_openstack::role::allinone (
     client_port        => '9042',
     client_port_thrift => '9160',
   }
-
   if $::osfamily == 'RedHat' {
     package { 'openstack-selinux':
     ensure => 'latest'
@@ -72,8 +70,79 @@ class midonet_openstack::role::allinone (
   class { '::midonet_openstack::profile::glance::controller':
     require => Class['::midonet_openstack::profile::keystone::controller'],
   }
-  class { '::midonet_openstack::profile::neutron::controller_vanilla': }
-  class { '::midonet_openstack::profile::nova::api':}
-  class { '::midonet_openstack::profile::nova::compute_vanilla': }
+  class { '::midonet_openstack::profile::neutron::controller': }
+    # Install these rubygems so our custom types work properly
+      if $::osfamily == 'RedHat' {
+        yumrepo { 'foreman-releases-repo':
+          ensure   => present,
+          baseurl  => $::midonet::params::foreman_releases_repo_url,
+          enabled  => 1,
+          gpgcheck => 1,
+          timeout  => 60,
+          gpgkey   => $::midonet::params::foreman_releases_repo_gpgkey,
+        } ->
+        package { $::midonet::params::midonet_faraday_package:
+          ensure => present,
+        } ->
+        package { $::midonet::params::midonet_multipart_post_package:
+          ensure => present,
+        }
+      }
+      elsif $::osfamily == 'Debian' {
+        package { 'ruby-faraday':
+          ensure => present,
+          before => midonet_host_registry[$::hostname]
+        }
+      }
+  class { '::midonet_openstack::profile::nova::api': }
+  contain '::midonet_openstack::profile::nova::api'
+  class { '::midonet_openstack::profile::nova::compute':}
+  contain '::midonet_openstack::profile::nova::compute'
   class { '::midonet_openstack::profile::horizon::horizon':}
+  include ::midonet::params
+  # Add midonet-cluster
+  class {'midonet::cluster':
+      zookeeper_hosts      => [{
+        'ip' => '127.0.0.1'}
+        ],
+      cassandra_servers    => ['127.0.0.1'],
+      cassandra_rep_factor => '1',
+      keystone_admin_token => 'testmido',
+      keystone_host        => $::midonet_openstack::params::controller_address_management,
+      require              => Class['::midonet_openstack::profile::cassandra::midocassandra']
+  }
+  contain '::midonet::cluster'
+  # Add midonet-agent
+  class { 'midonet::agent':
+    controller_host => '127.0.0.1',
+    metadata_port   => '8775',
+    shared_secret   => $::midonet_openstack::params::neutron_shared_secret,
+    zookeeper_hosts => [{
+        'ip' => '127.0.0.1'}
+        ],
+    require         => Class['::midonet_openstack::profile::cassandra::midocassandra']
+  }
+  contain '::midonet::agent'
+  # Add midonet-cli
+  class {'midonet::cli':
+    require  => Class['::midonet_openstack::profile::cassandra::midocassandra'],
+    username => 'admin',
+    password => 'testmido'
+  }
+  Class['midonet_openstack::profile::neutron::controller']        ->
+  Class['midonet_openstack::profile::nova::api']                  ->
+  Class['midonet_openstack::profile::nova::compute']              ->
+  Class['midonet::agent']                                         ->
+  Class['midonet::cluster']                                       ->
+  Class['midonet::cli']
+  # Register the host
+  midonet_host_registry { $::hostname:
+    ensure          => present,
+    midonet_api_url => 'http://127.0.0.1:8181/midonet-api',
+    username        => 'midogod',
+    password        => 'midogod',
+    require         => [Class['midonet::agent'],
+                        Class['::midonet_openstack::profile::neutron::controller'],
+                        Class['::midonet_openstack::profile::nova::compute']]
+  }
 }

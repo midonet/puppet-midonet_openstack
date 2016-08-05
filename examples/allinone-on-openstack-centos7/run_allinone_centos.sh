@@ -45,7 +45,9 @@ cp examples/allinone-on-openstack-centos7/params.pp params.pp
 sudo echo "export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/puppetlabs/bin'" > ~/.bashrc
 source ~/.bashrc
 
-bundle install
+bundle install --path ~/.gem
+export PATH="${PATH}:~/.gem/ruby/bin"
+echo 'export PATH="${PATH}:~/.gem/ruby/bin"' > ~/.bashrc
 
 # Puppet modules
 r10k puppetfile install --puppetfile ${OPENSTACK_AIO_DIR}/Puppetfile \
@@ -63,7 +65,7 @@ cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
 # Fuck the iptables
 iptables -F
 
-puppet apply -e "include ::midonet_openstack::role::allinone_vanilla"
+puppet apply -e "include ::midonet_openstack::role::allinone" --debug | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
 
 # Fuck the iptables
 iptables -F

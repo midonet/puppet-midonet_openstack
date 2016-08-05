@@ -2,26 +2,21 @@
 # configures neutron in controller node , preparing it for midonet
 #
 #
-
 class midonet_openstack::profile::neutron::controller {
   include ::openstack_integration::config
-
   $controller_management_address = $::midonet_openstack::params::controller_address_management
   $controller_api_address        = $::midonet_openstack::params::controller_address_api
-
   if $::osfamily == 'Debian' {
-    $ml2_package = 'neutron-plugin-ml2'
+    $ml2_package      = 'neutron-plugin-ml2'
+    $nova_api_service = 'nova-api'
   }
   if $::osfamily == 'RedHat' {
-    $package_networking = 'openstack-neutron-ml2'
+    $ml2_package      = 'openstack-neutron-ml2'
+    $nova_api_service = 'openstack-nova-api'
   }
-
   midonet_openstack::resources::firewall { 'Neutron': port => '9696', }
-
   package { 'python-neutron-lbaas': ensure => installed }
   package { 'python-neutron-fwaas': ensure => installed }
-  package { 'openstack-neutron-ml2': ensure => absent }
-
 rabbitmq_user { $::midonet_openstack::params::neutron_rabbitmq_user:
   admin    => true,
   password => $::midonet_openstack::params::neutron_rabbitmq_password,
@@ -45,23 +40,21 @@ class { '::neutron::keystone::auth':
   public_url => "http://${controller_api_address}:9696",
   admin_url  => "http://${controller_management_address}:9696"
 }
-
-
-
 class { '::neutron':
-  rabbit_user           => $::midonet_openstack::params::neutron_rabbitmq_user,
-  rabbit_password       => $::midonet_openstack::params::neutron_rabbitmq_password,
-  rabbit_hosts          => $::midonet_openstack::params::rabbitmq_hosts,
-  rabbit_use_ssl        => $::midonet_openstack::params::rabbitmq_ssl,
-  allow_overlapping_ips => true,
-  core_plugin           => 'midonet.neutron.plugin_v2.MidonetPluginV2',
-  service_plugins       => [
+  rabbit_user             => $::midonet_openstack::params::neutron_rabbitmq_user,
+  rabbit_password         => $::midonet_openstack::params::neutron_rabbitmq_password,
+  rabbit_hosts            => $::midonet_openstack::params::rabbitmq_hosts,
+  rabbit_use_ssl          => $::midonet_openstack::params::rabbitmq_ssl,
+  allow_overlapping_ips   => true,
+  core_plugin             => 'midonet.neutron.plugin_v2.MidonetPluginV2',
+  service_plugins         => [
     'midonet.neutron.services.firewall.plugin.MidonetFirewallPlugin',
     'lbaas',
     'neutron.services.l3.l3_midonet.MidonetL3ServicePlugin'
     ],
-  debug                 => true,
-  verbose               => true,
+  debug                   => true,
+  verbose                 => true,
+  dhcp_agent_notification => false,
 }
 class { '::neutron::client': }
 class { '::neutron::server':
@@ -76,9 +69,15 @@ class { '::neutron::server':
   region_name         => $::midonet_openstack::params::region,
   auth_region         => $::midonet_openstack::params::region
 }
-
-
-
+class { '::midonet::neutron_plugin':
+    midonet_api_ip    => '127.0.0.1',
+    midonet_api_port  => '8181',
+    keystone_username => 'neutron',
+    keystone_password => $::midonet_openstack::params::neutron_password,
+    keystone_tenant   => 'services',
+    sync_db           => true,
+    notify            => Service[$nova_api_service,'neutron-server']
+  }
   # Configure [nova] section in neutron.conf
   neutron_config {
     'nova/auth_url':                   value => "http://${controller_api_address}:5000";

@@ -4,53 +4,44 @@ class midonet_openstack::profile::nova::api {
   include ::openstack_integration::config
   $management_network = $::midonet_openstack::params::network_management
   $management_address = ip_for_network($management_network)
-
   $storage_management_address = $::midonet_openstack::params::storage_address_management
   $controller_management_address = $::midonet_openstack::params::controller_address_management
   $controller_api_address        = $::midonet_openstack::params::controller_address_api
-
   $user                = $::midonet_openstack::params::mysql_nova_user
   $pass                = $::midonet_openstack::params::mysql_nova_pass
   $api_user            = $::midonet_openstack::params::mysql_nova_api_user
   $api_pass            = $::midonet_openstack::params::mysql_nova_api_pass
   $database_connection = "mysql+pymysql://${user}:${pass}@127.0.0.1/nova"
   $api_database_connection = "mysql+pymysql://${api_user}:${api_pass}@127.0.0.1/nova_api"
-
-
   midonet_openstack::resources::firewall { 'Nova API': port => '8774', }
   midonet_openstack::resources::firewall { 'Nova Metadata': port => '8775', }
   midonet_openstack::resources::firewall { 'Nova EC2': port => '8773', }
   midonet_openstack::resources::firewall { 'Nova S3': port => '3333', }
   midonet_openstack::resources::firewall { 'Nova novnc': port => '6080', }
-
   class { '::nova::db::mysql':
     user     => $::midonet_openstack::params::mysql_nova_user,
     password => $::midonet_openstack::params::mysql_nova_pass,
   }
-
   class { '::nova::db::mysql_api':
     user     => $::midonet_openstack::params::mysql_nova_api_user,
     password => $::midonet_openstack::params::mysql_nova_api_pass,
   }
-
   class { '::nova::keystone::auth':
-    public_url      => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_api}:8774/v2/%(tenant_id)s",
+    public_url      => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_api}:8774/v2.1/%(tenant_id)s",
     public_url_v3   => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_api}:8774/v3/%(tenant_id)s",
-    internal_url    => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v2/%(tenant_id)s",
+    internal_url    => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v2.1/%(tenant_id)s",
     internal_url_v3 => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v3/%(tenant_id)s",
-    admin_url       => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v2/%(tenant_id)s",
+    admin_url       => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v2.1/%(tenant_id)s",
     admin_url_v3    => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v3/%(tenant_id)s",
     password        => $::midonet_openstack::params::nova_password,
     region          => $::midonet_openstack::params::region
   }
-
   rabbitmq_user { $midonet_openstack::params::nova_rabbitmq_user:
     admin    => true,
     password => $midonet_openstack::params::glance_rabbitmq_password,
     provider => 'rabbitmqctl',
     require  => Class['::rabbitmq'],
   }
-
   rabbitmq_user_permissions { 'nova@/':
     configure_permission => '.*',
     write_permission     => '.*',
@@ -58,7 +49,6 @@ class midonet_openstack::profile::nova::api {
     provider             => 'rabbitmqctl',
     require              => Class['::rabbitmq'],
   }
-
   class { '::nova':
     database_connection     => $database_connection,
     api_database_connection => $api_database_connection,
@@ -71,14 +61,11 @@ class midonet_openstack::profile::nova::api {
     debug                   => $::midonet_openstack::params::debug,
     require                 => Class['midonet_openstack::profile::memcache::memcache']
   }
-
-
   class { '::nova::network::neutron':
     neutron_password    => $::midonet_openstack::params::neutron_password,
     neutron_region_name => $::midonet_openstack::params::region,
     neutron_auth_url    => "http://${controller_management_address}:35357/v3",
   }
-
   class { '::nova::api':
     admin_password                       => $::midonet_openstack::params::nova_password,
     auth_uri                             => "http://${controller_api_address}:5000",
@@ -88,12 +75,10 @@ class midonet_openstack::profile::nova::api {
     default_floating_pool                => 'public',
     osapi_v3                             => true,
   }
-
   class { '::nova::vncproxy':
     host    => $::midonet_openstack::params::controller_address_api,
     enabled => true,
   }
-
   class { [
     '::nova::scheduler',
     '::nova::cert',
@@ -102,6 +87,4 @@ class midonet_openstack::profile::nova::api {
   ]:
     enabled => true
   }
-
-
 }
