@@ -50,7 +50,7 @@ class { '::neutron':
   service_plugins         => [
     'midonet.neutron.services.firewall.plugin.MidonetFirewallPlugin',
     'lbaas',
-    'neutron.services.l3.l3_midonet.MidonetL3ServicePlugin'
+    'midonet.neutron.services.l3.l3_midonet.MidonetL3ServicePlugin'
     ],
   debug                   => true,
   verbose                 => true,
