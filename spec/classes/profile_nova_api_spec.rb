@@ -62,11 +62,11 @@ describe 'midonet_openstack::profile::nova::api' do
 
     it 'should configure nova keystone auth' do
       is_expected.to contain_class('nova::keystone::auth').with(
-        'public_url'      => 'http://172.17.0.3:8774/v2/%(tenant_id)s',
+        'public_url'      => 'http://172.17.0.3:8774/v2.1/%(tenant_id)s',
         'public_url_v3'   => 'http://172.17.0.3:8774/v3/%(tenant_id)s',
-        'internal_url'    => 'http://172.17.0.3:8774/v2/%(tenant_id)s',
+        'internal_url'    => 'http://172.17.0.3:8774/v2.1/%(tenant_id)s',
         'internal_url_v3' => 'http://172.17.0.3:8774/v3/%(tenant_id)s',
-        'admin_url'       => 'http://172.17.0.3:8774/v2/%(tenant_id)s',
+        'admin_url'       => 'http://172.17.0.3:8774/v2.1/%(tenant_id)s',
         'admin_url_v3'    => 'http://172.17.0.3:8774/v3/%(tenant_id)s',
         'password'        => 'testmido',
         'region'          => 'openstack'

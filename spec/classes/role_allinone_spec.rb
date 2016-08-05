@@ -17,10 +17,10 @@ describe 'midonet_openstack::role::allinone' do
     it { is_expected.to contain_class('midonet_openstack::profile::mysql::controller') }
     it { is_expected.to contain_class('midonet_openstack::profile::memcache::memcache') }
     it { is_expected.to contain_class('midonet_openstack::profile::keystone::controller') }
-    it { is_expected.to contain_class('midonet_openstack::profile::neutron::controller_vanilla') }
+    it { is_expected.to contain_class('midonet_openstack::profile::neutron::controller') }
     it { is_expected.to contain_class('midonet_openstack::profile::glance::controller') }
     it { is_expected.to contain_class('midonet_openstack::profile::nova::api') }
-    it { is_expected.to contain_class('midonet_openstack::profile::nova::compute_vanilla') }
+    it { is_expected.to contain_class('midonet_openstack::profile::nova::compute') }
     it { is_expected.to contain_class('midonet_openstack::profile::horizon::horizon') }
     it { is_expected.to contain_class('midonet_openstack::profile::midojava::midojava') }
     it { is_expected.to contain_class('midonet_openstack::profile::zookeeper::zookeeper').with(
@@ -47,6 +47,7 @@ describe 'midonet_openstack::role::allinone' do
         :kernel                    => 'Linux',
         :ipaddress                 => '172.17.0.3',
         :concat_basedir            => '/var/packages',
+        :hostname                  => 'tests',
         :fqdn                      => 'tests.midokura.com',
         :operatingsystemrelease    => '14.04',
         :lsbdistrelease            => '14.04',
@@ -75,6 +76,7 @@ describe 'midonet_openstack::role::allinone' do
         :kernel                    => 'Linux',
         :ipaddress                 => '172.17.0.3',
         :concat_basedir            => '/var/packages',
+        :hostname                  => 'tests',
         :fqdn                      => 'tests.midokura.com',
         :operatingsystemrelease    => '16.04',
         :lsbdistrelease            => '16.04',

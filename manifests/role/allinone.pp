@@ -91,7 +91,7 @@ class midonet_openstack::role::allinone (
       elsif $::osfamily == 'Debian' {
         package { 'ruby-faraday':
           ensure => present,
-          before => midonet_host_registry[$::hostname]
+          before => Midonet_host_registry[$::hostname]
         }
       }
   class { '::midonet_openstack::profile::nova::api': }
