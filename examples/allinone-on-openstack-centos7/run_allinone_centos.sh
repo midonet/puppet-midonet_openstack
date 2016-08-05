@@ -65,7 +65,7 @@ cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
 # Fuck the iptables
 iptables -F
 
-puppet apply -e "include ::midonet_openstack::role::allinone" --debug | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+puppet apply -e "include ::midonet_openstack::role::allinone" --debug  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
 
 # Fuck the iptables
 iptables -F

@@ -60,7 +60,7 @@ class { '::neutron::client': }
 class { '::neutron::server':
   database_connection => "mysql+pymysql://${::midonet_openstack::params::mysql_neutron_user}:${::midonet_openstack::params::mysql_neutron_pass}@127.0.0.1/neutron?charset=utf8",
   password            => $::midonet_openstack::params::neutron_password,
-  sync_db             => false,
+  sync_db             => true,
   api_workers         => 2,
   rpc_workers         => 2,
   auth_uri            => "http://${controller_api_address}:5000",
