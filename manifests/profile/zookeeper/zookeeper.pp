@@ -33,7 +33,7 @@ class midonet_openstack::profile::zookeeper::zookeeper(
       file { '/etc/systemd/system/multi-user.target.wants/zookeeper.service':
         ensure  => file,
         content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
-        require => Class['::zookeeper']
+        before  => Class['::zookeeper']
       } ->
 
       service { 'zookeeper':
