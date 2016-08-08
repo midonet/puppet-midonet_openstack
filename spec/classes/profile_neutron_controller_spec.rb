@@ -58,7 +58,7 @@ describe 'midonet_openstack::profile::neutron::controller' do
       'service_plugins' => [
         'midonet.neutron.services.firewall.plugin.MidonetFirewallPlugin',
         'lbaas',
-        'neutron.services.l3.l3_midonet.MidonetL3ServicePlugin'
+        'midonet.neutron.services.l3.l3_midonet.MidonetL3ServicePlugin'
         ],
       'debug' => 'true',
       'verbose' => 'true',
@@ -73,7 +73,7 @@ describe 'midonet_openstack::profile::neutron::controller' do
       is_expected.to contain_class('neutron::server').with(
       'database_connection' => 'mysql+pymysql://neutron:testmido@127.0.0.1/neutron?charset=utf8',
       'password' => 'testmido',
-      'sync_db' => 'false',
+      'sync_db' => 'true',
       'api_workers' => '2',
       'rpc_workers' => '2',
       'auth_uri' => 'http://172.17.0.3:5000',
