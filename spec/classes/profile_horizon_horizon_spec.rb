@@ -39,9 +39,7 @@ describe 'midonet_openstack::profile::horizon::horizon' do
         'vhost_extra_params'           => { 'add_listen' => false },
         'keystone_default_role'        => 'user',
         'allowed_hosts'                => ['*',],
-        'neutron_options'              => {
-                                          'enable_lb' => true,
-                                        },
+        'neutron_options'              => { "enable_lb" => true, "enable_firewall" => true },
         'compress_offline'             => false,
       )
       end
