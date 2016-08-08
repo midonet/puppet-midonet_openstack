@@ -106,8 +106,10 @@ class midonet_openstack::role::allinone (
   include ::midonet::params
   # Add midonet-cluster
   class {'midonet::cluster':
-      zookeeper_hosts      => [{
-        'ip' => '127.0.0.1'}
+      zookeeper_hosts      => [
+      {
+        'ip' => $client_ip
+      }
         ],
       cassandra_servers    => ['127.0.0.1'],
       cassandra_rep_factor => '1',
@@ -122,7 +124,8 @@ class midonet_openstack::role::allinone (
     metadata_port   => '8775',
     shared_secret   => $::midonet_openstack::params::neutron_shared_secret,
     zookeeper_hosts => [{
-        'ip' => '127.0.0.1'}
+        'ip' => $client_ip
+      }
         ],
     require         => Class['::midonet_openstack::profile::cassandra::midocassandra']
   }
