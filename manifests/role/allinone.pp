@@ -82,10 +82,8 @@ class midonet_openstack::role::allinone (
   else {
     fail("OS ${::operatingsystem} not supported")
   }
-  package { $::rubygems_pkg_name: ensure => installed, } ->
-  exec { "${midonet::params::gem_bin_path} install faraday multipart-post":
-    ensure => present
-  }
+  package { $rubygems_pkg_name: ensure => installed, } ->
+  exec { "${::midonet::params::gem_bin_path} install faraday multipart-post": }
 
   class { '::midonet_openstack::profile::nova::api': }
   contain '::midonet_openstack::profile::nova::api'
