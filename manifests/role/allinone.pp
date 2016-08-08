@@ -71,32 +71,21 @@ class midonet_openstack::role::allinone (
     require => Class['::midonet_openstack::profile::keystone::controller'],
   }
   class { '::midonet_openstack::profile::neutron::controller': }
-    # Install these rubygems so our custom types work properly
-      if $::osfamily == 'RedHat' {
-        yumrepo { 'foreman-releases-repo':
-          ensure   => present,
-          baseurl  => $::midonet::params::foreman_releases_repo_url,
-          enabled  => 1,
-          gpgcheck => 1,
-          timeout  => 60,
-          gpgkey   => $::midonet::params::foreman_releases_repo_gpgkey,
-        } ->
-        package { ['centos-release-scl', 'centos-release-scl-rh']:
-          ensure => present,
-        } ->
-        package { $::midonet::params::midonet_faraday_package:
-          ensure => present,
-        } ->
-        package { $::midonet::params::midonet_multipart_post_package:
-          ensure => present,
-        }
-      }
-      elsif $::osfamily == 'Debian' {
-        package { 'ruby-faraday':
-          ensure => present,
-          before => midonet_host_registry[$::hostname]
-        }
-      }
+
+  # Register the host (and make sure dependencies are installed)
+  if $::osfamily == 'RedHat' {
+    $rubygems_pkg_name = 'rubygems'
+  }
+  elsif $::osfamily == 'Debian' {
+    $rubygems_pkg_name = 'ruby'
+  }
+  else {
+    fail("OS ${::operatingsystem} not supported")
+  }
+  package { $::rubygems_pkg_name: ensure => installed, } ->
+  exec { "${midonet::params::gem_bin_path} install faraday multipart-post":
+    ensure => present
+  }
 
   class { '::midonet_openstack::profile::nova::api': }
   contain '::midonet_openstack::profile::nova::api'
@@ -106,10 +95,8 @@ class midonet_openstack::role::allinone (
   include ::midonet::params
   # Add midonet-cluster
   class {'midonet::cluster':
-      zookeeper_hosts      => [
-      {
-        'ip' => $client_ip
-      }
+      zookeeper_hosts      => [{
+        'ip' => $client_ip}
         ],
       cassandra_servers    => ['127.0.0.1'],
       cassandra_rep_factor => '1',
@@ -124,8 +111,7 @@ class midonet_openstack::role::allinone (
     metadata_port   => '8775',
     shared_secret   => $::midonet_openstack::params::neutron_shared_secret,
     zookeeper_hosts => [{
-        'ip' => $client_ip
-      }
+        'ip' => $client_ip}
         ],
     require         => Class['::midonet_openstack::profile::cassandra::midocassandra']
   }
