@@ -81,6 +81,9 @@ class midonet_openstack::role::allinone (
           timeout  => 60,
           gpgkey   => $::midonet::params::foreman_releases_repo_gpgkey,
         } ->
+        package { ['centos-release-scl', 'centos-release-scl-rh']:
+          ensure => present,
+        } ->
         package { $::midonet::params::midonet_faraday_package:
           ensure => present,
         } ->
@@ -91,9 +94,10 @@ class midonet_openstack::role::allinone (
       elsif $::osfamily == 'Debian' {
         package { 'ruby-faraday':
           ensure => present,
-          before => Midonet_host_registry[$::hostname]
+          before => midonet_host_registry[$::hostname]
         }
       }
+
   class { '::midonet_openstack::profile::nova::api': }
   contain '::midonet_openstack::profile::nova::api'
   class { '::midonet_openstack::profile::nova::compute':}
