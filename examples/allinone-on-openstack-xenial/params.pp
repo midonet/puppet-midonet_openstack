@@ -523,7 +523,7 @@ class midonet_openstack::params {
   $zookeeper_servers = [
   {
     'id'     => '1',
-    'host'   => 'localhost',
+    'host'   => 'bridged_ip',
   },
   ]
 
