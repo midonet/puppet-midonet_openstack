@@ -72,18 +72,22 @@ class midonet_openstack::role::allinone (
   }
   class { '::midonet_openstack::profile::neutron::controller': }
 
-  # Register the host (and make sure dependencies are installed)
-  if $::osfamily == 'RedHat' {
-    $rubygems_pkg_name = 'rubygems'
+  # # Register the host (and make sure dependencies are installed)
+  # if $::osfamily == 'RedHat' {
+  #   $rubygems_pkg_name = 'rubygems'
+  # }
+  # elsif $::osfamily == 'Debian' {
+  #   $rubygems_pkg_name = 'ruby'
+  # }
+  # else {
+  #   fail("OS ${::operatingsystem} not supported")
+  # }
+  # package { $rubygems_pkg_name: ensure => installed, } ->
+  # exec { "${::midonet::params::gem_bin_path} install faraday multipart-post": }
+  package { ['faraday', 'multipart-post']:
+    ensure   => installed,
+    provider => 'gem',
   }
-  elsif $::osfamily == 'Debian' {
-    $rubygems_pkg_name = 'ruby'
-  }
-  else {
-    fail("OS ${::operatingsystem} not supported")
-  }
-  package { $rubygems_pkg_name: ensure => installed, } ->
-  exec { "${::midonet::params::gem_bin_path} install faraday multipart-post": }
 
   class { '::midonet_openstack::profile::nova::api': }
   contain '::midonet_openstack::profile::nova::api'
@@ -129,11 +133,10 @@ class midonet_openstack::role::allinone (
   # Register the host
   midonet_host_registry { $::hostname:
     ensure          => present,
-    midonet_api_url => 'http://127.0.0.1:8181/midonet-api',
+    midonet_api_url => 'http://127.0.0.1:8181',
     username        => 'midogod',
     password        => 'midogod',
-    require         => [Class['midonet::agent'],
-                        Class['::midonet_openstack::profile::neutron::controller'],
-                        Class['::midonet_openstack::profile::nova::compute']]
+    tenant_name     => 'midokura',
+    require         => Class['glance::api'],
   }
 }
