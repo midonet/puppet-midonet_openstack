@@ -124,6 +124,13 @@ class midonet_openstack::role::allinone (
     username => 'admin',
     password => 'testmido'
   }
+
+  #Xenial doesnt like daemons..
+  if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '16') >= 0
+  {
+    File_line<| match == 'libvirtd_opts='  |> { line => 'libvirtd_opts="-l"' }
+  }
+
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->
   Class['midonet_openstack::profile::nova::compute']              ->
@@ -131,7 +138,7 @@ class midonet_openstack::role::allinone (
   Class['midonet::cluster']                                       ->
   Class['midonet::cli']
   # Register the host
-  midonet_host_registry { $::hostname:
+  midonet_host_registry { $::fqdn:
     ensure          => present,
     midonet_api_url => 'http://127.0.0.1:8181',
     username        => 'midogod',

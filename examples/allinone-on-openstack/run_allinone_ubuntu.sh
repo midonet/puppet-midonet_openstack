@@ -16,7 +16,7 @@ apt-get install git -y
 apt-get install build-essential -y
 apt-get install g++ -y
 apt-get install lsb lsb-core lsb-release -y
-sudo apt-get autoremove puppet
+sudo apt-get autoremove puppet -y
 sudo apt-get install ruby-dev vim -y
 wget https://apt.puppetlabs.com/puppetlabs-release-pc1-trusty.deb
 sudo dpkg -i puppetlabs-release-pc1-trusty.deb
@@ -28,6 +28,10 @@ source ~/.bashrc
 rm -rf /usr/bin/gem
 
 ln -s /opt/puppetlabs/puppet/bin/gem /usr/bin/gem
+
+#remove old midonet
+rm -rf /opt/puppetlabs/puppet/modules/midonet
+
 
 sudo apt-get install zlib1g zlib1g-dev g++ -y
 /opt/puppetlabs/puppet/bin/gem  install r10k --no-rdoc --no-ri --verbose
@@ -52,11 +56,14 @@ sed -i "s,allowed_host_network,${ALLOWED_HOST_NETWORK}," /vagrant/params.pp
 
 cp /vagrant/params.pp /opt/puppetlabs/puppet/modules/midonet_openstack/manifests/params.pp
 
+#Override the midonet plugin
+cp -Rv /midonet /opt/puppetlabs/puppet/modules/
+
 # Fuck the iptables
 iptables -F
 # Run the puppet manifest. Comment this line if you want to perform
 # some changes in the manifest
-puppet apply -e "include ::midonet_openstack::role::allinone_vanilla"
+puppet apply -e "include ::midonet_openstack::role::allinone_midonet"
 # Fuck the iptables
 iptables -F
 #Add the FIP to Horizon Vhost
