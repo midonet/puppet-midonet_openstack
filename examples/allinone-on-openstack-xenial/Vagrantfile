@@ -14,10 +14,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname  = "allinone"
   config.vm.provider :openstack do |os|
     os.meta_args_support  = true
-    os.openstack_auth_url = 'http://xxx.xxx.xxx.xxx:5000/v2.0/tokens'
-    os.username           = ''
-    os.password           = ''
-    os.tenant_name        = ''
+    os.openstack_auth_url = 'http://118.67.110.147:5000/v2.0/tokens'
+    os.username           = 'alex.ruiz'
+    os.password           = 'mid0secure'
+    os.tenant_name        = 'AlexRuiz'
     os.flavor             = 'm2.xlarge'
     os.image              = 'Ubuntu 16.04.1'
     os.networks           = 'Internal-ahharu'
@@ -27,6 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "allinone" do |allinone|
     allinone.vm.synced_folder ".", "/vagrant"
     allinone.vm.synced_folder "../..", "/openstack"
+    allinone.vm.synced_folder "/home/ahharu/puppet-work/puppet-midonet" , "/midonet"
     allinone.vm.provision :shell, path: "run_allinone_ubuntu.sh", args:['@@ssh_ip@@']
   end
 
