@@ -97,6 +97,11 @@ class midonet_openstack::profile::nova::compute {
       ensure => latest
     }
     Package['device-mapper'] ~> Service['libvirtd'] ~> Service['nova-compute']
+    package { 'openstack-nova-network':
+      ensure  => latest,
+      notify  => Service['nova-compute'],
+      require => Class['nova::compute'],
+    }
   }
   Package['libvirt'] -> File['/etc/libvirt/qemu.conf']
 
