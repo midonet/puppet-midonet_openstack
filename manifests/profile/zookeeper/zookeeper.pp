@@ -18,6 +18,12 @@ class midonet_openstack::profile::zookeeper::zookeeper(
     if $::osfamily == 'RedHat'
     {
       $zk_packages = ['zookeeper']
+
+      file { '/etc/systemd/system/multi-user.target.wants/zookeeper.service':
+        ensure  => file,
+        content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
+      } ->
+
       class {'::zookeeper':
         servers        => $zk_servers,
         id             => $id,
@@ -27,13 +33,6 @@ class midonet_openstack::profile::zookeeper::zookeeper(
         service_name   => 'zookeeper',
         require        => [ File['/usr/java/default'], Class['midonet::repository'] ],
         manage_service => false,
-
-      }
-
-      file { '/etc/systemd/system/multi-user.target.wants/zookeeper.service':
-        ensure  => file,
-        content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
-        before  => Class['::zookeeper']
       } ->
 
       service { 'zookeeper':
