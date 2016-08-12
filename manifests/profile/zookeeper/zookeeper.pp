@@ -22,33 +22,35 @@ class midonet_openstack::profile::zookeeper::zookeeper(
       file { '/lib/systemd/system/zookeeper.service':
         ensure  => file,
         content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
-      } ->
+      }
 
       class {'::zookeeper':
-        servers        => $zk_servers,
-        id             => $id,
-        cfg_dir        => '/etc/zookeeper',
-        client_ip      => $client_ip,
-        packages       => $zk_packages,
-        service_name   => 'zookeeper',
-        require        => [ File['/usr/java/default'], Class['midonet::repository'] ],
-        manage_service => false,
+        servers             => $zk_servers,
+        id                  => $id,
+        cfg_dir             => '/etc/zookeeper',
+        client_ip           => $client_ip,
+        packages            => $zk_packages,
+        service_name        => 'zookeeper',
+        manage_service      => false,
+        manage_service_file => false,
       }
       contain '::zookeeper'
-      file { '/etc/init.d/zookeeper':
-        ensure  => absent,
-        require => Class['zookeeper']
+
+      file { 'zookeeper-old-initscript':
+        path   => '/etc/init.d/zookeeper',
+        ensure => absent,
       }
 
-      service { 'zookeeper':
-        ensure  => 'running',
-        enable  => true,
-        require => [
-          File['/etc/init.d/zookeeper','/lib/systemd/system/zookeeper.service'],
-          Class['zookeeper']
-        ]
+      service { 'zookeeper-service':
+        name   => 'zookeeper',
+        ensure => 'running',
+        enable => true,
       }
 
+      Class['zookeeper'] ->
+      File['/lib/systemd/system/zookeeper.service'] ->
+      File['zookeeper-old-initscript'] ->
+      Service['zookeeper-service']
 
     }
     elsif $::osfamily == 'Debian'

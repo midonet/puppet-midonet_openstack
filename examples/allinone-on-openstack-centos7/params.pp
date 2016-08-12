@@ -355,10 +355,10 @@ class midonet_openstack::params {
   $allinone = true
 
   ######## Networks
-  $network_api        = 'bridged_network'
-  $network_external   = 'bridged_network'
-  $network_management = 'bridged_network'
-  $network_data       = 'bridged_network'
+  $network_api        = ''
+  $network_external   = ''
+  $network_management = ''
+  $network_data       = ''
 
   $network_external_ippool_start = '172.17.0.100'
   $network_external_ippool_end   = '172.17.0.200'
@@ -371,23 +371,23 @@ class midonet_openstack::params {
 
   ######## Fixed IPs (controllers)
 
-  $controller_address_api        = 'bridged_ip'
-  $controller_address_management = 'bridged_ip'
-  $storage_address_api           = 'bridged_ip'
-  $storage_address_management    = 'bridged_ip'
+  $controller_address_api        = ''
+  $controller_address_management = ''
+  $storage_address_api           = ''
+  $storage_address_management    = ''
 
   ######## Database
 
   $mysql_root_password    = 'testmido'
   $mysql_service_password = 'testmido'
-  $mysql_allowed_hosts    = ['localhost', '127.0.0.1', 'allowed_host_network']
+  $mysql_allowed_hosts    = ['localhost', '127.0.0.1', '.%']
 
   $mysql_keystone_user = 'keystone'
   $mysql_keystone_pass = 'testmido'
 
   $mysql_glance_user  = 'glance'
   $mysql_glance_pass  = 'testmido'
-  $glance_api_servers = ['bridged_ip:9292']
+  $glance_api_servers = [':9292']
 
   $mysql_nova_user = 'nova'
   $mysql_nova_pass = 'testmido'
@@ -402,7 +402,7 @@ class midonet_openstack::params {
 
   $rabbitmq_user              = 'openstack'
   $rabbitmq_password          = 'testmido'
-  $rabbitmq_hosts             = ['bridged_ip:5672']
+  $rabbitmq_hosts             = [':5672']
   $rabbitmq_delete_guest_user = true
   $rabbitmq_ssl               = false
   $rabbitmq_ssl_only          = false
@@ -523,13 +523,13 @@ class midonet_openstack::params {
   $zookeeper_servers = [
   {
     'id'     => '1',
-    'host'   => 'bridged_ip',
+    'host'   => '',
   },
   ]
 
   ######## Cassandra
 
-  $cassandra_seeds = 'bridged_ip'
+  $cassandra_seeds = ''
 
   ######## Log levels
   $verbose = 'True'

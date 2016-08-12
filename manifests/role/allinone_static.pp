@@ -135,7 +135,7 @@ class midonet_openstack::role::allinone_static (
     package {'bridge-utils':
       ensure => installed,
       before => [Midonet_host_registry[$::fqdn],
-                 Midonet::Resources::Network_creation['Test Edge Router Setup']]
+      Midonet::Resources::Network_creation['Test Edge Router Setup']]
     }
   }
 
