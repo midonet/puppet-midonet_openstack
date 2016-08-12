@@ -60,7 +60,7 @@ class midonet_openstack::role::nsdb (
       client_port_thrift => '9160',
       require            => Class['::midonet_openstack::profile::midojava::midojava']
     }
-    contain '::midonet_openstack::profile::zookeeper::midocassandra'
+    contain '::midonet_openstack::profile::cassandra::midocassandra'
 
 
 }
