@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'midonet_openstack::profile::zookeeper::zookeeper' do
+describe 'midonet_openstack::profile::zookeeper::midozookeeper' do
 
   let :pre_condition do
     "include ::midonet_openstack::params"

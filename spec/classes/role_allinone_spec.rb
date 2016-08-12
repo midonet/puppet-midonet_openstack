@@ -23,7 +23,7 @@ describe 'midonet_openstack::role::allinone' do
     it { is_expected.to contain_class('midonet_openstack::profile::nova::compute') }
     it { is_expected.to contain_class('midonet_openstack::profile::horizon::horizon') }
     it { is_expected.to contain_class('midonet_openstack::profile::midojava::midojava') }
-    it { is_expected.to contain_class('midonet_openstack::profile::zookeeper::zookeeper').with(
+    it { is_expected.to contain_class('midonet_openstack::profile::zookeeper::midozookeeper').with(
       'zk_servers' => ['localhost'],
       'id'         => 1,
       'client_ip'  => '172.17.0.3',

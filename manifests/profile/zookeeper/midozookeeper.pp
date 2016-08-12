@@ -9,7 +9,7 @@
 #    Zookeeper client ip
 #  [*zk_servers*]
 #    List of zookeeper servers
-class midonet_openstack::profile::zookeeper::zookeeper(
+class midonet_openstack::profile::zookeeper::midozookeeper(
   $id                   = 1,
   $client_ip            = $::ipaddress_eth0,
   $zk_servers           = zookeeper_servers($midonet_openstack::params::zookeeper_servers)
@@ -28,6 +28,7 @@ class midonet_openstack::profile::zookeeper::zookeeper(
         service_name        => 'zookeeper',
         manage_service      => false,
         manage_service_file => false,
+        required            => Class['midonet::repository']
       }
       contain '::zookeeper'
 

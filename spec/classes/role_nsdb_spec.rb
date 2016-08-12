@@ -18,7 +18,7 @@ describe 'midonet_openstack::role::nsdb' do
         default_params
       end
     it { is_expected.to contain_class(
-      'midonet_openstack::profile::zookeeper::zookeeper').with(
+      'midonet_openstack::profile::zookeeper::midozookeeper').with(
       'zk_servers'   => ["localhost"],
       'id'           => 1,
       'client_ip'    => '172.17.0.3',
@@ -46,7 +46,7 @@ describe 'midonet_openstack::role::nsdb' do
        }
      end
    it { is_expected.to contain_class(
-     'midonet_openstack::profile::zookeeper::zookeeper').with(
+     'midonet_openstack::profile::zookeeper::midozookeeper').with(
      'zk_servers'   => ["localhost"],
      'id'           => 1,
      'client_ip'    => '172.17.0.3',

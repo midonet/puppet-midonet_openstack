@@ -46,12 +46,12 @@ class midonet_openstack::role::allinone_static (
   contain '::midonet::repository'
   class { '::midonet_openstack::profile::midojava::midojava':}
   contain '::midonet_openstack::profile::midojava::midojava'
-  class { '::midonet_openstack::profile::zookeeper::zookeeper':
+  class { '::midonet_openstack::profile::zookeeper::midozookeeper':
     zk_servers => zookeeper_servers($midonet_openstack::params::zookeeper_servers),
     id         => 1,
     client_ip  => $client_ip,
   }
-  contain '::midonet_openstack::profile::zookeeper::zookeeper'
+  contain '::midonet_openstack::profile::zookeeper::midozookeeper'
 
   class {'::midonet_openstack::profile::cassandra::midocassandra':
     seeds              => $::midonet_openstack::params::cassandra_seeds,
@@ -183,7 +183,7 @@ class midonet_openstack::role::allinone_static (
   Class['midonet_openstack::profile::repos' ]                     ->
   Class['midonet::repository' ]                                   ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
-  Class['midonet_openstack::profile::zookeeper::zookeeper' ]      ->
+  Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->

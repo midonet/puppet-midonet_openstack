@@ -43,13 +43,13 @@ class midonet_openstack::role::nsdb (
       contain '::midonet_openstack::profile::midojava::midojava'
     }
 
-    class {'::midonet_openstack::profile::zookeeper::zookeeper':
+    class {'::midonet_openstack::profile::zookeeper::midozookeeper':
       zk_servers => zookeeper_servers($zk_servers),
       id         => $id,
       client_ip  => $client_ip,
       require    => Class['::midonet_openstack::profile::midojava::midojava']
     }
-    contain '::midonet_openstack::profile::zookeeper::zookeeper'
+    contain '::midonet_openstack::profile::zookeeper::midozookeeper'
 
     class {'::midonet_openstack::profile::cassandra::midocassandra':
       seeds              => $::midonet_openstack::params::cassandra_seeds,
