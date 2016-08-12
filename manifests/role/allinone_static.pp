@@ -30,8 +30,10 @@ class midonet_openstack::role::allinone_static (
   $mem_username            = undef,
   $mem_password            = undef,
   ) inherits ::midonet_openstack::role {
-  class { '::midonet_openstack::profile::firewall::firewall': } ->
-  class { '::midonet_openstack::profile::repos': } ->
+  class { '::midonet_openstack::profile::firewall::firewall': }
+  contain '::midonet_openstack::profile::firewall::firewall'
+  class { '::midonet_openstack::profile::repos': }
+  contain '::midonet_openstack::profile::repos'
   class { '::midonet::repository':
     is_mem            => $is_mem,
     midonet_version   => undef,
@@ -40,13 +42,17 @@ class midonet_openstack::role::allinone_static (
     mem_version       => undef,
     mem_username      => $mem_username,
     mem_password      => $mem_password
-  } ->
-  class { '::midonet_openstack::profile::midojava::midojava':} ->
+  }
+  contain '::midonet::repository'
+  class { '::midonet_openstack::profile::midojava::midojava':}
+  contain '::midonet_openstack::profile::midojava::midojava'
   class { '::midonet_openstack::profile::zookeeper::zookeeper':
     zk_servers => zookeeper_servers($midonet_openstack::params::zookeeper_servers),
     id         => 1,
     client_ip  => $client_ip,
-  } ->
+  }
+  contain '::midonet_openstack::profile::zookeeper::zookeeper'
+
   class {'::midonet_openstack::profile::cassandra::midocassandra':
     seeds              => $::midonet_openstack::params::cassandra_seeds,
     seed_address       => $client_ip,
@@ -55,6 +61,7 @@ class midonet_openstack::role::allinone_static (
     client_port        => '9042',
     client_port_thrift => '9160',
   }
+  contain '::midonet_openstack::profile::cassandra::midocassandra'
   if $::osfamily == 'RedHat' {
     package { 'openstack-selinux':
     ensure => 'latest'
@@ -64,32 +71,26 @@ class midonet_openstack::role::allinone_static (
   Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
   }
   class { '::midonet_openstack::profile::memcache::memcache':}
+  contain '::midonet_openstack::profile::memcache::memcache'
   class { '::midonet_openstack::profile::keystone::controller': }
+  contain '::midonet_openstack::profile::keystone::controller'
   class { '::midonet_openstack::profile::mysql::controller': }
+  contain '::midonet_openstack::profile::mysql::controller'
   class { '::midonet_openstack::profile::rabbitmq::controller': }
+  contain '::midonet_openstack::profile::rabbitmq::controller'
   class { '::midonet_openstack::profile::glance::controller':
     require => Class['::midonet_openstack::profile::keystone::controller'],
   }
+  contain '::midonet_openstack::profile::glance::controller'
   class { '::midonet_openstack::profile::neutron::controller': }
-
-  # Register the host (and make sure dependencies are installed)
-  if $::osfamily == 'RedHat' {
-    $rubygems_pkg_name = 'rubygems'
-  }
-  elsif $::osfamily == 'Debian' {
-    $rubygems_pkg_name = 'ruby'
-  }
-  else {
-    fail("OS ${::operatingsystem} not supported")
-  }
-  package { $rubygems_pkg_name: ensure => installed, } ->
-  exec { "${::midonet::params::gem_bin_path} install faraday multipart-post": }
+  contain '::midonet_openstack::profile::neutron::controller'
 
   class { '::midonet_openstack::profile::nova::api': }
   contain '::midonet_openstack::profile::nova::api'
   class { '::midonet_openstack::profile::nova::compute':}
   contain '::midonet_openstack::profile::nova::compute'
   class { '::midonet_openstack::profile::horizon::horizon':}
+  contain '::midonet_openstack::profile::horizon::horizon'
   include ::midonet::params
   # Add midonet-cluster
   class {'midonet::cluster':
@@ -120,22 +121,22 @@ class midonet_openstack::role::allinone_static (
     username => 'admin',
     password => 'testmido'
   }
-  Class['midonet_openstack::profile::neutron::controller']        ->
-  Class['midonet_openstack::profile::nova::api']                  ->
-  Class['midonet_openstack::profile::nova::compute']              ->
-  Class['midonet::agent']                                         ->
-  Class['midonet::cluster']                                       ->
-  Class['midonet::cli']                                           ->
-  Midonet_host_registry[$::fqdn]                                  ->
-  Midonet_resources_network_creation['Test Edge Router Setup']    ->
-  Class['midonet::gateway::static']
+  contain '::midonet::cli'
+
+  #Xenial doesnt like daemons..
+  if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '16') >= 0
+  {
+    File_line<| match == 'libvirtd_opts='  |> { line => 'libvirtd_opts="-l"' }
+  }
 
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
-    midonet_api_url => 'http://127.0.0.1:8181/midonet-api',
+    midonet_api_url => 'http://127.0.0.1:8181',
     username        => 'midogod',
     password        => 'midogod',
+    tenant_name     => 'midokura',
+    require         => Class['glance::api'],
   }
 
   midonet::resources::network_creation { 'Test Edge Router Setup':
@@ -156,23 +157,33 @@ class midonet_openstack::role::allinone_static (
   }
 
   class { 'midonet::gateway::static':
-    network_id             => 'test-br',
-    cidr                   => '172.17.0.0/24',
-    gateway_ip             => '172.17.0.201',
-    service_host           => '127.0.0.1',
-    service_dir            => '/tmp/gw2',
-    zookeeper_hosts        => [{
-        'ip' => $client_ip}
-        ],
-    api_port               => '8181',
-    scripts_dir            => '/tmp',
-    uplink_script          => 'create_fake_uplink_l2.sh',
-    midorc_script          => 'midorc',
-    functions_script       => 'functions',
-    ensure_scripts         => 'present',
-    mido_keystone_user     => 'midogod',
-    mido_keystone_password => 'midogod',
-    mido_project_id        => 'midokura'
+    nic            => 'enp0s3',
+    fip            => '200.200.200.0/24',
+    edge_router    => 'edge-router',
+    veth0_ip       => '172.19.0.1',
+    veth1_ip       => '172.19.0.2',
+    veth_network   => '172.19.0.0/30',
+    scripts_dir    => '/tmp',
+    uplink_script  => 'create_fake_uplink_l2.sh',
+    ensure_scripts =>  'present',
   }
+
+  contain midonet::gateway::static
+
+  Class['midonet_openstack::profile::firewall::firewall' ]        ->
+  Class['midonet_openstack::profile::repos' ]                     ->
+  Class['midonet::repository' ]                                   ->
+  Class['midonet_openstack::profile::midojava::midojava']         ->
+  Class['midonet_openstack::profile::zookeeper::zookeeper' ]      ->
+  Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
+  Class['midonet_openstack::profile::neutron::controller']        ->
+  Class['midonet_openstack::profile::nova::api']                  ->
+  Class['midonet_openstack::profile::nova::compute']              ->
+  Class['midonet::agent']                                         ->
+  Class['midonet::cluster']                                       ->
+  Class['midonet::cli']                                           ->
+  Midonet_host_registry[$::fqdn]                                  ->
+  Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
+  Class['midonet::gateway::static']
 
 }
