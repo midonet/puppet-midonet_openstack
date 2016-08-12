@@ -19,11 +19,6 @@ class midonet_openstack::profile::zookeeper::zookeeper(
     {
       $zk_packages = ['zookeeper']
 
-      file { '/lib/systemd/system/zookeeper.service':
-        ensure  => file,
-        content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
-      }
-
       class {'::zookeeper':
         servers             => $zk_servers,
         id                  => $id,
@@ -35,6 +30,11 @@ class midonet_openstack::profile::zookeeper::zookeeper(
         manage_service_file => false,
       }
       contain '::zookeeper'
+
+      file { '/lib/systemd/system/zookeeper.service':
+        ensure  => file,
+        content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
+      }
 
       file { 'zookeeper-old-initscript':
         path   => '/etc/init.d/zookeeper',
