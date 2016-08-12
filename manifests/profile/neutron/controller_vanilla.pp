@@ -91,7 +91,7 @@ class midonet_openstack::profile::neutron::controller_vanilla {
     auth_url    => "http://${controller_management_address}:35357",
     password    => $::midonet_openstack::params::nova_password,
     region_name => $::midonet_openstack::params::region,
-    nova_url    => "http://${controller_management_address}:8774/v2"
+    nova_url    => "http://${controller_management_address}:8774/v2.1"
   }
   class { '::neutron::services::fwaas':
     enabled => true,
