@@ -1,6 +1,6 @@
 # == Class: midonet_openstack::role::allinone
 #
-# Copyright (c) 2015 Midokura SARL, All Rights Reserved.
+# Copyright (c) 2016 Midokura SARL, All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -156,19 +156,18 @@ class midonet_openstack::role::allinone_static (
     gateway_ip              => '172.17.0.1'
   }
 
-  class { 'midonet::gateway::static':
-    nic            => 'enp0s3',
-    fip            => '200.200.200.0/24',
-    edge_router    => 'edge-router',
-    veth0_ip       => '172.19.0.1',
-    veth1_ip       => '172.19.0.2',
-    veth_network   => '172.19.0.0/30',
-    scripts_dir    => '/tmp',
-    uplink_script  => 'create_fake_uplink_l2.sh',
-    ensure_scripts =>  'present',
-  }
-
-  contain midonet::gateway::static
+  #class { 'midonet::gateway::static':
+    #nic            => 'enp0s3',
+    #fip            => '200.200.200.0/24',
+    #edge_router    => 'edge-router',
+    #veth0_ip       => '172.19.0.1',
+    #veth1_ip       => '172.19.0.2',
+    #veth_network   => '172.19.0.0/30',
+    #scripts_dir    => '/tmp',
+    #uplink_script  => 'create_fake_uplink_l2.sh',
+    #ensure_scripts =>  'present',
+  #}
+  #contain midonet::gateway::static
 
   Class['midonet_openstack::profile::firewall::firewall' ]        ->
   Class['midonet_openstack::profile::repos' ]                     ->
@@ -183,7 +182,7 @@ class midonet_openstack::role::allinone_static (
   Class['midonet::cluster']                                       ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
-  Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
-  Class['midonet::gateway::static']
+  Midonet::Resources::Network_creation['Test Edge Router Setup']
+  #Class['midonet::gateway::static']
 
 }

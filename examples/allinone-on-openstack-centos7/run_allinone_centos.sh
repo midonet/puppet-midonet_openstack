@@ -52,6 +52,9 @@ echo 'export PATH="${PATH}:~/.gem/ruby/bin"' > ~/.bashrc
 # Puppet modules
 r10k puppetfile install --puppetfile ${OPENSTACK_AIO_DIR}/Puppetfile \
   --moduledir ${PUPPET_MODULEDIR}
+rm -rf /etc/puppetlabs/code/modules/midonet
+cp -Rv /ali-g /etc/puppetlabs/code/modules/midonet
+
 
 
 
@@ -65,7 +68,8 @@ cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
 # Fuck the iptables
 iptables -F
 
-puppet apply -e "include ::midonet_openstack::role::allinone" --debug  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+/opt/puppetlabs/puppet/bin/gem install faraday multipart-post
+puppet apply -e "include ::midonet_openstack::role::allinone_static" --debug --trace 2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
 
 # Fuck the iptables
 iptables -F

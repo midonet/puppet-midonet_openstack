@@ -1,6 +1,6 @@
 # == Class: midonet_openstack::role::allinone
 #
-# Copyright (c) 2015 Midokura SARL, All Rights Reserved.
+# Copyright (c) 2016 Midokura SARL, All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,8 +30,10 @@ class midonet_openstack::role::allinone (
   $mem_username            = undef,
   $mem_password            = undef,
   ) inherits ::midonet_openstack::role {
-  class { '::midonet_openstack::profile::firewall::firewall': } ->
-  class { '::midonet_openstack::profile::repos': } ->
+  class { '::midonet_openstack::profile::firewall::firewall': }
+  contain '::midonet_openstack::profile::firewall::firewall'
+  class { '::midonet_openstack::profile::repos': }
+  contain '::midonet_openstack::profile::repos'
   class { '::midonet::repository':
     is_mem            => $is_mem,
     midonet_version   => undef,
@@ -40,13 +42,17 @@ class midonet_openstack::role::allinone (
     mem_version       => undef,
     mem_username      => $mem_username,
     mem_password      => $mem_password
-  } ->
-  class { '::midonet_openstack::profile::midojava::midojava':} ->
+  }
+  contain '::midonet::repository'
+  class { '::midonet_openstack::profile::midojava::midojava':}
+  contain '::midonet_openstack::profile::midojava::midojava'
   class { '::midonet_openstack::profile::zookeeper::zookeeper':
     zk_servers => zookeeper_servers($midonet_openstack::params::zookeeper_servers),
     id         => 1,
     client_ip  => $client_ip,
-  } ->
+  }
+  contain '::midonet_openstack::profile::zookeeper::zookeeper'
+
   class {'::midonet_openstack::profile::cassandra::midocassandra':
     seeds              => $::midonet_openstack::params::cassandra_seeds,
     seed_address       => $client_ip,
@@ -55,6 +61,7 @@ class midonet_openstack::role::allinone (
     client_port        => '9042',
     client_port_thrift => '9160',
   }
+  contain '::midonet_openstack::profile::cassandra::midocassandra'
   if $::osfamily == 'RedHat' {
     package { 'openstack-selinux':
     ensure => 'latest'
@@ -64,36 +71,26 @@ class midonet_openstack::role::allinone (
   Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
   }
   class { '::midonet_openstack::profile::memcache::memcache':}
+  contain '::midonet_openstack::profile::memcache::memcache'
   class { '::midonet_openstack::profile::keystone::controller': }
+  contain '::midonet_openstack::profile::keystone::controller'
   class { '::midonet_openstack::profile::mysql::controller': }
+  contain '::midonet_openstack::profile::mysql::controller'
   class { '::midonet_openstack::profile::rabbitmq::controller': }
+  contain '::midonet_openstack::profile::rabbitmq::controller'
   class { '::midonet_openstack::profile::glance::controller':
     require => Class['::midonet_openstack::profile::keystone::controller'],
   }
+  contain '::midonet_openstack::profile::glance::controller'
   class { '::midonet_openstack::profile::neutron::controller': }
-
-  # # Register the host (and make sure dependencies are installed)
-  # if $::osfamily == 'RedHat' {
-  #   $rubygems_pkg_name = 'rubygems'
-  # }
-  # elsif $::osfamily == 'Debian' {
-  #   $rubygems_pkg_name = 'ruby'
-  # }
-  # else {
-  #   fail("OS ${::operatingsystem} not supported")
-  # }
-  # package { $rubygems_pkg_name: ensure => installed, } ->
-  # exec { "${::midonet::params::gem_bin_path} install faraday multipart-post": }
-  package { ['faraday', 'multipart-post']:
-    ensure   => installed,
-    provider => 'gem',
-  }
+  contain '::midonet_openstack::profile::neutron::controller'
 
   class { '::midonet_openstack::profile::nova::api': }
   contain '::midonet_openstack::profile::nova::api'
   class { '::midonet_openstack::profile::nova::compute':}
   contain '::midonet_openstack::profile::nova::compute'
   class { '::midonet_openstack::profile::horizon::horizon':}
+  contain '::midonet_openstack::profile::horizon::horizon'
   include ::midonet::params
   # Add midonet-cluster
   class {'midonet::cluster':
@@ -124,6 +121,7 @@ class midonet_openstack::role::allinone (
     username => 'admin',
     password => 'testmido'
   }
+  contain '::midonet::cli'
 
   #Xenial doesnt like daemons..
   if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '16') >= 0
@@ -131,12 +129,6 @@ class midonet_openstack::role::allinone (
     File_line<| match == 'libvirtd_opts='  |> { line => 'libvirtd_opts="-l"' }
   }
 
-  Class['midonet_openstack::profile::neutron::controller']        ->
-  Class['midonet_openstack::profile::nova::api']                  ->
-  Class['midonet_openstack::profile::nova::compute']              ->
-  Class['midonet::agent']                                         ->
-  Class['midonet::cluster']                                       ->
-  Class['midonet::cli']
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
@@ -146,4 +138,19 @@ class midonet_openstack::role::allinone (
     tenant_name     => 'midokura',
     require         => Class['glance::api'],
   }
+
+  Class['midonet_openstack::profile::firewall::firewall' ]        ->
+  Class['midonet_openstack::profile::repos' ]                     ->
+  Class['midonet::repository' ]                                   ->
+  Class['midonet_openstack::profile::midojava::midojava']         ->
+  Class['midonet_openstack::profile::zookeeper::zookeeper' ]      ->
+  Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
+  Class['midonet_openstack::profile::neutron::controller']        ->
+  Class['midonet_openstack::profile::nova::api']                  ->
+  Class['midonet_openstack::profile::nova::compute']              ->
+  Class['midonet::agent']                                         ->
+  Class['midonet::cluster']                                       ->
+  Class['midonet::cli']                                           ->
+  Midonet_host_registry[$::fqdn]
+
 }

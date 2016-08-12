@@ -19,7 +19,7 @@ class midonet_openstack::profile::zookeeper::zookeeper(
     {
       $zk_packages = ['zookeeper']
 
-      file { '/etc/systemd/system/multi-user.target.wants/zookeeper.service':
+      file { '/lib/systemd/system/zookeeper.service':
         ensure  => file,
         content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
       } ->
@@ -35,10 +35,18 @@ class midonet_openstack::profile::zookeeper::zookeeper(
         manage_service => false,
       }
       contain '::zookeeper'
+      file { '/etc/init.d/zookeeper':
+        ensure  => absent,
+        require => Class['zookeeper']
+      }
 
       service { 'zookeeper':
         ensure  => 'running',
-        require => Class['zookeeper']
+        enable  => true,
+        require => [
+          File['/etc/init.d/zookeeper','/lib/systemd/system/zookeeper.service'],
+          Class['zookeeper']
+        ]
       }
 
 
