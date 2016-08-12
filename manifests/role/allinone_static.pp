@@ -129,6 +129,16 @@ class midonet_openstack::role::allinone_static (
     File_line<| match == 'libvirtd_opts='  |> { line => 'libvirtd_opts="-l"' }
   }
 
+  #install bridge-utils
+  if $::operatingsystem == 'Ubuntu'
+  {
+    package {'bridge-utils':
+      ensure => installed
+      before => [Midonet_host_registry[$::fqdn],
+                 Midonet::resources::network_creation['Test Edge Router Setup']]
+    }
+  }
+
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
