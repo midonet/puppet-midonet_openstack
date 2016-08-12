@@ -31,7 +31,8 @@ class midonet_openstack::profile::zookeeper::zookeeper(
       }
       contain '::zookeeper'
 
-      file { '/lib/systemd/system/zookeeper.service':
+      file { 'zk service file':
+        path    => '/lib/systemd/system/zookeeper.service',
         ensure  => file,
         content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
       }
@@ -48,7 +49,7 @@ class midonet_openstack::profile::zookeeper::zookeeper(
       }
 
       Class['zookeeper'] ->
-      File['/lib/systemd/system/zookeeper.service'] ->
+      File['zk service file'] ->
       File['zookeeper-old-initscript'] ->
       Service['zookeeper-service']
 
