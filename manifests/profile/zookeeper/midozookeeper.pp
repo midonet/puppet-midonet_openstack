@@ -75,10 +75,6 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         packages     => $zk_packages,
         service_name => 'zookeeper',
         require      => [ File['/usr/java/default'], Class['midonet::repository'] ],
-        subscribe    => [
-          File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
-          File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
-          ]
       }
       contain 'zookeeper'
     }
