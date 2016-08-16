@@ -114,7 +114,7 @@ class midonet_openstack::role::allinone (
         'ip' => $client_ip}
         ],
     require         => Class['::midonet_openstack::profile::cassandra::midocassandra',
-                             '::midonet_openstack::profile::zookeeper::midozookeeper']
+                            '::midonet_openstack::profile::zookeeper::midozookeeper']
   }
   contain '::midonet::agent'
   # Add midonet-cli

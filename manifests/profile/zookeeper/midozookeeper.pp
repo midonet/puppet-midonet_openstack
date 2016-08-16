@@ -35,25 +35,25 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
       contain '::zookeeper'
 
       file { 'zk service file':
-        path    => '/lib/systemd/system/zookeeper.service',
         ensure  => file,
+        path    => '/lib/systemd/system/zookeeper.service',
         content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
       }
 
       file { 'zookeeper-old-initscript':
-        path   => '/etc/init.d/zookeeper',
         ensure => absent,
+        path   => '/etc/init.d/zookeeper',
       }
 
       service { 'zookeeper-service':
-        name      => 'zookeeper',
         ensure    => 'running',
+        name      => 'zookeeper',
         enable    => true,
         require   => [File['zk service file','zookeeper-old-initscript',"${cfg_dir}/zoo.cfg"],
                       Class['zookeeper']],
         subscribe => [
-                     File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
-                     File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
+                      File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
+                      File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
                       ]
       }
 
