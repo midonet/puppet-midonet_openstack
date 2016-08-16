@@ -101,7 +101,8 @@ class midonet_openstack::role::allinone (
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $::midonet_openstack::params::controller_address_management,
-      require              => Class['::midonet_openstack::profile::cassandra::midocassandra']
+      require              => Class['::midonet_openstack::profile::cassandra::midocassandra',
+                                    '::midonet_openstack::profile::zookeeper::midozookeeper']
   }
   contain '::midonet::cluster'
   # Add midonet-agent
@@ -112,12 +113,14 @@ class midonet_openstack::role::allinone (
     zookeeper_hosts => [{
         'ip' => $client_ip}
         ],
-    require         => Class['::midonet_openstack::profile::cassandra::midocassandra']
+    require         => Class['::midonet_openstack::profile::cassandra::midocassandra',
+                             '::midonet_openstack::profile::zookeeper::midozookeeper']
   }
   contain '::midonet::agent'
   # Add midonet-cli
   class {'midonet::cli':
-    require  => Class['::midonet_openstack::profile::cassandra::midocassandra'],
+    require  => Class['::midonet_openstack::profile::cassandra::midocassandra',
+                      '::midonet_openstack::profile::zookeeper::midozookeeper'],
     username => 'admin',
     password => 'testmido'
   }
@@ -143,7 +146,7 @@ class midonet_openstack::role::allinone (
   Class['midonet_openstack::profile::repos' ]                     ->
   Class['midonet::repository' ]                                   ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
-  Class['midonet_openstack::profile::zookeeper::midozookeeper' ]      ->
+  Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->

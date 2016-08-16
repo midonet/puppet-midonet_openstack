@@ -58,7 +58,8 @@ class midonet_openstack::role::nsdb (
       ssl_storage_port   => '7001',
       client_port        => '9042',
       client_port_thrift => '9160',
-      require            => Class['::midonet_openstack::profile::midojava::midojava']
+      require            => Class['::midonet_openstack::profile::midojava::midojava',
+                                  '::midonet_openstack::profile::zookeeper::midozookeeper']
     }
     contain '::midonet_openstack::profile::cassandra::midocassandra'
 
