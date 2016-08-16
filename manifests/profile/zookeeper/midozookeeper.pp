@@ -47,8 +47,8 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         name    => 'zookeeper',
         ensure  => 'running',
         enable  => true,
-        require => File['zk service file','zookeeper-old-initscript'],
-                   Class['zookeeper']
+        require => [File['zk service file','zookeeper-old-initscript'],
+                   Class['zookeeper']]
       }
 
       Class['zookeeper'] ->
