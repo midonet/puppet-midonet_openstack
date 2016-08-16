@@ -50,11 +50,11 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         ensure    => 'running',
         enable    => true,
         require   => [File['zk service file','zookeeper-old-initscript',"${cfg_dir}/zoo.cfg"],
-                   Class['zookeeper']],
+                      Class['zookeeper']],
         subscribe => [
-         File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
-         File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
-       ]
+                     File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
+                     File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
+                      ]
       }
 
       Class['zookeeper'] ->
@@ -76,9 +76,9 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         service_name => 'zookeeper',
         require      => [ File['/usr/java/default'], Class['midonet::repository'] ],
         subscribe    => [
-         File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
-         File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
-       ]
+          File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
+          File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
+          ]
       }
       contain 'zookeeper'
     }
