@@ -129,7 +129,7 @@ class midonet_openstack::profile::cassandra::midocassandra (
 {
   # Cassandra pre-requisites.  You may want to install your own Java
   # environment.
-  contain cassandra::datastax_repo
+  include cassandra::datastax_repo
   midonet_openstack::resources::firewall { 'Cassandra Client Port': port => $client_port, }
   midonet_openstack::resources::firewall { 'Cassandra Port Thrift': port => $client_port_thrift, }
 
