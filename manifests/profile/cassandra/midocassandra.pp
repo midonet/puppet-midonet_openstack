@@ -156,6 +156,5 @@ class midonet_openstack::profile::cassandra::midocassandra (
   class {'::cassandra::firewall_ports':
     client_ports      => [$client_port,$client_port_thrift],
   }
-  contain '::cassandra::firewall_ports'
 
 }
