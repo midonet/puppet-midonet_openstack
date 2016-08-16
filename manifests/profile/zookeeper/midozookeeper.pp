@@ -12,8 +12,10 @@
 class midonet_openstack::profile::zookeeper::midozookeeper(
   $id                   = 1,
   $client_ip            = $::ipaddress_eth0,
-  $zk_servers           = zookeeper_servers($midonet_openstack::params::zookeeper_servers)
+  $zk_servers           = zookeeper_servers($midonet_openstack::params::zookeeper_servers),
+  $cfg_dir              = '/etc/zookeeper'
   ){
+
     midonet_openstack::resources::firewall { 'Zookeeper': port => '2181'}
     if $::osfamily == 'RedHat'
     {
@@ -22,13 +24,13 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
       class {'::zookeeper':
         servers             => $zk_servers,
         id                  => $id,
-        cfg_dir             => '/etc/zookeeper',
+        cfg_dir             => $cfg_dir,
         client_ip           => $client_ip,
         packages            => $zk_packages,
         service_name        => 'zookeeper',
         manage_service      => false,
         manage_service_file => false,
-        require            => Class['midonet::repository']
+        require             => Class['midonet::repository']
       }
       contain '::zookeeper'
 
@@ -44,11 +46,15 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
       }
 
       service { 'zookeeper-service':
-        name    => 'zookeeper',
-        ensure  => 'running',
-        enable  => true,
-        require => [File['zk service file','zookeeper-old-initscript'],
-                   Class['zookeeper']]
+        name      => 'zookeeper',
+        ensure    => 'running',
+        enable    => true,
+        require   => [File['zk service file','zookeeper-old-initscript',"${cfg_dir}/zoo.cfg"],
+                   Class['zookeeper']],
+        subscribe => [
+         File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
+         File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
+       ]
       }
 
       Class['zookeeper'] ->
@@ -64,11 +70,15 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
       class {'::zookeeper':
         servers      => $zk_servers,
         id           => $id,
-        cfg_dir      => '/etc/zookeeper',
+        cfg_dir      => $cfg_dir,
         client_ip    => $client_ip,
         packages     => $zk_packages,
         service_name => 'zookeeper',
         require      => [ File['/usr/java/default'], Class['midonet::repository'] ],
+        subscribe    => [
+         File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
+         File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
+       ]
       }
       contain 'zookeeper'
     }

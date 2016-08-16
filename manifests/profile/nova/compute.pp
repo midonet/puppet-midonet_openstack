@@ -98,8 +98,8 @@ class midonet_openstack::profile::nova::compute {
     }
     Package['openstack-nova-network'] -> Package['device-mapper'] ~> Service['libvirtd'] ~> Service['nova-compute']
     package { 'openstack-nova-network':
-      ensure  => latest,
-      notify  => Service['nova-compute'],
+      ensure => latest,
+      notify => Service['nova-compute'],
     } ->
     service { 'openstack-nova-network': enable => false }
   }
