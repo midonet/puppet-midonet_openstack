@@ -72,7 +72,10 @@ class midonet_openstack::profile::nova::compute {
   if $::osfamily == 'RedHat' {
     package { 'lvm2':
       ensure => latest,
-      before => Class['::nova::compute::libvirt']
+      before => [
+        Class['::nova::compute::libvirt', '::nova::compute'],
+        Package['device-mapper']
+      ]
     }
   }
   class { '::nova::compute::libvirt':

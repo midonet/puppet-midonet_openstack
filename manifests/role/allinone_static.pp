@@ -50,6 +50,13 @@ class midonet_openstack::role::allinone_static (
     zk_servers => zookeeper_servers($midonet_openstack::params::zookeeper_servers),
     id         => 1,
     client_ip  => $client_ip,
+    before     => Class[
+      'midonet::cluster::install',
+      'midonet::cluster::run',
+      'midonet::agent::install',
+      'midonet::agent::run',
+      'midonet::cli',
+    ],
   }
   contain '::midonet_openstack::profile::zookeeper::midozookeeper'
 
@@ -64,8 +71,9 @@ class midonet_openstack::role::allinone_static (
   contain '::midonet_openstack::profile::cassandra::midocassandra'
   if $::osfamily == 'RedHat' {
     package { 'openstack-selinux':
-    ensure => 'latest'
+    ensure => 'latest',
   }
+
   # temporary hack to make sure RabbitMQ does not steal UID
   # of Keystone
   Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
@@ -102,11 +110,8 @@ class midonet_openstack::role::allinone_static (
       keystone_admin_token => 'testmido',
       keystone_host        => $::midonet_openstack::params::controller_address_management,
       require              => [
-        Class[
-          '::midonet_openstack::profile::cassandra::midocassandra',
-          '::midonet_openstack::profile::zookeeper::midozookeeper'
-        ],
         Service['zookeeper-service'],
+        File["/etc/zookeeper/zoo.cfg"]
       ]
   }
   contain '::midonet::cluster'
@@ -118,12 +123,9 @@ class midonet_openstack::role::allinone_static (
     zookeeper_hosts => [{
         'ip' => $client_ip}
         ],
-    require              => [
-      Class[
-        '::midonet_openstack::profile::cassandra::midocassandra',
-        '::midonet_openstack::profile::zookeeper::midozookeeper'
-      ],
+    require         => [
       Service['zookeeper-service'],
+      File["/etc/zookeeper/zoo.cfg"]
     ]
   }
   contain '::midonet::agent'
@@ -131,12 +133,9 @@ class midonet_openstack::role::allinone_static (
   class {'midonet::cli':
     username => 'admin',
     password => 'testmido',
-    require              => [
-      Class[
-        '::midonet_openstack::profile::cassandra::midocassandra',
-        '::midonet_openstack::profile::zookeeper::midozookeeper'
-      ],
+    require         => [
       Service['zookeeper-service'],
+      File["/etc/zookeeper/zoo.cfg"]
     ]
   }
   contain '::midonet::cli'
@@ -197,11 +196,11 @@ class midonet_openstack::role::allinone_static (
   #}
   #contain midonet::gateway::static
 
-  Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
-  Class['midonet_openstack::profile::midojava::midojava']         ->
   Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
+  Class['midonet_openstack::profile::firewall::firewall']         ->
+  Class['midonet_openstack::profile::midojava::midojava']         ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->
