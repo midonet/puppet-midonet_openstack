@@ -136,7 +136,10 @@ class midonet_openstack::profile::cassandra::midocassandra (
 
   if $::osfamily == 'RedHat' or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '14.10') > 0) {
     #Cassandra systemd for newer versions
-    Class<| title == 'cassandra'  |> { service_systemd => true }
+    $is_systemd = true
+  }
+  else {
+    $is_systemd = false
   }
   ## Hard-pin the version here since midonet requires 2.2
   if $::osfamily == 'RedHat' {
@@ -153,6 +156,7 @@ class midonet_openstack::profile::cassandra::midocassandra (
     native_transport_port => $client_port,
     rpc_port              => $client_port_thrift,
     package_ensure        => $version,
+    service_systemd       => $is_systemd,
     require               => Class['cassandra::datastax_repo'],
     before                => Class['cassandra::firewall_ports']
   }
