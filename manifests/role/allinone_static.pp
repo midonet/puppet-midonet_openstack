@@ -101,7 +101,13 @@ class midonet_openstack::role::allinone_static (
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $::midonet_openstack::params::controller_address_management,
-      require              => Class['::midonet_openstack::profile::cassandra::midocassandra']
+      require              => [
+        Class[
+          '::midonet_openstack::profile::cassandra::midocassandra',
+          '::midonet_openstack::profile::zookeeper::midozookeeper'
+        ],
+        Service['zookeeper-service'],
+      ]
   }
   contain '::midonet::cluster'
   # Add midonet-agent
@@ -112,14 +118,26 @@ class midonet_openstack::role::allinone_static (
     zookeeper_hosts => [{
         'ip' => $client_ip}
         ],
-    require         => Class['::midonet_openstack::profile::cassandra::midocassandra']
+    require              => [
+      Class[
+        '::midonet_openstack::profile::cassandra::midocassandra',
+        '::midonet_openstack::profile::zookeeper::midozookeeper'
+      ],
+      Service['zookeeper-service'],
+    ]
   }
   contain '::midonet::agent'
   # Add midonet-cli
   class {'midonet::cli':
-    require  => Class['::midonet_openstack::profile::cassandra::midocassandra'],
     username => 'admin',
-    password => 'testmido'
+    password => 'testmido',
+    require              => [
+      Class[
+        '::midonet_openstack::profile::cassandra::midocassandra',
+        '::midonet_openstack::profile::zookeeper::midozookeeper'
+      ],
+      Service['zookeeper-service'],
+    ]
   }
   contain '::midonet::cli'
 
@@ -179,9 +197,9 @@ class midonet_openstack::role::allinone_static (
   #}
   #contain midonet::gateway::static
 
-  Class['midonet_openstack::profile::firewall::firewall' ]        ->
-  Class['midonet_openstack::profile::repos' ]                     ->
-  Class['midonet::repository' ]                                   ->
+  Class['midonet_openstack::profile::firewall::firewall']         ->
+  Class['midonet_openstack::profile::repos']                      ->
+  Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
   Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->

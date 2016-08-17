@@ -13,7 +13,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
   $id                   = 1,
   $client_ip            = $::ipaddress_eth0,
   $zk_servers           = zookeeper_servers($midonet_openstack::params::zookeeper_servers),
-  $cfg_dir              = '/etc/zookeeper'
+  $cfg_dir              = '/etc/zookeeper',
   ){
 
     midonet_openstack::resources::firewall { 'Zookeeper': port => '2181'}
@@ -49,12 +49,13 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         ensure    => 'running',
         name      => 'zookeeper',
         enable    => true,
-        require   => [File['zk service file','zookeeper-old-initscript',"${cfg_dir}/zoo.cfg"],
-                      Class['zookeeper']],
+        require   => [
+          File['zk service file','zookeeper-old-initscript',"${cfg_dir}/zoo.cfg"],
+          Class['zookeeper']
+        ],
         subscribe => [
-                      File["${cfg_dir}/myid"], File["${cfg_dir}/zoo.cfg"],
-                      File["${cfg_dir}/environment"], File["${cfg_dir}/log4j.properties"],
-                      ]
+          File["${cfg_dir}/myid", "${cfg_dir}/zoo.cfg", "${cfg_dir}/environment", "${cfg_dir}/log4j.properties"],
+        ]
       }
 
       Class['zookeeper'] ->
