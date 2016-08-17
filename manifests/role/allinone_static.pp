@@ -196,11 +196,11 @@ class midonet_openstack::role::allinone_static (
   #}
   #contain midonet::gateway::static
 
+  Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
-  Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
-  Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
+  Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->
