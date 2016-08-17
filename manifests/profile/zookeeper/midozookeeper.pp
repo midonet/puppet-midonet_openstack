@@ -47,10 +47,10 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
       #}
 
       service { 'zookeeper-service':
-        ensure    => 'running',
-        name      => 'zookeeper',
-        enable    => true,
-        require   => [
+        ensure  => 'running',
+        name    => 'zookeeper',
+        enable  => true,
+        require => [
           File['zk service file',"${cfg_dir}/zoo.cfg"],
         ],
       }

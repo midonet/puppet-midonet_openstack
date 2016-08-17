@@ -111,7 +111,7 @@ class midonet_openstack::role::allinone_static (
       keystone_host        => $::midonet_openstack::params::controller_address_management,
       require              => [
         Service['zookeeper-service'],
-        File["/etc/zookeeper/zoo.cfg"]
+        File['/etc/zookeeper/zoo.cfg']
       ]
   }
   contain '::midonet::cluster'
@@ -125,7 +125,7 @@ class midonet_openstack::role::allinone_static (
         ],
     require         => [
       Service['zookeeper-service'],
-      File["/etc/zookeeper/zoo.cfg"]
+      File['/etc/zookeeper/zoo.cfg']
     ]
   }
   contain '::midonet::agent'
@@ -133,9 +133,9 @@ class midonet_openstack::role::allinone_static (
   class {'midonet::cli':
     username => 'admin',
     password => 'testmido',
-    require         => [
+    require  => [
       Service['zookeeper-service'],
-      File["/etc/zookeeper/zoo.cfg"]
+      File['/etc/zookeeper/zoo.cfg']
     ]
   }
   contain '::midonet::cli'
