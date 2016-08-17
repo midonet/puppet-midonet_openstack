@@ -30,6 +30,8 @@ class midonet_openstack::role::allinone_static (
   $mem_username            = undef,
   $mem_password            = undef,
   ) inherits ::midonet_openstack::role {
+
+
   class { '::midonet_openstack::profile::firewall::firewall': }
   contain '::midonet_openstack::profile::firewall::firewall'
   class { '::midonet_openstack::profile::repos': }
@@ -74,9 +76,21 @@ class midonet_openstack::role::allinone_static (
     ensure => 'latest',
   }
 
+  $zk_requires=[
+    Service['zookeeper-service'],
+    File['/etc/zookeeper/zoo.cfg']
+  ]
+
   # temporary hack to make sure RabbitMQ does not steal UID
   # of Keystone
   Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
+  }
+  if $::osfamily == 'Debian'
+  {
+    $zk_requires=[
+      Package['zookeeper','zookeeperd'],
+      File['/etc/zookeeper/zoo.cfg']
+    ]
   }
   class { '::midonet_openstack::profile::memcache::memcache':}
   contain '::midonet_openstack::profile::memcache::memcache'
@@ -109,10 +123,7 @@ class midonet_openstack::role::allinone_static (
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $::midonet_openstack::params::controller_address_management,
-      require              => [
-        Service['zookeeper-service'],
-        File['/etc/zookeeper/zoo.cfg']
-      ]
+      require              => $zk_requires
   }
   contain '::midonet::cluster'
   # Add midonet-agent
@@ -123,20 +134,14 @@ class midonet_openstack::role::allinone_static (
     zookeeper_hosts => [{
         'ip' => $client_ip}
         ],
-    require         => [
-      Service['zookeeper-service'],
-      File['/etc/zookeeper/zoo.cfg']
-    ]
+    require         => $zk_requires
   }
   contain '::midonet::agent'
   # Add midonet-cli
   class {'midonet::cli':
     username => 'admin',
     password => 'testmido',
-    require  => [
-      Service['zookeeper-service'],
-      File['/etc/zookeeper/zoo.cfg']
-    ]
+    require  => $zk_requires
   }
   contain '::midonet::cli'
 

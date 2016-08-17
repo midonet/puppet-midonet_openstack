@@ -24,12 +24,14 @@
 #   Midonet MEM username
 # [*mem_password*]
 #   Midonet MEM password
-class midonet_openstack::role::allinone (
+class midonet_openstack::role::allinone_static (
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $is_mem                  = false,
   $mem_username            = undef,
   $mem_password            = undef,
   ) inherits ::midonet_openstack::role {
+
+
   class { '::midonet_openstack::profile::firewall::firewall': }
   contain '::midonet_openstack::profile::firewall::firewall'
   class { '::midonet_openstack::profile::repos': }
@@ -50,6 +52,13 @@ class midonet_openstack::role::allinone (
     zk_servers => zookeeper_servers($midonet_openstack::params::zookeeper_servers),
     id         => 1,
     client_ip  => $client_ip,
+    before     => Class[
+      'midonet::cluster::install',
+      'midonet::cluster::run',
+      'midonet::agent::install',
+      'midonet::agent::run',
+      'midonet::cli',
+    ],
   }
   contain '::midonet_openstack::profile::zookeeper::midozookeeper'
 
@@ -64,11 +73,24 @@ class midonet_openstack::role::allinone (
   contain '::midonet_openstack::profile::cassandra::midocassandra'
   if $::osfamily == 'RedHat' {
     package { 'openstack-selinux':
-    ensure => 'latest'
+    ensure => 'latest',
   }
+
+  $zk_requires=[
+    Service['zookeeper-service'],
+    File['/etc/zookeeper/zoo.cfg']
+  ]
+
   # temporary hack to make sure RabbitMQ does not steal UID
   # of Keystone
   Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
+  }
+  if $::osfamily == 'Debian'
+  {
+    $zk_requires=[
+      Package['zookeeper','zookeeperd'],
+      File['/etc/zookeeper/zoo.cfg']
+    ]
   }
   class { '::midonet_openstack::profile::memcache::memcache':}
   contain '::midonet_openstack::profile::memcache::memcache'
@@ -101,8 +123,7 @@ class midonet_openstack::role::allinone (
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $::midonet_openstack::params::controller_address_management,
-      require              => Class['::midonet_openstack::profile::cassandra::midocassandra',
-                                    '::midonet_openstack::profile::zookeeper::midozookeeper']
+      require              => $zk_requires
   }
   contain '::midonet::cluster'
   # Add midonet-agent
@@ -113,16 +134,14 @@ class midonet_openstack::role::allinone (
     zookeeper_hosts => [{
         'ip' => $client_ip}
         ],
-    require         => Class['::midonet_openstack::profile::cassandra::midocassandra',
-                            '::midonet_openstack::profile::zookeeper::midozookeeper']
+    require         => $zk_requires
   }
   contain '::midonet::agent'
   # Add midonet-cli
   class {'midonet::cli':
-    require  => Class['::midonet_openstack::profile::cassandra::midocassandra',
-                      '::midonet_openstack::profile::zookeeper::midozookeeper'],
     username => 'admin',
-    password => 'testmido'
+    password => 'testmido',
+    require  => $zk_requires
   }
   contain '::midonet::cli'
 
@@ -132,7 +151,15 @@ class midonet_openstack::role::allinone (
     File_line<| match == 'libvirtd_opts='  |> { line => 'libvirtd_opts="-l"' }
   }
 
-  midonet_openstack::resources::firewall { 'Midonet API': port => '8181', }
+  #install bridge-utils
+  if $::operatingsystem == 'Ubuntu'
+  {
+    package {'bridge-utils':
+      ensure => installed,
+      before => [Midonet_host_registry[$::fqdn],
+      Midonet::Resources::Network_creation['Test Edge Router Setup']]
+    }
+  }
 
   # Register the host
   midonet_host_registry { $::fqdn:
@@ -144,9 +171,9 @@ class midonet_openstack::role::allinone (
     require         => Class['glance::api'],
   }
 
-  Class['midonet_openstack::profile::firewall::firewall' ]        ->
-  Class['midonet_openstack::profile::repos' ]                     ->
-  Class['midonet::repository' ]                                   ->
+  Class['midonet_openstack::profile::firewall::firewall']         ->
+  Class['midonet_openstack::profile::repos']                      ->
+  Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
   Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
