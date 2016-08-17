@@ -161,6 +161,7 @@ class midonet_openstack::role::allinone_static (
     }
   }
 
+  midonet_openstack::resources::firewall { 'Midonet API': port => '8181', }
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
