@@ -24,7 +24,7 @@
 #   Midonet MEM username
 # [*mem_password*]
 #   Midonet MEM password
-class midonet_openstack::role::allinone_static (
+class midonet_openstack::role::allinone (
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $is_mem                  = false,
   $mem_username            = undef,
