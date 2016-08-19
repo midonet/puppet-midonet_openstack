@@ -52,11 +52,6 @@ echo 'export PATH="${PATH}:~/.gem/ruby/bin"' > ~/.bashrc
 # Puppet modules
 r10k puppetfile install --puppetfile ${OPENSTACK_AIO_DIR}/Puppetfile \
   --moduledir ${PUPPET_MODULEDIR}
-rm -rf /etc/puppetlabs/code/modules/midonet
-cp -Rv /ali-g /etc/puppetlabs/code/modules/midonet
-
-
-
 
 # Copy this repository to $moduledir
 mkdir -p ${PUPPET_MODULEDIR}/midonet_openstack
