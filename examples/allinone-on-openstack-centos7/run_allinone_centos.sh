@@ -64,7 +64,7 @@ cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
 iptables -F
 
 /opt/puppetlabs/puppet/bin/gem install faraday multipart-post
-puppet apply -e "include ::midonet_openstack::role::allinone_static" --trace 2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+puppet apply -e "include ::midonet_openstack::role::allinone_static" --debug --trace 2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
 
 # Fuck the iptables
 iptables -F

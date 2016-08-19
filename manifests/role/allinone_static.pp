@@ -182,25 +182,27 @@ class midonet_openstack::role::allinone_static (
     edge_router_name        => 'edge-router',
     edge_network_name       => 'net-edge1-gw1',
     edge_subnet_name        => 'subnet-edge1-gw1',
-    edge_cidr               => '172.17.0.0/24',
+    edge_cidr               => '172.19.0.0/30',
     port_name               => 'testport',
-    port_fixed_ip           => '172.17.0.201',
-    port_interface_name     => 'ens3',
-    gateway_ip              => '172.17.0.1'
+    port_fixed_ip           => '172.19.0.2',
+    port_interface_name     => 'veth1',
+    gateway_ip              => '172.172.0.1',
+    allocation_pools        => ['start=172.172.0.100,end=172.172.0.200'],
+    subnet_cidr             => '172.172.0.0/24',
   }
 
-  #class { 'midonet::gateway::static':
-    #nic            => 'enp0s3',
-    #fip            => '200.200.200.0/24',
-    #edge_router    => 'edge-router',
-    #veth0_ip       => '172.19.0.1',
-    #veth1_ip       => '172.19.0.2',
-    #veth_network   => '172.19.0.0/30',
-    #scripts_dir    => '/tmp',
-    #uplink_script  => 'create_fake_uplink_l2.sh',
-    #ensure_scripts =>  'present',
-  #}
-  #contain midonet::gateway::static
+  class { 'midonet::gateway::static':
+    nic            => 'enp0s3',
+    fip            => '172.172.0.0/24',
+    edge_router    => 'edge-router',
+    veth0_ip       => '172.19.0.1',
+    veth1_ip       => '172.19.0.2',
+    veth_network   => '172.19.0.0/30',
+    scripts_dir    => '/tmp',
+    uplink_script  => 'create_fake_uplink_l2.sh',
+    ensure_scripts => 'present',
+  }
+  contain midonet::gateway::static
 
   Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
@@ -215,7 +217,7 @@ class midonet_openstack::role::allinone_static (
   Class['midonet::cluster']                                       ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
-  Midonet::Resources::Network_creation['Test Edge Router Setup']
-  #Class['midonet::gateway::static']
+  Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
+  Class['midonet::gateway::static']
 
 }
