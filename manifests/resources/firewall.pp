@@ -12,7 +12,7 @@ define midonet_openstack::resources::firewall ( $port ) {
   if $port =~ /9[0-9]+/ {
     firewall { "8${port} - ${title}":
       proto  => 'tcp',
-      state  => ['NEW'],
+      state  => ['NEW','RELATED','ESTABLISHED'],
       action => 'accept',
       dport  => $port,
       sport  => $port,
@@ -21,7 +21,7 @@ define midonet_openstack::resources::firewall ( $port ) {
   } else {
     firewall { "${port} - ${title}":
       proto  => 'tcp',
-      state  => ['NEW'],
+      state  => ['NEW','RELATED','ESTABLISHED'],
       action => 'accept',
       sport  => $port,
       dport  => $port,
