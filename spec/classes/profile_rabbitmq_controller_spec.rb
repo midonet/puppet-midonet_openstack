@@ -65,7 +65,7 @@ shared_examples_for 'setup rabbitmq on redhat' do
 
     it 'should setup rabbitmq' do
       is_expected.to contain_class('rabbitmq').with(
-        'package_provider'      => 'rpm',
+        'package_provider'      => 'yum',
         'delete_guest_user'     => 'true',
         'environment_variables' => {},
         'repos_ensure'          => true,

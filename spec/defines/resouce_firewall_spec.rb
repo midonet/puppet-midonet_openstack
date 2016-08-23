@@ -32,7 +32,7 @@ describe 'midonet_openstack::resources::firewall' do
     it 'should add a firewall rule on port 117' do
       is_expected.to contain_firewall('117 - Open Test Port').with(
         'proto'  => 'tcp',
-        'state'  => ['NEW'],
+        'state'  => ['NEW','RELATED','ESTABLISHED'],
         'action' => 'accept',
         'sport'  => '117',
         'dport'  => '117',

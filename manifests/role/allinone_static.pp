@@ -31,7 +31,7 @@ class midonet_openstack::role::allinone_static (
   $mem_password            = undef,
   ) inherits ::midonet_openstack::role {
 
-
+  include stdlib
   class { '::midonet_openstack::profile::firewall::firewall': }
   contain '::midonet_openstack::profile::firewall::firewall'
   class { '::midonet_openstack::profile::repos': }
@@ -134,7 +134,7 @@ class midonet_openstack::role::allinone_static (
     zookeeper_hosts => [{
         'ip' => $client_ip}
         ],
-    require         => $zk_requires
+    require         => concat($zk_requires,Class['::midonet::cluster::install','::midonet::cluster::run'])
   }
   contain '::midonet::agent'
   # Add midonet-cli
@@ -192,7 +192,7 @@ class midonet_openstack::role::allinone_static (
   }
 
   class { 'midonet::gateway::static':
-    nic            => 'enp0s3',
+    nic            => 'eth0',
     fip            => '172.172.0.0/24',
     edge_router    => 'edge-router',
     veth0_ip       => '172.19.0.1',
@@ -213,8 +213,8 @@ class midonet_openstack::role::allinone_static (
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->
   Class['midonet_openstack::profile::nova::compute']              ->
-  Class['midonet::agent']                                         ->
   Class['midonet::cluster']                                       ->
+  Class['midonet::agent']                                         ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
   Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
