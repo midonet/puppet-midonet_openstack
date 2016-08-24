@@ -17,8 +17,8 @@
 class midonet_openstack::profile::neutron::server {
   openstack::resources::controller { 'neutron': }
   openstack::resources::database { 'neutron': }
-  openstack::resources::firewall { 'Neutron API': port => '9696', }
-  openstack::resources::firewall { 'MidoNet API': port => '8080', }
+  #openstack#::resources::firewall { 'Neutron API': port => '9696', }
+  #openstack#::resources::firewall { 'MidoNet API': port => '8080', }
 
   include ::openstack::common::neutron
 

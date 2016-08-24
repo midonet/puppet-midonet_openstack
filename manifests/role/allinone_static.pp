@@ -32,8 +32,8 @@ class midonet_openstack::role::allinone_static (
   ) inherits ::midonet_openstack::role {
 
   include stdlib
-  class { '::midonet_openstack::profile::firewall::firewall': }
-  contain '::midonet_openstack::profile::firewall::firewall'
+  # class { '::midonet_openstack::profile::firewall::firewall': }
+  # contain '::midonet_openstack::profile::firewall::firewall'
   class { '::midonet_openstack::profile::repos': }
   contain '::midonet_openstack::profile::repos'
   class { '::midonet::repository':
@@ -61,6 +61,8 @@ class midonet_openstack::role::allinone_static (
     ],
   }
   contain '::midonet_openstack::profile::zookeeper::midozookeeper'
+
+  ##midonet_openstack#::resources::firewall { 'Zookeeper': port => '8181', }
 
   class {'::midonet_openstack::profile::cassandra::midocassandra':
     seeds              => $::midonet_openstack::params::cassandra_seeds,
@@ -161,7 +163,7 @@ class midonet_openstack::role::allinone_static (
     }
   }
 
-  midonet_openstack::resources::firewall { 'Midonet API': port => '8181', }
+  ##midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
@@ -204,7 +206,7 @@ class midonet_openstack::role::allinone_static (
   }
   contain midonet::gateway::static
 
-  Class['midonet_openstack::profile::firewall::firewall']         ->
+  # Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->

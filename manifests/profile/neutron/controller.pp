@@ -14,7 +14,7 @@ class midonet_openstack::profile::neutron::controller {
     $ml2_package      = 'openstack-neutron-ml2'
     $nova_api_service = 'openstack-nova-api'
   }
-  midonet_openstack::resources::firewall { 'Neutron': port => '9696', }
+  ##midonet_openstack#::resources::firewall { 'Neutron': port => '9696', }
   package { 'python-neutron-lbaas': ensure => installed }
   package { 'python-neutron-fwaas': ensure => installed }
 rabbitmq_user { $::midonet_openstack::params::neutron_rabbitmq_user:

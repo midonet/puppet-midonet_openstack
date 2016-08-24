@@ -30,9 +30,7 @@ describe 'midonet_openstack::profile::cassandra::midocassandra' do
         'client_port_thrift'  => '9160',
         ) }
 
-        it { is_expected.to contain_class('cassandra::firewall_ports').with(
-        'client_ports'        => ['9042','9160']
-          ) }
+
    end
 
   end
@@ -52,9 +50,6 @@ describe 'midonet_openstack::profile::cassandra::midocassandra' do
         'client_port_thrift'  => '9160',
         )}
 
-        it { is_expected.to contain_class('cassandra::firewall_ports').with(
-        'client_ports'        => ['9042','9160']
-          ) }
    end
 
   end

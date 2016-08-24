@@ -23,28 +23,7 @@ describe 'midonet_openstack::profile::nova::api' do
         default_params
       end
 
-    it 'should open the ports for nova api' do
-      is_expected.to contain_midonet_openstack__resources__firewall(
-      'Nova API').with(
-        'port'      => '8774',
-      )
-      is_expected.to contain_midonet_openstack__resources__firewall(
-      'Nova Metadata').with(
-        'port'      => '8775',
-      )
-      is_expected.to contain_midonet_openstack__resources__firewall(
-      'Nova EC2').with(
-        'port'      => '8773',
-      )
-      is_expected.to contain_midonet_openstack__resources__firewall(
-      'Nova S3').with(
-        'port'      => '3333',
-      )
-      is_expected.to contain_midonet_openstack__resources__firewall(
-      'Nova novnc').with(
-        'port'      => '6080',
-      )
-      end
+
 
     it 'should configure nova db' do
       is_expected.to contain_class('nova::db::mysql').with(
