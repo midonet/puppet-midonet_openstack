@@ -12,7 +12,6 @@ describe 'midonet_openstack::role::allinone' do
 
   shared_examples_for 'set up the allinone node' do
     it { is_expected.to contain_class('midonet_openstack::profile::repos') }
-    it { is_expected.to contain_class('midonet_openstack::profile::firewall::firewall') }
     it { is_expected.to contain_class('midonet_openstack::profile::rabbitmq::controller') }
     it { is_expected.to contain_class('midonet_openstack::profile::mysql::controller') }
     it { is_expected.to contain_class('midonet_openstack::profile::memcache::memcache') }

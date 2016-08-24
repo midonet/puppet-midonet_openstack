@@ -16,7 +16,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
   $cfg_dir              = '/etc/zookeeper',
   ){
 
-    midonet_openstack::resources::firewall { 'Zookeeper': port => '2181'}
+    ##midonet_openstack#::resources::firewall { 'Zookeeper': port => '2181'}
     if $::osfamily == 'RedHat'
     {
       $zk_packages = ['zookeeper']

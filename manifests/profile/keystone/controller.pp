@@ -28,8 +28,8 @@ class midonet_openstack::profile::keystone::controller (
     $controller_management_address = $::midonet_openstack::params::controller_address_management
     $controller_api_address        = $::midonet_openstack::params::controller_address_api
 
-    midonet_openstack::resources::firewall { 'Keystone Public': port => '5000', }
-    midonet_openstack::resources::firewall { 'Keystone Private': port => '35357', }
+    ##midonet_openstack#::resources::firewall { 'Keystone Public': port => '5000', }
+    ##midonet_openstack#::resources::firewall { 'Keystone Private': port => '35357', }
 
 
 

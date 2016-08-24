@@ -7,7 +7,7 @@
 
 class midonet_openstack::profile::memcache::memcache($port = '11211') {
 
-  midonet_openstack::resources::firewall { 'Memcache': port => $port, }
+  ##midonet_openstack#::resources::firewall { 'Memcache': port => $port, }
 
   class { '::memcached':
     listen_ip => $::midonet_openstack::params::controller_address_management, #'127.0.0.1',

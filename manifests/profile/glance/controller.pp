@@ -16,8 +16,8 @@ class midonet_openstack::profile::glance::controller (
     $controller_management_address = $::midonet_openstack::params::controller_address_management
     $controller_api_address        = $::midonet_openstack::params::controller_address_api
 
-    midonet_openstack::resources::firewall { 'Glance API': port => '9292', }
-    midonet_openstack::resources::firewall { 'Glance Registry': port => '9191', }
+    ##midonet_openstack#::resources::firewall { 'Glance API': port => '9292', }
+    ##midonet_openstack#::resources::firewall { 'Glance Registry': port => '9191', }
 
     if $::midonet_openstack::params::glance_ssl {
       openstack_integration::ssl_key { 'glance':
