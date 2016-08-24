@@ -5,7 +5,7 @@ gem 'json_pure' , '2.0.1'
 gem 'fast_gettext' , '1.1.0'
 gem 'puppet', puppetversion
 gem 'r10k'
-gem 'puppetlabs_spec_helper', '>= 0.8.2'
+gem 'puppetlabs_spec_helper', '1.1.1'
 gem 'puppet-lint', '>= 2.0.0'
 gem 'facter', '>= 1.7.0'
 gem 'puppet-syntax'
