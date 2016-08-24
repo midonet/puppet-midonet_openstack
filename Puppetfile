@@ -9,7 +9,7 @@ mod 'openstack_integration',
 mod 'puppetlabs/apt' , '2.2.2'
 mod 'rabbitmq',
   :git => 'https://github.com/puppetlabs/puppetlabs-rabbitmq',
-  :tag => '5.3.1'
+  :tag => '5.4.0'
 mod 'puppetlabs/stdlib'
 
 
