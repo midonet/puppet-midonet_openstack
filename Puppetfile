@@ -70,3 +70,5 @@ mod 'glance',
   mod 'midonet',
     :git => 'https://github.com/openstack/puppet-midonet.git',
     :ref => 'master'
+
+  mod 'jfryman/selinux'

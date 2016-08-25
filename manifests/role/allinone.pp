@@ -156,7 +156,10 @@ class midonet_openstack::role::allinone (
   {
     package {'bridge-utils':
       ensure => installed,
-      before => Midonet_host_registry[$::fqdn],
+      before => [
+        Midonet_host_registry[$::fqdn],
+        Midonet::Resources::Network_creation['Test Edge Router Setup']
+      ]
     }
   }
 
@@ -171,6 +174,39 @@ class midonet_openstack::role::allinone (
     require         => Class['glance::api'],
   }
 
+  midonet::resources::network_creation { 'Test Edge Router Setup':
+    api_endpoint            => 'http://127.0.0.1:8181/midonet-api',
+    keystone_username       => 'midogod',
+    keystone_password       => 'midogod',
+    tenant_name             => 'midokura',
+    controller_ip           => '127.0.0.1',
+    controller_neutron_port => '9696',
+    edge_router_name        => 'edge-router',
+    edge_network_name       => 'net-edge1-gw1',
+    edge_subnet_name        => 'subnet-edge1-gw1',
+    edge_cidr               => '192.168.1.0/24',
+    port_name               => 'testport',
+    port_fixed_ip           => '192.168.1.9',
+    port_interface_name     => 'eth1',
+    gateway_ip              => '172.172.0.1',
+    allocation_pools        => ['start=172.172.0.100,end=172.172.0.200'],
+    subnet_cidr             => '172.172.0.0/24',
+  }
+
+  midonet_gateway_bgp { 'edge-router':
+    ensure                  => present,
+    bgp_local_as_number     => '65520',
+    bgp_advertised_networks => [ '172.172.0.0/24' ],
+    bgp_neighbors           => [ { 'ip_address' => '192.168.1.6', 'remote_asn' => '65506', 'remote_net' =>  '192.168.1.0/24'} ],
+    midonet_api_url         => 'http://127.0.0.1:8181',
+    username                => 'midogod',
+    password                => 'midogod',
+    tenant_name             => 'midokura',
+    require                 => Midonet::Resources::Network_creation['Test Edge Router Setup'],
+  }
+
+  midonet::resources::interface_up { 'Bring eth1 up': mac_address => 'fa:16:3e:5a:60:17', }
+
   Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
@@ -183,6 +219,9 @@ class midonet_openstack::role::allinone (
   Class['midonet::agent']                                         ->
   Class['midonet::cluster']                                       ->
   Class['midonet::cli']                                           ->
-  Midonet_host_registry[$::fqdn]
+  Midonet_host_registry[$::fqdn]                                  ->
+  Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
+  Midonet_gateway_bgp['edge-router']                              ->
+  Midonet::Resources::Interface_up['Bring eth1 up']
 
 }
