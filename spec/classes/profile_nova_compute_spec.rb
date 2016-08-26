@@ -38,7 +38,7 @@ describe 'midonet_openstack::profile::nova::compute' do
     it 'should configure libvirt' do
       is_expected.to contain_class('nova::compute::libvirt').with(
         'libvirt_virt_type' => 'qemu',
-        'vncserver_listen'  => '172.17.0.3',
+        'vncserver_listen'  => '0.0.0.0',
       )
       end
 
@@ -63,6 +63,14 @@ shared_examples_for 'setup nova::compute extra stepts on redhat' do
     is_expected.to contain_package('device-mapper').with(
       'ensure' => 'latest',
     )
+  end
+
+    it 'should install selinux qemu policy' do
+      is_expected.to contain_selinux__module('qemu-kvm').with(
+        'ensure'      => 'present',
+        'source'      => 'puppet:///modules/midonet_openstack/selinux/qemu-kvm.te',
+        'syncversion' => false,
+      )
     end
 
 end
