@@ -16,8 +16,6 @@
 #
 class midonet_openstack::profile::nova::compute {
 
-  include selinux
-
     $management_network = $::midonet_openstack::params::network_management
     $management_address = ip_for_network($management_network)
 
@@ -98,10 +96,13 @@ class midonet_openstack::profile::nova::compute {
   }
 
 
-  selinux::module { 'qemu-kvm':
-    ensure      => 'present',
-    source      => 'puppet:///modules/midonet_openstack/selinux/qemu-kvm.te',
-    syncversion => false,
+  if $::osfamily == 'RedHat' {
+    include selinux
+    selinux::module { 'qemu-kvm':
+      ensure      => 'present',
+      source      => 'puppet:///modules/midonet_openstack/selinux/qemu-kvm.te',
+      syncversion => false,
+    }
   }
 
 
