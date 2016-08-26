@@ -16,6 +16,8 @@
 #
 class midonet_openstack::profile::nova::compute {
 
+  include selinux
+
     $management_network = $::midonet_openstack::params::network_management
     $management_address = ip_for_network($management_network)
 
@@ -80,7 +82,7 @@ class midonet_openstack::profile::nova::compute {
   }
   class { '::nova::compute::libvirt':
     libvirt_virt_type => $::midonet_openstack::params::nova_libvirt_type,
-    vncserver_listen  => $management_address,
+    vncserver_listen  => '0.0.0.0',
   }
 
   class { '::nova::migration::libvirt':
@@ -94,6 +96,14 @@ class midonet_openstack::profile::nova::compute {
   mode   => '0644',
   notify => Service['libvirt'],
   }
+
+
+  selinux::module { 'qemu-kvm':
+    ensure      => 'present',
+    source      => 'puppet:///modules/midonet_openstack/selinux/qemu-kvm.te',
+    syncversion => false,
+  }
+
 
   if $::osfamily == 'RedHat' {
     package { 'device-mapper':

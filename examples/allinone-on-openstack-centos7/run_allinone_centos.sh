@@ -13,7 +13,7 @@ PUPPET_MODULEDIR="${PUPPET_BASE_PATH}/modules"
 
 # Prerequisites
 sudo yum -y remove facter puppet rdo-release epel-release
-sudo yum -y install libxml2-devel libxslt-devel ruby-devel rubygems wget vim
+sudo yum -y install libxml2-devel libxslt-devel ruby-devel rubygems wget vim biosdevname tcpdump
 sudo yum -y groupinstall "Development Tools"
 
 # Puppet
@@ -53,6 +53,10 @@ echo 'export PATH="${PATH}:~/.gem/ruby/bin"' > ~/.bashrc
 r10k puppetfile install --puppetfile ${OPENSTACK_AIO_DIR}/Puppetfile \
   --moduledir ${PUPPET_MODULEDIR}
 
+# Make sure puppet-midonet has the latest changes
+rm -rf /etc/puppetlabs/code/modules/midonet
+cp -Rv /ali-g /etc/puppetlabs/code/modules/midonet
+
 # Copy this repository to $moduledir
 mkdir -p ${PUPPET_MODULEDIR}/midonet_openstack
 cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
@@ -64,7 +68,10 @@ cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
 iptables -F
 
 /opt/puppetlabs/puppet/bin/gem install faraday multipart-post
-puppet apply -e "include ::midonet_openstack::role::allinone_static" --debug --trace 2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+puppet apply -e "include ::midonet_openstack::role::allinone" --debug --trace 2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+sed -i 's/\(novncproxy_base_url=http:\/\/\)[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\(:6080\/vnc_auto.html\)$/\1'"${1}"'\2/' /etc/nova/nova.conf
+service openstack-nova-compute restart
+#ip link set dev eth1 up
 
 # Fuck the iptables
 iptables -F
