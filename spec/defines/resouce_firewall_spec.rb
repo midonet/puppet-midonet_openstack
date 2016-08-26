@@ -1,6 +1,6 @@
 
 #
-# Unit tests for midonet_openstack::resources::firewall
+# Unit tests for midonet_openstack#::resources::firewall
 #
 
 require 'spec_helper'
