@@ -26,7 +26,7 @@
 #   Midonet MEM password
 class midonet_openstack::role::compute (
   $is_mem                  = false,
-  $manage_repos             = false,
+  $manage_repos            = false,
   $mem_username            = undef,
   $mem_password            = undef,
   ) inherits ::midonet_openstack::role {

@@ -92,7 +92,7 @@ class midonet_openstack::profile::glance::controller (
     $glance_stores = concat($http_store, $backend_store)
     class { '::glance::api':
       debug                     => $midonet_openstack::params::glance_debug,
-      database_connection       => "mysql+pymysql://${::midonet_openstack::params::mysql_glance_user}:${midonet_openstack::params::mysql_glance_pass}@127.0.0.1/glance?charset=utf8",
+      database_connection       => "mysql+pymysql://${::midonet_openstack::params::mysql_glance_user}:${midonet_openstack::params::mysql_glance_pass}@${controller_management_address}/glance?charset=utf8",
       keystone_password         => $midonet_openstack::params::glance_password,
       workers                   => 2,
       stores                    => $glance_stores,
@@ -110,7 +110,7 @@ class midonet_openstack::profile::glance::controller (
     }
     class { '::glance::registry':
       debug               => $midonet_openstack::params::glance_debug,
-      database_connection => "mysql+pymysql://${midonet_openstack::params::mysql_glance_user}:${midonet_openstack::params::mysql_glance_pass}@127.0.0.1/glance?charset=utf8",
+      database_connection => "mysql+pymysql://${midonet_openstack::params::mysql_glance_user}:${midonet_openstack::params::mysql_glance_pass}@${controller_management_address}/glance?charset=utf8",
       keystone_password   => $midonet_openstack::params::glance_password,
       bind_host           => $controller_management_address,
       workers             => 2,

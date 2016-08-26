@@ -14,8 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class midonet_openstack::profile::nova::compute {
+# == Parameters
+#
+#  [*rabbitmq_hosts*]
+#    Rabbitmq hosts
+#  [*glance_api_servers*]
+#    Glance API hosts
+#  [*memcached_servers*]
+#    Memcached hosts
+#  [*compute_mgmnt_address*]
+#    Management address of the compute node
+#
+class midonet_openstack::profile::nova::compute(
+  $rabbitmq_hosts        =    $::midonet_openstack::params::rabbitmq_hosts,
+  $glance_api_servers    =    $::midonet_openstack::params::glance_api_servers,
+  $memcached_servers     =    ["${::midonet_openstack::params::controller_address_management}:11211"],
+  $compute_mgmnt_address =    $::ipaddress
+  ) {
 
+    include stdlib
     $management_network = $::midonet_openstack::params::network_management
     $management_address = ip_for_network($management_network)
 
@@ -27,20 +44,21 @@ class midonet_openstack::profile::nova::compute {
     $pass                = $::midonet_openstack::params::mysql_nova_pass
     $api_user            = $::midonet_openstack::params::mysql_nova_api_user
     $api_pass            = $::midonet_openstack::params::mysql_nova_api_pass
-    $database_connection = "mysql+pymysql://${user}:${pass}@127.0.0.1/nova"
-    $api_database_connection = "mysql+pymysql://${api_user}:${api_pass}@127.0.0.1/nova_api"
+    $database_connection = "mysql+pymysql://${user}:${pass}@${::midonet_openstack::params::controller_address_management}/nova"
+    $api_database_connection = "mysql+pymysql://${api_user}:${api_pass}@${::midonet_openstack::params::controller_address_management}/nova_api"
 
     ##midonet_openstack#::resources::firewall { 'Nova Endpoint': port => '8774', }
 
     unless $::midonet_openstack::params::allinone {
+
       class { '::nova':
         api_database_connection => $api_database_connection,
         database_connection     => $database_connection,
-        rabbit_hosts            => $::midonet_openstack::params::rabbitmq_hosts,
+        rabbit_hosts            => $rabbitmq_hosts,
         rabbit_userid           => $::midonet_openstack::params::nova_rabbitmq_user,
         rabbit_password         => $::midonet_openstack::params::nova_rabbitmq_password,
-        glance_api_servers      => join($::midonet_openstack::params::glance_api_servers, ','),
-        memcached_servers       => ["${::midonet_openstack::params::controller_address_management}:11211"],
+        glance_api_servers      => join($glance_api_servers, ','),
+        memcached_servers       => $memcached_servers,
         verbose                 => $::midonet_openstack::params::verbose,
         debug                   => $::midonet_openstack::params::debug,
       }
