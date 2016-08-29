@@ -1,4 +1,4 @@
-# == Class: midonet_openstack::role::allinone
+# == Class: midonet_openstack::role::controller_static
 #
 # Copyright (c) 2016 Midokura SARL, All Rights Reserved.
 #
@@ -67,6 +67,7 @@ class midonet_openstack::role::controller_static (
   class {'::midonet_openstack::profile::cassandra::midocassandra':
     seeds              => $::midonet_openstack::params::cassandra_seeds,
     seed_address       => $client_ip,
+    rpc_address        => $client_ip,
     storage_port       => '7000',
     ssl_storage_port   => '7001',
     client_port        => '9042',
@@ -120,7 +121,7 @@ class midonet_openstack::role::controller_static (
       zookeeper_hosts      => [{
         'ip' => $client_ip}
         ],
-      cassandra_servers    => ['127.0.0.1'],
+      cassandra_servers    => [$::midonet_openstack::params::controller_address_management],
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $::midonet_openstack::params::controller_address_management,
@@ -144,7 +145,10 @@ class midonet_openstack::role::controller_static (
     zookeeper_hosts => [{
         'ip' => $client_ip}
         ],
-    require         => concat($zk_requires,Class['::midonet::cluster::install','::midonet::cluster::run'])
+    require         =>     [Service['zookeeper-service'],
+                            File['/etc/zookeeper/zoo.cfg'],
+                            Class['::midonet::cluster::install',
+                                  '::midonet::cluster::run']]
   }
   contain '::midonet::agent'
 
@@ -155,14 +159,13 @@ class midonet_openstack::role::controller_static (
   }
 
   #install bridge-utils
-  if $::operatingsystem == 'Ubuntu'
-  {
-    package {'bridge-utils':
-      ensure => installed,
-      before => [Midonet_host_registry[$::fqdn],
-      Midonet::Resources::Network_creation['Test Edge Router Setup']]
-    }
+
+  package {'bridge-utils':
+    ensure => installed,
+    before => [Midonet_host_registry[$::fqdn],
+    Midonet::Resources::Network_creation['Test Edge Router Setup']]
   }
+
 
   ##midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
   # Register the host
@@ -172,6 +175,7 @@ class midonet_openstack::role::controller_static (
     username        => 'midogod',
     password        => 'midogod',
     tenant_name     => 'midokura',
+    require         => Anchor['keystone::service::end']
   }
 
   midonet::resources::network_creation { 'Test Edge Router Setup':
@@ -211,13 +215,24 @@ class midonet_openstack::role::controller_static (
   Class['midonet_openstack::profile::midojava::midojava']         ->
   Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
-  Class['midonet_openstack::profile::nova::api']                  ->
+  Class['midonet_openstack::profile::mysql::controller' ]         ->
+  Class['midonet_openstack::profile::memcache::memcache' ]        ->
+  Class['midonet_openstack::profile::keystone::controller' ]      ->
+  Class['midonet_openstack::profile::rabbitmq::controller' ]      ->
+  Class['midonet_openstack::profile::glance::controller' ]        ->
   Class['midonet_openstack::profile::neutron::controller']        ->
+  Class['midonet_openstack::profile::nova::api']                  ->
+  Class['midonet_openstack::profile::horizon::horizon']           ->
   Class['midonet::cluster']                                       ->
   Class['midonet::agent']                                         ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
   Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
   Class['midonet::gateway::static']
+
+  Keystone_tenant<||>
+  -> Keystone_role<||>
+  -> Midonet_openstack::Resources::Keystone_user<||>
+  -> Midonet_host_registry[$::fqdn]
 
 }

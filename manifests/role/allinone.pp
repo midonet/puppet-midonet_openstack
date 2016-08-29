@@ -32,8 +32,8 @@ class midonet_openstack::role::allinone (
   ) inherits ::midonet_openstack::role {
 
 
-  class { '::midonet_openstack::profile::firewall::firewall': }
-  contain '::midonet_openstack::profile::firewall::firewall'
+  #class { '::midonet_openstack::profile::firewall::firewall': }
+  #contain '::midonet_openstack::profile::firewall::firewall'
   class { '::midonet_openstack::profile::repos': }
   contain '::midonet_openstack::profile::repos'
   class { '::midonet::repository':
@@ -152,18 +152,16 @@ class midonet_openstack::role::allinone (
   }
 
   #install bridge-utils
-  if $::operatingsystem == 'Ubuntu'
-  {
-    package {'bridge-utils':
-      ensure => installed,
-      before => [
-        Midonet_host_registry[$::fqdn],
-        Midonet::Resources::Network_creation['Test Edge Router Setup']
-      ]
-    }
+
+  package {'bridge-utils':
+    ensure => installed,
+    before => [
+      Midonet_host_registry[$::fqdn],
+      Midonet::Resources::Network_creation['Test Edge Router Setup']
+    ]
   }
 
-  #midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
+  #midonet_openstack::resources::firewall { 'Midonet API': port => '8181', }
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
@@ -209,7 +207,7 @@ class midonet_openstack::role::allinone (
 
   midonet::resources::interface_up { 'Bring eth1 up': mac_address => 'fa:16:3e:5a:60:17', }
 
-  Class['midonet_openstack::profile::firewall::firewall']         ->
+  #Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
