@@ -154,6 +154,7 @@ class midonet_openstack::profile::cassandra::midocassandra (
     storage_port          => $storage_port,
     ssl_storage_port      => $ssl_storage_port,
     native_transport_port => $client_port,
+    rpc_address           => $seed_address,
     rpc_port              => $client_port_thrift,
     package_ensure        => $version,
     service_systemd       => $is_systemd,

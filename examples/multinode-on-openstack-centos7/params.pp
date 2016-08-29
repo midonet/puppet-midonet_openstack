@@ -352,7 +352,7 @@
 #
 class midonet_openstack::params {
   $region = 'openstack'
-  $allinone = true
+  $allinone = false
 
   ######## Networks
   $network_api        = 'bridged_network'

@@ -10,7 +10,7 @@ class midonet_openstack::profile::mysql::controller (
   ){
   class { '::mysql::server':
     override_options => {
-      mysqld => { bind-address => $bind_address} #Allow remote connections
+      mysqld => { bind-address      => $bind_address} #Allow remote connections
     },
     # ... other class options
   }

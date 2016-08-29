@@ -11,6 +11,10 @@ PUPPET_BASE_PATH=/etc/puppetlabs/code
 PUPPET_PKG=puppet-agent
 PUPPET_MODULEDIR="${PUPPET_BASE_PATH}/modules"
 
+hostnamectl set-hostname $(hostname -s)
+
+sed -i "s|^127.0.0.1.*|127.0.0.1  $(hostname -s).local $(hostname -s) localhost|" /etc/hosts
+
 # Prerequisites
 sudo yum -y remove facter puppet rdo-release epel-release
 sudo yum -y install libxml2-devel libxslt-devel ruby-devel rubygems wget vim biosdevname tcpdump
@@ -30,17 +34,17 @@ cd ${OPENSTACK_AIO_DIR}
 
 # Hack the module 'openstack'
 IP=$(ip -4 a | grep inet | grep -e '192.168.1\.' | sed 's/^[[:space:]]*//' | cut -d' ' -f2 | cut -d'/' -f1)
-sed -i "s/bridged_ip/${IP}/" examples/allinone-on-openstack-centos7/params.pp
+sed -i "s/bridged_ip/${IP}/" examples/multinode-on-openstack-centos7/params.pp
 
 # get the network of the bridged interface and replace some variables
 NETWORK=$(ip r | grep -v default | grep -e '^192.168.1\.' | cut -d' ' -f1)
-sed -i "s%bridged_network%${NETWORK}%" examples/allinone-on-openstack-centos7/params.pp
+sed -i "s%bridged_network%${NETWORK}%" examples/multinode-on-openstack-centos7/params.pp
 
 ALLOWED_HOST_NETWORK=$(ip r | grep -v default | grep -e '^192.168.1\.' | cut -d' ' -f1 | cut -d'/' -f1 | cut -d'.' -f1,2,3).%
-sed -i "s,allowed_host_network,${ALLOWED_HOST_NETWORK}," examples/allinone-on-openstack-centos7/params.pp
+sed -i "s,allowed_host_network,${ALLOWED_HOST_NETWORK}," examples/multinode-on-openstack-centos7/params.pp
 
 #Override the params.pp
-cp examples/allinone-on-openstack-centos7/params.pp manifests/params.pp
+cp examples/multinode-on-openstack-centos7/params.pp manifests/params.pp
 
 sudo echo "export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/puppetlabs/bin'" > ~/.bashrc
 source ~/.bashrc
@@ -55,7 +59,7 @@ r10k puppetfile install --puppetfile ${OPENSTACK_AIO_DIR}/Puppetfile \
 
 # Make sure puppet-midonet has the latest changes
 rm -rf /etc/puppetlabs/code/modules/midonet
-cp -Rv /ali-g /etc/puppetlabs/code/modules/midonet
+cp -R /ali-g /etc/puppetlabs/code/modules/midonet
 
 # Copy this repository to $moduledir
 mkdir -p ${PUPPET_MODULEDIR}/midonet_openstack
@@ -68,9 +72,9 @@ cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
 iptables -F
 
 /opt/puppetlabs/puppet/bin/gem install faraday multipart-post
-puppet apply -e "include ::midonet_openstack::role::allinone" --debug --trace 2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
-sed -i 's/\(novncproxy_base_url=http:\/\/\)[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\(:6080\/vnc_auto.html\)$/\1'"${1}"'\2/' /etc/nova/nova.conf
-service openstack-nova-compute restart
+puppet apply -e "include ::midonet_openstack::role::controller_static"  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+#sed -i 's/\(novncproxy_base_url=http:\/\/\)[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\(:6080\/vnc_auto.html\)$/\1'"${1}"'\2/' /etc/nova/nova.conf
+#service openstack-nova-compute restart
 #ip link set dev eth1 up
 
 # Fuck the iptables

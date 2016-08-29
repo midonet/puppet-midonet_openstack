@@ -1,4 +1,4 @@
-# == Class: midonet_openstack::role::allinone
+# == Class: midonet_openstack::role::allinone_static
 #
 # Copyright (c) 2016 Midokura SARL, All Rights Reserved.
 #
@@ -154,13 +154,10 @@ class midonet_openstack::role::allinone_static (
   }
 
   #install bridge-utils
-  if $::operatingsystem == 'Ubuntu'
-  {
-    package {'bridge-utils':
-      ensure => installed,
-      before => [Midonet_host_registry[$::fqdn],
-      Midonet::Resources::Network_creation['Test Edge Router Setup']]
-    }
+  package {'bridge-utils':
+    ensure => installed,
+    before => [Midonet_host_registry[$::fqdn],
+    Midonet::Resources::Network_creation['Test Edge Router Setup']]
   }
 
   ##midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
