@@ -1,4 +1,4 @@
-# == Class: midonet_openstack::role::allinone
+# == Class: midonet_openstack::role::compute_static
 #
 # Copyright (c) 2016 Midokura SARL, All Rights Reserved.
 #
@@ -16,8 +16,8 @@
 #
 # == Parameters
 #
-#  [*rabbitmq_hosts*]
-#    Rabbitmq hosts
+#  [*zookeeper_client_ip*]
+#    Zookeeper Host Ip
 # [*is_mem*]
 #   Using MEM installation?
 # [*mem_username*]
@@ -25,7 +25,7 @@
 # [*mem_password*]
 #   Midonet MEM password
 class midonet_openstack::role::compute_static (
-  $rabbitmq_hosts,
+  $client_ip               = $::midonet_openstack::params::controller_address_management,
   $is_mem                  = false,
   $mem_username            = undef,
   $mem_password            = undef,
@@ -44,24 +44,48 @@ class midonet_openstack::role::compute_static (
     mem_password      => $mem_password
   }
   contain '::midonet::repository'
+  class { '::midonet_openstack::profile::midojava::midojava':}
+  contain '::midonet_openstack::profile::midojava::midojava'
+
 
   if $::osfamily == 'RedHat' {
     package { 'openstack-selinux':
     ensure => 'latest',
   }
 
-  class { '::midonet_openstack::profile::midojava::midojava':}
-  contain '::midonet_openstack::profile::midojava::midojava'
+  $zk_requires=[
+    Service['zookeeper-service'],
+    File['/etc/zookeeper/zoo.cfg']
+  ]
 
-  class { '::midonet_openstack::profile::neutron::compute': }
-  contain '::midonet_openstack::profile::neutron::compute'
+  # temporary hack to make sure RabbitMQ does not steal UID
+  # of Keystone
+  Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
+  }
+  if $::osfamily == 'Debian'
+  {
+    $zk_requires=[
+      Package['zookeeper','zookeeperd'],
+      File['/etc/zookeeper/zoo.cfg']
+    ]
+  }
+
 
   class { '::midonet_openstack::profile::nova::compute': }
   contain '::midonet_openstack::profile::nova::compute'
 
   include ::midonet::params
-  # Add midonet-cluster
 
+  # Add midonet-agent
+  class { 'midonet::agent':
+    controller_host => $::midonet_openstack::params::controller_management_address,
+    metadata_port   => '8775',
+    shared_secret   => $::midonet_openstack::params::neutron_shared_secret,
+    zookeeper_hosts => [{
+        'ip' => $client_ip}
+        ],
+  }
+  contain '::midonet::agent'
 
   #Xenial doesnt like daemons..
   if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '16') >= 0
@@ -70,26 +94,12 @@ class midonet_openstack::role::compute_static (
   }
 
   #install bridge-utils
-  if $::operatingsystem == 'Ubuntu'
-  {
-    package {'bridge-utils':
-      ensure => installed,
-      before => [Midonet_host_registry[$::fqdn],
-      Midonet::Resources::Network_creation['Test Edge Router Setup']]
-    }
+
+  package {'bridge-utils':
+    ensure => installed,
+    before => Midonet_host_registry[$::fqdn]
   }
 
-  # Add midonet-agent
-  class { 'midonet::agent':
-    controller_host => $::midonet_openstack::params::controller_address_management,
-    metadata_port   => '8775',
-    shared_secret   => $::midonet_openstack::params::neutron_shared_secret,
-    zookeeper_hosts => [{
-        'ip' => $::midonet_openstack::params::controller_address_management}
-        ],
-    require         => Anchor['::java::end']
-  }
-  contain '::midonet::agent'
 
   ##midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
   # Register the host
@@ -101,46 +111,12 @@ class midonet_openstack::role::compute_static (
     tenant_name     => 'midokura',
   }
 
-  midonet::resources::network_creation { 'Test Edge Router Setup':
-    api_endpoint            => "http://${::midonet_openstack::params::controller_address_management}:8181/midonet-api",
-    keystone_username       => 'midogod',
-    keystone_password       => 'midogod',
-    tenant_name             => 'midokura',
-    controller_ip           => '127.0.0.1',
-    controller_neutron_port => '9696',
-    edge_router_name        => 'edge-router',
-    edge_network_name       => 'net-edge1-gw1',
-    edge_subnet_name        => 'subnet-edge1-gw1',
-    edge_cidr               => '172.19.0.0/30',
-    port_name               => 'testport',
-    port_fixed_ip           => '172.19.0.2',
-    port_interface_name     => 'veth1',
-    gateway_ip              => '172.172.0.1',
-    allocation_pools        => ['start=172.172.0.100,end=172.172.0.200'],
-    subnet_cidr             => '172.172.0.0/24',
-  }
-
-  class { 'midonet::gateway::static':
-    nic            => 'enp0s3',
-    fip            => '172.172.0.0/24',
-    edge_router    => 'edge-router',
-    veth0_ip       => '172.19.0.1',
-    veth1_ip       => '172.19.0.2',
-    veth_network   => '172.19.0.0/30',
-    scripts_dir    => '/tmp',
-    uplink_script  => 'create_fake_uplink_l2.sh',
-    ensure_scripts => 'present',
-  }
-  contain midonet::gateway::static
 
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
   Class['midonet_openstack::profile::nova::compute']              ->
-  Class['midonet_openstack::profile::neutron::compute']           ->
   Class['midonet::agent']                                         ->
-  Midonet_host_registry[$::fqdn]                                  ->
-  Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
-  Class['midonet::gateway::static']
+  Midonet_host_registry[$::fqdn]
 
 }
