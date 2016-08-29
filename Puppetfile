@@ -72,3 +72,10 @@ mod 'glance',
     :ref => 'master'
 
   mod 'jfryman/selinux'
+
+mod 'TubeMogul/curator'
+mod 'elasticsearch/elasticsearch'
+mod 'elasticsearch/logstash'
+mod 'electrical/file_concat'
+mod 'richardc/datacat'
+
