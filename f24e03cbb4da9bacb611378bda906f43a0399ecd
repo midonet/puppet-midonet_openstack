@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baa041b7_a6154be6",
+        "filename": "examples/allinone_mem/allinone.pp",
+        "patchSetId": 2
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1008482
+      },
+      "writtenOn": "2016-08-30T08:19:22Z",
+      "side": 1,
+      "message": "would be better passing in parameters to the class..",
+      "revId": "f24e03cbb4da9bacb611378bda906f43a0399ecd",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_46db1f50",
+        "filename": "manifests/role/allinone_mem.pp",
+        "patchSetId": 2
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1008482
+      },
+      "writtenOn": "2016-08-30T08:19:22Z",
+      "side": 1,
+      "message": "please make this mandatory, no default value",
+      "revId": "f24e03cbb4da9bacb611378bda906f43a0399ecd",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
