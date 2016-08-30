@@ -52,12 +52,13 @@ class midonet_openstack::profile::keystone::controller (
   class { '::keystone::cron::token_flush': }
 
   class { '::keystone::db::mysql':
-    password => $midonet_openstack::params::mysql_keystone_pass,
+    password      => $midonet_openstack::params::mysql_keystone_pass,
+    allowed_hosts => '%',
   }
 
   class { '::keystone':
     debug               => $midonet_openstack::params::keystone_debug,
-    database_connection => "mysql+pymysql://${midonet_openstack::params::mysql_keystone_user}:${midonet_openstack::params::mysql_keystone_pass}@127.0.0.1/keystone",
+    database_connection => "mysql+pymysql://${midonet_openstack::params::mysql_keystone_user}:${midonet_openstack::params::mysql_keystone_pass}@${controller_management_address}/keystone",
     admin_token         => $midonet_openstack::params::keystone_admin_token,
     enabled             => $midonet_openstack::params::keystone_enabled,
     service_name        => 'httpd',
