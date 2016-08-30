@@ -96,20 +96,25 @@ class midonet_openstack::role::controller_static (
   }
   class { '::midonet_openstack::profile::memcache::memcache':}
   contain '::midonet_openstack::profile::memcache::memcache'
-  class { '::midonet_openstack::profile::keystone::controller': }
+  class { '::midonet_openstack::profile::rabbitmq::controller': }
+  contain '::midonet_openstack::profile::rabbitmq::controller'
+  class { '::midonet_openstack::profile::keystone::controller':
+    require => Anchor['rabbitmq::end'] }
   contain '::midonet_openstack::profile::keystone::controller'
   class { '::midonet_openstack::profile::mysql::controller': }
   contain '::midonet_openstack::profile::mysql::controller'
-  class { '::midonet_openstack::profile::rabbitmq::controller': }
-  contain '::midonet_openstack::profile::rabbitmq::controller'
+
   class { '::midonet_openstack::profile::glance::controller':
-    require => Class['::midonet_openstack::profile::keystone::controller'],
+    require => [Class['::midonet_openstack::profile::keystone::controller',],
+    Anchor['rabbitmq::end']],
   }
   contain '::midonet_openstack::profile::glance::controller'
-  class { '::midonet_openstack::profile::neutron::controller': }
+  class { '::midonet_openstack::profile::neutron::controller':
+    require => Anchor['rabbitmq::end']}
   contain '::midonet_openstack::profile::neutron::controller'
 
-  class { '::midonet_openstack::profile::nova::api': }
+  class { '::midonet_openstack::profile::nova::api':
+  require => Anchor['rabbitmq::end'] }
   contain '::midonet_openstack::profile::nova::api'
 
   class { '::midonet_openstack::profile::horizon::horizon':}
@@ -144,10 +149,9 @@ class midonet_openstack::role::controller_static (
     zookeeper_hosts => [{
         'ip' => $client_ip}
         ],
-    require         =>     [Service['zookeeper-service'],
-                            File['/etc/zookeeper/zoo.cfg'],
+    require         =>      concat($zk_requires,
                             Class['::midonet::cluster::install',
-                                  '::midonet::cluster::run']]
+                                  '::midonet::cluster::run'])
   }
   contain '::midonet::agent'
 
@@ -212,12 +216,12 @@ class midonet_openstack::role::controller_static (
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
+  Class['midonet_openstack::profile::rabbitmq::controller' ]      ->
   Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
   Class['midonet_openstack::profile::mysql::controller' ]         ->
   Class['midonet_openstack::profile::memcache::memcache' ]        ->
   Class['midonet_openstack::profile::keystone::controller' ]      ->
-  Class['midonet_openstack::profile::rabbitmq::controller' ]      ->
   Class['midonet_openstack::profile::glance::controller' ]        ->
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->
