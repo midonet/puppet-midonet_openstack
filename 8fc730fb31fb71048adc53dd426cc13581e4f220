@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baa041b7_a6b9cb17",
+        "filename": "manifests/role/allinone_analytics.pp",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1008711
+      },
+      "writtenOn": "2016-08-30T07:53:30Z",
+      "side": 1,
+      "message": "Please, don\u0027t use a default value for mem_* parameters. Make them mandatory, with no default value.",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 35,
+        "endChar": 32
+      },
+      "revId": "8fc730fb31fb71048adc53dd426cc13581e4f220",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
