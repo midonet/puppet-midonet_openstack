@@ -195,9 +195,13 @@ class midonet_openstack::role::allinone (
     ensure                  => present,
     bgp_local_as_number     => '65520',
     bgp_advertised_networks => [ '172.172.0.0/24' ],
-    bgp_neighbors           => [ { 'ip_address'    => '192.168.1.6',
-    'remote_asn' => '65506',
-    'remote_net' =>  '192.168.1.0/24'} ],
+    bgp_neighbors           => [
+      {
+        'ip_address' => '192.168.1.6',
+        'remote_asn' => '65506',
+        'remote_net' =>  '192.168.1.0/24'
+      }
+    ],
     midonet_api_url         => 'http://127.0.0.1:8181',
     username                => 'midogod',
     password                => 'midogod',
