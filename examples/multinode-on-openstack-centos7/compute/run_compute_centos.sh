@@ -34,7 +34,7 @@ cd ${OPENSTACK_AIO_DIR}
 
 # Hack the module 'openstack'
 IP=$(ip -4 a | grep inet | grep -e '192.168.1\.' | sed 's/^[[:space:]]*//' | cut -d' ' -f2 | cut -d'/' -f1)
-sed -i "s/bridged_ip/${IP}/" examples/multinode-on-openstack-centos7/params.pp
+sed -i "s/bridged_ip/${1}/" examples/multinode-on-openstack-centos7/params.pp
 
 # get the network of the bridged interface and replace some variables
 NETWORK=$(ip r | grep -v default | grep -e '^192.168.1\.' | cut -d' ' -f1)
@@ -44,7 +44,7 @@ ALLOWED_HOST_NETWORK=$(ip r | grep -v default | grep -e '^192.168.1\.' | cut -d'
 sed -i "s,allowed_host_network,${ALLOWED_HOST_NETWORK}," examples/multinode-on-openstack-centos7/params.pp
 
 #Override the params.pp
-cp examples/multinode-on-openstack-centos7/params.pp params.pp
+cp examples/multinode-on-openstack-centos7/params.pp manifests/params.pp
 
 sudo echo "export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/puppetlabs/bin'" > ~/.bashrc
 source ~/.bashrc
@@ -59,7 +59,7 @@ r10k puppetfile install --puppetfile ${OPENSTACK_AIO_DIR}/Puppetfile \
 
 # Make sure puppet-midonet has the latest changes
 rm -rf /etc/puppetlabs/code/modules/midonet
-cp -Rv /ali-g /etc/puppetlabs/code/modules/midonet
+cp -R /ali-g /etc/puppetlabs/code/modules/midonet
 
 # Copy this repository to $moduledir
 mkdir -p ${PUPPET_MODULEDIR}/midonet_openstack
@@ -72,7 +72,7 @@ cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
 iptables -F
 
 /opt/puppetlabs/puppet/bin/gem install faraday multipart-post
-puppet apply -e "include ::midonet_openstack::role::controller_static"  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+puppet apply -e "include ::midonet_openstack::role::compute_static" --debug --trace  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
 #sed -i 's/\(novncproxy_base_url=http:\/\/\)[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\(:6080\/vnc_auto.html\)$/\1'"${1}"'\2/' /etc/nova/nova.conf
 #service openstack-nova-compute restart
 #ip link set dev eth1 up
@@ -81,7 +81,4 @@ puppet apply -e "include ::midonet_openstack::role::controller_static"  2>&1 | t
 iptables -F
 # Add the FIP to Horizon Vhost
 # We do a sed because centos7 was screwing with the echo solution.
-sed -i "\|</VirtualHost>|i ServerAlias $1" /etc/httpd/conf.d/15-horizon_vhost.conf
 # Restart the Apache service.
-service httpd stop
-service httpd start
