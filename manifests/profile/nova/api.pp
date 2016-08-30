@@ -1,3 +1,4 @@
+
 # The profile to set up the Nova controller !
 class midonet_openstack::profile::nova::api {
   include ::openstack_integration::params
@@ -22,12 +23,12 @@ class midonet_openstack::profile::nova::api {
     user          => $::midonet_openstack::params::mysql_nova_user,
     password      => $::midonet_openstack::params::mysql_nova_pass,
     allowed_hosts => '%',
-  }
+  } ->
   class { '::nova::db::mysql_api':
     user          => $::midonet_openstack::params::mysql_nova_api_user,
     password      => $::midonet_openstack::params::mysql_nova_api_pass,
     allowed_hosts => '%',
-  }
+  } ->
   class { '::nova::keystone::auth':
     public_url      => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_api}:8774/v2.1/%(tenant_id)s",
     public_url_v3   => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_api}:8774/v3/%(tenant_id)s",
@@ -37,20 +38,20 @@ class midonet_openstack::profile::nova::api {
     admin_url_v3    => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_management}:8774/v3/%(tenant_id)s",
     password        => $::midonet_openstack::params::nova_password,
     region          => $::midonet_openstack::params::region
-  }
+  } ->
   rabbitmq_user { $midonet_openstack::params::nova_rabbitmq_user:
     admin    => true,
     password => $midonet_openstack::params::glance_rabbitmq_password,
     provider => 'rabbitmqctl',
     require  => Class['::rabbitmq'],
-  }
+  } ->
   rabbitmq_user_permissions { 'nova@/':
     configure_permission => '.*',
     write_permission     => '.*',
     read_permission      => '.*',
     provider             => 'rabbitmqctl',
     require              => Class['::rabbitmq'],
-  }
+  } ->
   class { '::nova':
     database_connection     => $database_connection,
     api_database_connection => $api_database_connection,
@@ -62,12 +63,12 @@ class midonet_openstack::profile::nova::api {
     verbose                 => $::midonet_openstack::params::verbose,
     debug                   => $::midonet_openstack::params::debug,
     require                 => Class['midonet_openstack::profile::memcache::memcache']
-  }
+  } ->
   class { '::nova::network::neutron':
     neutron_password    => $::midonet_openstack::params::neutron_password,
     neutron_region_name => $::midonet_openstack::params::region,
     neutron_auth_url    => "http://${controller_management_address}:35357/v3",
-  }
+  } ->
   class { '::nova::api':
     admin_password                       => $::midonet_openstack::params::nova_password,
     auth_uri                             => "http://${controller_api_address}:5000",
@@ -76,11 +77,11 @@ class midonet_openstack::profile::nova::api {
     enabled                              => true,
     default_floating_pool                => 'public',
     osapi_v3                             => true,
-  }
+  } ->
   class { '::nova::vncproxy':
     host    => $::midonet_openstack::params::controller_address_api,
     enabled => true,
-  }
+  } ->
   class { [
     '::nova::scheduler',
     '::nova::cert',

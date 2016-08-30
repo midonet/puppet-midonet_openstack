@@ -21,25 +21,23 @@ rabbitmq_user { $::midonet_openstack::params::neutron_rabbitmq_user:
   admin    => true,
   password => $::midonet_openstack::params::neutron_rabbitmq_password,
   provider => 'rabbitmqctl',
-  require  => Class['::rabbitmq'],
-}
+} ->
 rabbitmq_user_permissions { 'neutron@/':
   configure_permission => '.*',
   write_permission     => '.*',
   read_permission      => '.*',
   provider             => 'rabbitmqctl',
-  require              => Class['::rabbitmq'],
-}
+} ->
 class { '::neutron::db::mysql':
   password      => $::midonet_openstack::params::mysql_neutron_pass,
   allowed_hosts => '%',
-}
+} ->
 class { '::neutron::keystone::auth':
   password   => $::midonet_openstack::params::neutron_password,
   region     => $::midonet_openstack::params::region,
   public_url => "http://${controller_api_address}:9696",
   admin_url  => "http://${controller_management_address}:9696"
-}
+} ->
 class { '::neutron':
   rabbit_user             => $::midonet_openstack::params::neutron_rabbitmq_user,
   rabbit_password         => $::midonet_openstack::params::neutron_rabbitmq_password,
@@ -55,8 +53,8 @@ class { '::neutron':
   debug                   => true,
   verbose                 => true,
   dhcp_agent_notification => false,
-}
-class { '::neutron::client': }
+} ->
+class { '::neutron::client': } ->
 class { '::neutron::server':
   database_connection => "mysql+pymysql://${::midonet_openstack::params::mysql_neutron_user}:${::midonet_openstack::params::mysql_neutron_pass}@${controller_management_address}/neutron?charset=utf8",
   password            => $::midonet_openstack::params::neutron_password,
@@ -68,7 +66,7 @@ class { '::neutron::server':
   service_providers   => ['LOADBALANCER:Midonet:midonet.neutron.services.loadbalancer.driver.MidonetLoadbalancerDriver:default'],
   region_name         => $::midonet_openstack::params::region,
   auth_region         => $::midonet_openstack::params::region
-}
+} ->
 class { '::midonet::neutron_plugin':
     midonet_api_ip    => '127.0.0.1',
     midonet_api_port  => '8181',
@@ -77,7 +75,7 @@ class { '::midonet::neutron_plugin':
     keystone_tenant   => 'services',
     sync_db           => true,
     notify            => Service[$nova_api_service,'neutron-server']
-  }
+  } ->
   # Configure [nova] section in neutron.conf
   neutron_config {
     'nova/auth_url':                   value => "http://${controller_api_address}:5000";

@@ -3,11 +3,13 @@ set -x
 set -e
 
 #Fix fqdm issues
-sed -i '/127.0.0.1 localhost$/ s/$/ allinone/' /etc/hosts
-echo domain local >> /etc/resolv.conf
-sudo hostname allinone
 
 # Update machine and install vim (just in case)
+
+hostnamectl set-hostname $(hostname -s)
+
+sed -i "s|^127.0.0.1.*|127.0.0.1  $(hostname -s).local $(hostname -s) localhost|" /etc/hosts
+
 
 
 apt-get remove puppet -y
