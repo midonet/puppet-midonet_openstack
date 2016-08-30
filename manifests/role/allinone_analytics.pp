@@ -31,8 +31,8 @@ class midonet_openstack::role::allinone_analytics (
   $controller_ip           = $::midonet_openstack::params::controller_address_api,
   $is_mem                  = true,
   $manage_repo             = true,
-  $mem_username            = '',
-  $mem_password            = '',
+  $mem_username,
+  $mem_password,
   ) inherits ::midonet_openstack::role {
   # class { '::midonet_openstack::profile::firewall::firewall': }
   # contain '::midonet_openstack::profile::firewall::firewall'
