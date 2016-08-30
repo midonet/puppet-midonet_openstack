@@ -22,6 +22,57 @@
       "revId": "8fc730fb31fb71048adc53dd426cc13581e4f220",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_26293b38",
+        "filename": "manifests/role/allinone_analytics.pp",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1008482
+      },
+      "writtenOn": "2016-08-30T08:15:58Z",
+      "side": 1,
+      "message": "please align this",
+      "revId": "8fc730fb31fb71048adc53dd426cc13581e4f220",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_061f570a",
+        "filename": "manifests/role/allinone_analytics.pp",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1008482
+      },
+      "writtenOn": "2016-08-30T08:15:58Z",
+      "side": 1,
+      "message": "this is not needed",
+      "revId": "8fc730fb31fb71048adc53dd426cc13581e4f220",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baa041b7_e61b531b",
+        "filename": "manifests/role/allinone_analytics.pp",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1008482
+      },
+      "writtenOn": "2016-08-30T08:15:58Z",
+      "side": 1,
+      "message": "not needed either",
+      "revId": "8fc730fb31fb71048adc53dd426cc13581e4f220",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     }
   ]
 }
