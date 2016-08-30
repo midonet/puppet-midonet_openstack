@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baa041b7_f95c144e",
+        "filename": "manifests/role/allinone_mem.pp",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1008482
+      },
+      "writtenOn": "2016-08-30T12:41:57Z",
+      "side": 1,
+      "message": "required parameters MUST be at the top!",
+      "revId": "4d2d94c0fa920b118e375e25a695d55c6e4ae087",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
