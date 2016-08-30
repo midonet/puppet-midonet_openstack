@@ -134,7 +134,8 @@ class midonet_openstack::profile::cassandra::midocassandra (
   ##midonet_openstack#::resources::firewall { 'Cassandra Port Thrift': port => $client_port_thrift, }
 
 
-  if $::osfamily == 'RedHat' or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '14.10') > 0) {
+  if $::osfamily == 'RedHat' #or ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '14.10') > 0)
+  {
     #Cassandra systemd for newer versions
     $is_systemd = true
   }

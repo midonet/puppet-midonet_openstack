@@ -38,7 +38,7 @@ describe 'midonet_openstack::profile::keystone::controller' do
     it 'should configure keystone' do
       is_expected.to contain_class('keystone').with(
         'debug'               => 'true',
-        'database_connection' => 'mysql+pymysql://keystone:testmido@127.0.0.1/keystone',
+        'database_connection' => 'mysql+pymysql://keystone:testmido@172.17.0.3/keystone',
         'admin_token'         => 'testmido',
         'enabled'             => 'true',
         'service_name'        => 'httpd',

@@ -66,7 +66,7 @@ describe 'midonet_openstack::profile::glance::controller' do
     it 'should configure the glance API' do
       is_expected.to contain_class('glance::api').with(
       'debug'                     => 'true',
-      'database_connection'       => "mysql+pymysql://glance:testmido@127.0.0.1/glance?charset=utf8",
+      'database_connection'       => "mysql+pymysql://glance:testmido@172.17.0.3/glance?charset=utf8",
       'keystone_password'         => 'midokura',
       'workers'                   => '2',
       'stores'                    => '["http", "file"]',
@@ -87,7 +87,7 @@ describe 'midonet_openstack::profile::glance::controller' do
     it 'should configure the glance registry' do
       is_expected.to contain_class('glance::registry').with(
       'debug'                     => 'true',
-      'database_connection'       => 'mysql+pymysql://glance:testmido@127.0.0.1/glance?charset=utf8',
+      'database_connection'       => 'mysql+pymysql://glance:testmido@172.17.0.3/glance?charset=utf8',
       'keystone_password'         => 'midokura',
       'workers'                   => '2',
       'bind_host'                 => '172.17.0.3',

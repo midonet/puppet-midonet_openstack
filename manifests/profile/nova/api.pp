@@ -1,3 +1,4 @@
+
 # The profile to set up the Nova controller !
 class midonet_openstack::profile::nova::api {
   include ::openstack_integration::params
@@ -18,16 +19,6 @@ class midonet_openstack::profile::nova::api {
   #midonet_openstack#::resources::firewall { 'Nova EC2': port => '8773', }
   #midonet_openstack#::resources::firewall { 'Nova S3': port => '3333', }
   #midonet_openstack#::resources::firewall { 'Nova novnc': port => '6080', }
-  class { '::nova::db::mysql':
-    user          => $::midonet_openstack::params::mysql_nova_user,
-    password      => $::midonet_openstack::params::mysql_nova_pass,
-    allowed_hosts => '%',
-  }
-  class { '::nova::db::mysql_api':
-    user          => $::midonet_openstack::params::mysql_nova_api_user,
-    password      => $::midonet_openstack::params::mysql_nova_api_pass,
-    allowed_hosts => '%',
-  }
   class { '::nova::keystone::auth':
     public_url      => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_api}:8774/v2.1/%(tenant_id)s",
     public_url_v3   => "${::openstack_integration::config::proto}://${::midonet_openstack::params::controller_address_api}:8774/v3/%(tenant_id)s",
@@ -38,6 +29,7 @@ class midonet_openstack::profile::nova::api {
     password        => $::midonet_openstack::params::nova_password,
     region          => $::midonet_openstack::params::region
   }
+
   rabbitmq_user { $midonet_openstack::params::nova_rabbitmq_user:
     admin    => true,
     password => $midonet_openstack::params::glance_rabbitmq_password,
@@ -50,6 +42,17 @@ class midonet_openstack::profile::nova::api {
     read_permission      => '.*',
     provider             => 'rabbitmqctl',
     require              => Class['::rabbitmq'],
+  }
+  Rabbitmq_user_permissions['nova@/'] -> Service<| tag == 'nova-service' |>
+  class { '::nova::db::mysql':
+    user          => $::midonet_openstack::params::mysql_nova_user,
+    password      => $::midonet_openstack::params::mysql_nova_pass,
+    allowed_hosts => '%',
+  }
+  class { '::nova::db::mysql_api':
+    user          => $::midonet_openstack::params::mysql_nova_api_user,
+    password      => $::midonet_openstack::params::mysql_nova_api_pass,
+    allowed_hosts => '%',
   }
   class { '::nova':
     database_connection     => $database_connection,
