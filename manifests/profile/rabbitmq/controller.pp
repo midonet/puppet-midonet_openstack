@@ -61,7 +61,7 @@ class midonet_openstack::profile::rabbitmq::controller {
 
   rabbitmq_vhost { '/':
   provider => 'rabbitmqctl',
-  require  => Class['::rabbitmq'],
+  require  => [Class['::rabbitmq'],Anchor[rabbitmq::end]] ,
   }
 
 }

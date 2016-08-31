@@ -7,7 +7,7 @@
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box       = 'compute'
-  config.ssh.username = 'centos'
+  config.ssh.username = 'ubuntu'
   config.vm.provider :openstack do |os|
     os.meta_args_support  = true
     os.openstack_auth_url = 'http://118.67.110.147:5000/v2.0/tokens'
@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     os.password           = 'mid0sick'
     os.tenant_name        = 'AlexRuiz'
     os.flavor             = 'm2.xlarge'
-    os.image              = 'CentOS7-prereqs-controllerOnly'
+    os.image              = 'Ubuntu16-prereqs'
     os.networks           = [ {
       name: 'Internal-ahharu',
       address: '192.168.1.6'
@@ -26,7 +26,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     allinone.vm.synced_folder "../", "/vagrant"
     allinone.vm.synced_folder "../../../", "/openstack"
     allinone.vm.synced_folder "/home/ahharu/puppet-work/puppet-midonet", "/ali-g"
-    allinone.vm.provision :shell, path: "run_compute_centos.sh", args:['192.168.1.5']
+    allinone.vm.provision :shell, path: "run_compute_ubuntu.sh", args:['192.168.1.5']
   end
   # config.vm.define "compute" do |allinone|
   #   compute.vm.hostname "compute"

@@ -19,7 +19,6 @@ describe 'midonet_openstack::profile::neutron::controller' do
       'admin' => 'true',
       'password' => 'safe_password',
       'provider' => 'rabbitmqctl',
-      'require' => 'Class[Rabbitmq]',
       )
     end
 
@@ -29,7 +28,6 @@ describe 'midonet_openstack::profile::neutron::controller' do
       'write_permission' => '.*',
       'read_permission' => '.*',
       'provider' => 'rabbitmqctl',
-      'require' => 'Class[Rabbitmq]',
       )
     end
 
@@ -71,7 +69,7 @@ describe 'midonet_openstack::profile::neutron::controller' do
 
     it 'should install the neutron server' do
       is_expected.to contain_class('neutron::server').with(
-      'database_connection' => 'mysql+pymysql://neutron:testmido@127.0.0.1/neutron?charset=utf8',
+      'database_connection' => 'mysql+pymysql://neutron:testmido@172.17.0.3/neutron?charset=utf8',
       'password' => 'testmido',
       'sync_db' => 'true',
       'api_workers' => '2',

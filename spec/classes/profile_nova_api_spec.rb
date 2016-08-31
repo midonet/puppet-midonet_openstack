@@ -73,8 +73,8 @@ describe 'midonet_openstack::profile::nova::api' do
 
     it 'should install and configure base nove packages' do
       is_expected.to contain_class('nova').with(
-        'database_connection'     => 'mysql+pymysql://nova:testmido@127.0.0.1/nova',
-        'api_database_connection' => 'mysql+pymysql://nova_api:testmido@127.0.0.1/nova_api',
+        'database_connection'     => 'mysql+pymysql://nova:testmido@172.17.0.3/nova',
+        'api_database_connection' => 'mysql+pymysql://nova_api:testmido@172.17.0.3/nova_api',
         'rabbit_hosts'            => ["172.17.0.3:5672"],
         'rabbit_userid'           => 'nova',
         'rabbit_password'         => 'safe_password',

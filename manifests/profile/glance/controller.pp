@@ -38,6 +38,7 @@ class midonet_openstack::profile::glance::controller (
       password => $midonet_openstack::params::glance_rabbitmq_password,
       provider => 'rabbitmqctl',
       require  => Class['::rabbitmq'],
+      before   => Service['glance-api','glance-registry']
     }
     rabbitmq_user_permissions { 'glance@/':
       configure_permission => '.*',
@@ -45,6 +46,7 @@ class midonet_openstack::profile::glance::controller (
       read_permission      => '.*',
       provider             => 'rabbitmqctl',
       require              => Class['::rabbitmq'],
+      before               => Service['glance-api','glance-registry']
     }
 
     class { '::glance::db::mysql':

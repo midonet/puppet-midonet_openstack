@@ -81,7 +81,7 @@ puppet apply -e "include ::midonet_openstack::role::controller_static"  2>&1 | t
 iptables -F
 # Add the FIP to Horizon Vhost
 # We do a sed because centos7 was screwing with the echo solution.
-sed -i "\|</VirtualHost>|i ServerAlias $1" /etc/httpd/conf.d/15-horizon_vhost.conf
+sed -i "\|</VirtualHost>|i ServerAlias $2" /etc/httpd/conf.d/15-horizon_vhost.conf
 # Restart the Apache service.
 service httpd stop
 service httpd start
