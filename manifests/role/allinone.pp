@@ -211,21 +211,31 @@ class midonet_openstack::role::allinone (
 
   midonet::resources::interface_up { 'Bring eth1 up': mac_address => 'fa:16:3e:5a:60:17', }
 
-  #Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
+  Anchor['rabbitmq::end']                                         ->
   Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
+  Class['midonet_openstack::profile::mysql::controller' ]         ->
+  Class['midonet_openstack::profile::memcache::memcache' ]        ->
+  Class['midonet_openstack::profile::keystone::controller' ]      ->
+  Class['midonet_openstack::profile::glance::controller' ]        ->
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->
   Class['midonet_openstack::profile::nova::compute']              ->
-  Class['midonet::agent']                                         ->
+  Class['midonet_openstack::profile::horizon::horizon']           ->
   Class['midonet::cluster']                                       ->
+  Class['midonet::agent']                                         ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
   Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
   Midonet_gateway_bgp['edge-router']                              ->
   Midonet::Resources::Interface_up['Bring eth1 up']
+
+  Keystone_tenant<||>
+  -> Keystone_role<||>
+  -> Midonet_openstack::Resources::Keystone_user<||>
+  -> Midonet_host_registry[$::fqdn]
 
 }
