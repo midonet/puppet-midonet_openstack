@@ -25,11 +25,11 @@
 # [*mem_password*]
 #   Midonet MEM password
 class midonet_openstack::role::allinone_mem (
+  $mem_username,
+  $mem_password,
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $is_mem                  = true,
   $manage_repo             = true,
-  $mem_username,
-  $mem_password,
   ) inherits ::midonet_openstack::role {
 
   include stdlib

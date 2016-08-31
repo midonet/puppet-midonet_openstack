@@ -27,12 +27,12 @@
 # [*controller_ip*]
 #   Controller node ip address
 class midonet_openstack::role::allinone_analytics (
+  $mem_username,
+  $mem_password,
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $controller_ip           = $::midonet_openstack::params::controller_address_api,
   $is_mem                  = true,
   $manage_repo             = true,
-  $mem_username            = '',
-  $mem_password            = '',
   ) inherits ::midonet_openstack::role {
   # class { '::midonet_openstack::profile::firewall::firewall': }
   # contain '::midonet_openstack::profile::firewall::firewall'
