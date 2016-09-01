@@ -9,7 +9,7 @@ sed -i "s|^127.0.0.1.*|127.0.0.1  $(hostname -s).local $(hostname -s) localhost|
 
 
 # Update machine and install vim (just in case)
-
+rm -rf /var/lib/dpkg/lock
 
 apt-get remove puppet -y
 sudo apt-get update -y
