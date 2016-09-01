@@ -30,9 +30,13 @@ class midonet_openstack::role::allinone_mem (
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $is_mem                  = true,
   $manage_repo             = true,
+  $mem_apache_servername   = $::ipaddress,
+  $horizon_extra_aliases   = undef,
+  $cluster_ip              = undef,
+  $analytics_ip            = undef
   ) inherits ::midonet_openstack::role {
 
-  include stdlib
+  include ::stdlib
   #class { '::midonet_openstack::profile::firewall::firewall': }
   #contain '::midonet_openstack::profile::firewall::firewall'
   class { '::midonet_openstack::profile::repos': }
@@ -112,7 +116,9 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet_openstack::profile::nova::api'
   class { '::midonet_openstack::profile::nova::compute':}
   contain '::midonet_openstack::profile::nova::compute'
-  class { '::midonet_openstack::profile::horizon::horizon':}
+  class { '::midonet_openstack::profile::horizon::horizon':
+    extra_aliases => $horizon_extra_aliases
+  }
   contain '::midonet_openstack::profile::horizon::horizon'
   include ::midonet::params
   # Add midonet-cluster
@@ -152,7 +158,11 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet::cli'
 
   #Add MEM manager class
-  class {'midonet::mem':}
+  class {'midonet::mem':
+    mem_apache_servername => $mem_apache_servername,
+    cluster_ip            => $cluster_ip,
+    analytics_ip          => $analytics_ip
+  }
 
   #Xenial doesnt like daemons..
   if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '16') >= 0
@@ -212,19 +222,29 @@ class midonet_openstack::role::allinone_mem (
   }
   contain midonet::gateway::static
 
-  # Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
+  Anchor['rabbitmq::end']                                         ->
   Class['midonet_openstack::profile::zookeeper::midozookeeper' ]  ->
   Class['midonet_openstack::profile::cassandra::midocassandra' ]  ->
+  Class['midonet_openstack::profile::mysql::controller' ]         ->
+  Class['midonet_openstack::profile::memcache::memcache' ]        ->
+  Class['midonet_openstack::profile::keystone::controller' ]      ->
+  Class['midonet_openstack::profile::glance::controller' ]        ->
   Class['midonet_openstack::profile::neutron::controller']        ->
   Class['midonet_openstack::profile::nova::api']                  ->
   Class['midonet_openstack::profile::nova::compute']              ->
+  Class['midonet_openstack::profile::horizon::horizon']           ->
   Class['midonet::cluster']                                       ->
   Class['midonet::agent']                                         ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
   Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
   Class['midonet::gateway::static']
+
+  Keystone_tenant<||>
+  -> Keystone_role<||>
+  -> Midonet_openstack::Resources::Keystone_user<||>
+  -> Midonet_host_registry[$::fqdn]
 }

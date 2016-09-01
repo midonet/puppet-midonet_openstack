@@ -2,13 +2,13 @@
 set -x
 set -e
 
-
-
-# Update machine and install vim (just in case)
+#Fix fqdm issues
 hostnamectl set-hostname $(hostname -s)
 
 sed -i "s|^127.0.0.1.*|127.0.0.1  $(hostname -s).local $(hostname -s) localhost|" /etc/hosts
-rm -rf /var/lib/dpkg/lock
+
+
+# Update machine and install vim (just in case)
 
 apt-get remove puppet -y
 sudo apt-get update -y
@@ -35,7 +35,7 @@ sudo apt-get install zlib1g zlib1g-dev g++ -y
 /opt/puppetlabs/puppet/bin/gem  install bundler --no-rdoc --no-ri --verbose
 /opt/puppetlabs/puppet/bin/gem  install faraday --no-rdoc --no-ri --verbose
 /opt/puppetlabs/puppet/bin/gem  install json --no-rdoc --no-ri --verbose
-#/opt/puppetlabs/puppet/bin/r10k puppetfile install --moduledir /opt/puppetlabs/puppet/modules/ --puppetfile /openstack/Puppetfile --verbose
+/opt/puppetlabs/puppet/bin/r10k puppetfile install --moduledir /opt/puppetlabs/puppet/modules/ --puppetfile /openstack/Puppetfile --verbose
 rm -rf /opt/puppetlabs/puppet/modules/midonet_openstack
 ln -s /openstack/ /opt/puppetlabs/puppet/modules/midonet_openstack
 
@@ -61,7 +61,14 @@ cp -R /ali-g /etc/puppetlabs/code/modules/midonet
 iptables -F
 # Run the puppet manifest. Comment this line if you want to perform
 # some changes in the manifest
-puppet apply -e "include ::midonet_openstack::role::compute_static" --debug --trace  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+puppet apply /vagrant/allinone.pp --debug --trace  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
 # Fuck the iptables
 iptables -F
 #Add the FIP to Horizon Vhost
+new_vhost=$(mktemp)
+head -n -1 /etc/apache2/sites-enabled/15-horizon_vhost.conf > $new_vhost
+echo "ServerAlias $2" >> $new_vhost
+echo '</VirtualHost>' >> $new_vhost
+mv $new_vhost /etc/apache2/sites-enabled/15-horizon_vhost.conf
+# Restart the Apache service.
+service apache2 restart

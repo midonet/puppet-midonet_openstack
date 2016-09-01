@@ -2,20 +2,23 @@
 # == Class: midonet_openstack::profile::horizon::horizon
 #
 #  Configure Horizon on a node
-class midonet_openstack::profile::horizon::horizon {
+class midonet_openstack::profile::horizon::horizon(
+  $extra_aliases = []
+  ){
   include ::openstack_integration::params
   include ::openstack_integration::config
+  include ::stdlib
   $vhost_params = { add_listen => false }
   $controller_management_address = $::midonet_openstack::params::controller_address_management
   $controller_api_address        = $::midonet_openstack::params::controller_address_api
 
   class { '::horizon':
     keystone_multidomain_support => true,
-    server_aliases               => [$::fqdn,
+    server_aliases               => concat($extra_aliases,[$::fqdn,
       $::midonet_openstack::params::controller_address_management,
       $::midonet_openstack::params::controller_address_api,
       'localhost',
-      '127.0.0.1'],
+      '127.0.0.1']),
     cache_backend                => 'django.core.cache.backends.memcached.MemcachedCache',
     cache_server_ip              => [$::midonet_openstack::params::controller_address_management],
     cache_server_port            => '11211',
