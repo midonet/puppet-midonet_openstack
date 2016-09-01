@@ -376,6 +376,9 @@ class midonet_openstack::params {
   $storage_address_api           = $::ipaddress
   $storage_address_management    = $::ipaddress
 
+  ########Analytics node(Needs to change value)
+  $analytics_node_ip             = $::ipaddress
+
   ######## Database
 
   $mysql_root_password    = 'testmido'

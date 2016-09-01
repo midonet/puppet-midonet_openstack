@@ -152,7 +152,10 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet::cli'
 
   #Add MEM manager class
-  class {'midonet::mem':}
+  class {'midonet::mem':
+    cluster_ip    => $::midonet_openstack::params::controller_address_api,
+    analytics_ip  => $::midonet_openstack::params::analytics_node_ip,
+  }
 
   #Xenial doesnt like daemons..
   if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '16') >= 0
