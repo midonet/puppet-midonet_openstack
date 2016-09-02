@@ -29,6 +29,10 @@ class midonet_openstack::role::controller_static (
   $is_mem                  = false,
   $mem_username            = undef,
   $mem_password            = undef,
+  $mem_apache_servername   = $::ipaddress,
+  $horizon_extra_aliases   = undef,
+  $cluster_ip              = undef,
+  $analytics_ip            = undef
   ) inherits ::midonet_openstack::role {
 
   include stdlib
@@ -83,9 +87,6 @@ class midonet_openstack::role::controller_static (
     File['/etc/zookeeper/zoo.cfg']
   ]
 
-  # temporary hack to make sure RabbitMQ does not steal UID
-  # of Keystone
-  Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
   }
   if $::osfamily == 'Debian'
   {
@@ -103,9 +104,7 @@ class midonet_openstack::role::controller_static (
   class { '::midonet_openstack::profile::mysql::controller': }
   contain '::midonet_openstack::profile::mysql::controller'
 
-  class { '::midonet_openstack::profile::glance::controller':
-    require => [Class['::midonet_openstack::profile::keystone::controller',],],
-  }
+  class { '::midonet_openstack::profile::glance::controller':}
   contain '::midonet_openstack::profile::glance::controller'
   class { '::midonet_openstack::profile::neutron::controller':}
   contain '::midonet_openstack::profile::neutron::controller'
@@ -113,7 +112,9 @@ class midonet_openstack::role::controller_static (
   class { '::midonet_openstack::profile::nova::api':}
   contain '::midonet_openstack::profile::nova::api'
 
-  class { '::midonet_openstack::profile::horizon::horizon':}
+  class { '::midonet_openstack::profile::horizon::horizon':
+    extra_aliases => $horizon_extra_aliases,
+  }
   contain '::midonet_openstack::profile::horizon::horizon'
   include ::midonet::params
   # Add midonet-cluster
@@ -136,6 +137,15 @@ class midonet_openstack::role::controller_static (
     require  => $zk_requires
   }
   contain '::midonet::cli'
+
+  if $is_mem == true {
+    #Add MEM manager class
+    class {'midonet::mem':
+      mem_apache_servername => $mem_apache_servername,
+      cluster_ip            => $cluster_ip,
+      analytics_ip          => $analytics_ip
+    }
+  }
 
   # Add midonet-agent
   class { 'midonet::agent':

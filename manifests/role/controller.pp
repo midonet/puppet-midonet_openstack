@@ -36,9 +36,6 @@ class midonet_openstack::role::controller (
     package { 'openstack-selinux':
         ensure => 'latest'
     }
-    # temporary hack to make sure RabbitMQ does not steal UID
-    # of Keystone
-    Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
   }
 
   if $manage_repos and !defined(Class['midonet::repository']){
@@ -58,9 +55,7 @@ class midonet_openstack::role::controller (
   class { '::midonet_openstack::profile::mysql::controller': }
   class { '::midonet_openstack::profile::repos': }
   class { '::midonet_openstack::profile::rabbitmq::controller': }
-  class { '::midonet_openstack::profile::glance::controller':
-    require => Class['::midonet_openstack::profile::keystone::controller'],
-  }
+  class { '::midonet_openstack::profile::glance::controller':  }
   class { '::midonet_openstack::profile::neutron::controller_vanilla': }
   class { '::midonet_openstack::profile::nova::api':}
   class { '::midonet_openstack::profile::horizon::horizon':}
