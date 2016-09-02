@@ -91,7 +91,6 @@ class midonet_openstack::profile::nova::compute(
     package { 'lvm2':
       ensure => latest,
       before => [
-        Class['::nova::compute::libvirt', '::nova::compute'],
         Package['device-mapper']
       ]
     }

@@ -86,9 +86,7 @@ class midonet_openstack::role::allinone_mem (
     File['/etc/zookeeper/zoo.cfg']
   ]
 
-  # temporary hack to make sure RabbitMQ does not steal UID
-  # of Keystone
-  Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
+
   }
   if $::osfamily == 'Debian'
   {
@@ -105,9 +103,7 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet_openstack::profile::mysql::controller'
   class { '::midonet_openstack::profile::rabbitmq::controller': }
   contain '::midonet_openstack::profile::rabbitmq::controller'
-  class { '::midonet_openstack::profile::glance::controller':
-    require => Class['::midonet_openstack::profile::keystone::controller'],
-  }
+  class { '::midonet_openstack::profile::glance::controller':  }
   contain '::midonet_openstack::profile::glance::controller'
   class { '::midonet_openstack::profile::neutron::controller': }
   contain '::midonet_openstack::profile::neutron::controller'
