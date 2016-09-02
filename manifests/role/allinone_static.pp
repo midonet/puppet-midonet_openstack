@@ -83,9 +83,6 @@ class midonet_openstack::role::allinone_static (
     File['/etc/zookeeper/zoo.cfg']
   ]
 
-  # temporary hack to make sure RabbitMQ does not steal UID
-  # of Keystone
-  Package<| title == 'keystone' |> -> Package<| title == 'rabbitmq-server' |>
   }
   if $::osfamily == 'Debian'
   {
