@@ -13,10 +13,10 @@ class midonet_openstack::profile::midojava::midojava(
     case $::osfamily {
       'Debian': {
         include ::apt
-        if $::lsbdistrelease == '16.04' {
-          # Placeholder so the default case does not fail
+        if $version < 8
+        {
+          $package_name_debian = "openjdk-${version}-jdk-headless"
         }
-        elsif $::lsbdistrelease == '14.04' {
           notice ( 'Ubuntu 14.04 Installation. Adding OpenJDK keys')
           apt::key { 'openjdk-r':
             id     => 'DA1A4A13543B466853BAF164EB9B1D8886F44E2A',
@@ -37,7 +37,6 @@ class midonet_openstack::profile::midojava::midojava(
               before   => Class['java'],
               notify   => Class['::apt::update']
           }
-        }
         else {
           fail("Can't manage Java on ${::lsbdistid} ${::lsbdistrelease}")
         }
@@ -69,7 +68,7 @@ class midonet_openstack::profile::midojava::midojava(
       }
       'RedHat': {
         class {'::java':
-          package               => $package_name_redhat,
+          package => $package_name_redhat,
         }
         contain '::java'
 
