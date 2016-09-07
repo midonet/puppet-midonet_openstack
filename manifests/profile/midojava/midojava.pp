@@ -8,6 +8,7 @@
 class midonet_openstack::profile::midojava::midojava(
   $version = 8,
   ) {
+    include ::stdlib
     $package_name_redhat = "java-1.${version}.0-openjdk-headless"
     case $::osfamily {
       'Debian': {
@@ -28,7 +29,7 @@ class midonet_openstack::profile::midojava::midojava(
           apt::source {'openjdk-r':
               comment  => 'OpenJDK Repository',
               location => 'http://ppa.launchpad.net/openjdk-r/ppa/ubuntu',
-              release  => $::lsbdistcodename,
+              release  => downcase($::lsbdistcodename),
               key      => {
                     'id'     => 'DA1A4A13543B466853BAF164EB9B1D8886F44E2A',
                     'server' => 'subkeys.pgp.net',
