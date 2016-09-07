@@ -33,7 +33,8 @@ class midonet_openstack::role::allinone_mem (
   $mem_apache_servername   = $::ipaddress,
   $horizon_extra_aliases   = undef,
   $cluster_ip              = undef,
-  $analytics_ip            = undef
+  $analytics_ip            = undef,
+  $is_insights             = undef,
   ) inherits ::midonet_openstack::role {
 
   include ::stdlib
@@ -117,6 +118,7 @@ class midonet_openstack::role::allinone_mem (
   }
   contain '::midonet_openstack::profile::horizon::horizon'
   include ::midonet::params
+
   # Add midonet-cluster
   class {'midonet::cluster':
       is_mem               => $is_mem,
@@ -127,17 +129,19 @@ class midonet_openstack::role::allinone_mem (
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $::midonet_openstack::params::controller_address_management,
+      is_insights          => $is_insights,
       require              => $zk_requires
   }
   contain '::midonet::cluster'
-  # Add midonet-agent
+
+  #Add midonet-agent
   class { 'midonet::agent':
     controller_host => '127.0.0.1',
     metadata_port   => '8775',
     shared_secret   => $::midonet_openstack::params::neutron_shared_secret,
     zookeeper_hosts => [{
-        'ip' => $client_ip}
-        ],
+      'ip' => $client_ip}
+      ],
     is_mem          => $is_mem,
     manage_repo     => $manage_repo,
     mem_username    => $mem_username,
@@ -145,7 +149,8 @@ class midonet_openstack::role::allinone_mem (
     require         => $zk_requires
   }
   contain '::midonet::agent'
-  # Add midonet-cli
+
+  #Add midonet-cli
   class {'midonet::cli':
     username => 'admin',
     password => 'testmido',
