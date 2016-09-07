@@ -28,7 +28,7 @@ class midonet_openstack::profile::midojava::midojava(
           apt::source {'openjdk-r':
               comment  => 'OpenJDK Repository',
               location => 'http://ppa.launchpad.net/openjdk-r/ppa/ubuntu',
-              release  => 'trusty',
+              release  => $::lsbdistcodename,
               key      => {
                     'id'     => 'DA1A4A13543B466853BAF164EB9B1D8886F44E2A',
                     'server' => 'subkeys.pgp.net',
