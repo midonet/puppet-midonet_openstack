@@ -8,7 +8,6 @@
 class midonet_openstack::profile::midojava::midojava(
   $version = 8,
   ) {
-    $package_name_debian = "openjdk-${version}-jdk-headless"
     $package_name_redhat = "java-1.${version}.0-openjdk-headless"
     case $::osfamily {
       'Debian': {
