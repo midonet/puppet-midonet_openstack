@@ -37,9 +37,6 @@ class midonet_openstack::profile::midojava::midojava(
               before   => Class['java'],
               notify   => Class['::apt::update']
           }
-        else {
-          fail("Can't manage Java on ${::lsbdistid} ${::lsbdistrelease}")
-        }
       }
       'RedHat': {
         # Placeholder so the default case does not fail
