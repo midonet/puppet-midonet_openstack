@@ -10,16 +10,10 @@ class midonet_openstack::profile::midojava::midojava(
   ) {
     include ::stdlib
     $package_name_redhat = "java-1.${version}.0-openjdk-headless"
+    $package_name_debian = "openjdk-${version}-jre-headless"
     case $::osfamily {
       'Debian': {
         include ::apt
-        if $version < 8
-        {
-          $package_name_debian = "openjdk-${version}-jre-headless"
-        }
-        else {
-          $package_name_debian = "openjdk-${version}-jdk-headless"
-        }
           notice ( 'Ubuntu 14.04 Installation. Adding OpenJDK keys')
           apt::key { 'openjdk-r':
             id     => 'DA1A4A13543B466853BAF164EB9B1D8886F44E2A',
