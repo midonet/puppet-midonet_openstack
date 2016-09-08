@@ -33,7 +33,6 @@ class midonet_openstack::role::nsdb (
     $zk_servers           = $midonet_openstack::params::zookeeper_servers
   ) inherits ::midonet_openstack::role {
 
-    include ::midonet_openstack::profile::firewall::firewall
     if $manage_repos and !defined(Class['midonet::repository']){
       class { '::midonet::repository': }
     }

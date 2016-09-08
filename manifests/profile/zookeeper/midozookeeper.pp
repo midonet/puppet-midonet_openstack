@@ -73,7 +73,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         client_ip    => $client_ip,
         packages     => $zk_packages,
         service_name => 'zookeeper',
-        require      => [ File['/usr/java/default'], Class['midonet::repository'] ],
+        require      => [ File['/usr/java/default'] ],
       }
       contain 'zookeeper'
     }
