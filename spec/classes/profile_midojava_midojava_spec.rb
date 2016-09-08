@@ -21,7 +21,7 @@ describe 'midonet_openstack::profile::midojava::midojava' do
 
      it { is_expected.to contain_class(
        'java').with(
-         'package'               => 'openjdk-8-jdk-headless',
+         'package'               => 'openjdk-8-jre-headless',
          'java_alternative'      => 'java-1.8.0-openjdk-amd64',
          'java_alternative_path' => '/usr/lib/jvm/java-1.8.0-openjdk-amd64'
        )
