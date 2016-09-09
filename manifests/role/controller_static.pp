@@ -84,7 +84,7 @@ class midonet_openstack::role::controller_static (
 
   $zk_requires=[
     Service['zookeeper-service'],
-    File['/etc/zookeeper/zoo.cfg']
+    File['/etc/zookeeper/conf/zoo.cfg']
   ]
 
   }
@@ -92,7 +92,7 @@ class midonet_openstack::role::controller_static (
   {
     $zk_requires=[
       Package['zookeeper','zookeeperd'],
-      File['/etc/zookeeper/zoo.cfg']
+      File['/etc/zookeeper/conf/zoo.cfg']
     ]
   }
   class { '::midonet_openstack::profile::memcache::memcache':}

@@ -83,7 +83,7 @@ class midonet_openstack::role::allinone_mem (
 
   $zk_requires=[
     Service['zookeeper-service'],
-    File['/etc/zookeeper/zoo.cfg']
+    File['/etc/zookeeper/conf/zoo.cfg']
   ]
 
 
@@ -92,7 +92,7 @@ class midonet_openstack::role::allinone_mem (
   {
     $zk_requires=[
       Package['zookeeper','zookeeperd'],
-      File['/etc/zookeeper/zoo.cfg']
+      File['/etc/zookeeper/conf/zoo.cfg']
     ]
   }
   class { '::midonet_openstack::profile::memcache::memcache':}
