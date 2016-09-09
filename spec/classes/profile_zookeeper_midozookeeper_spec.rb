@@ -24,7 +24,7 @@ describe 'midonet_openstack::profile::zookeeper::midozookeeper' do
        'zookeeper').with(
          'servers'          => ["localhost"],
          'id'               => 1,
-         'cfg_dir'          => '/etc/zookeeper',
+         'cfg_dir'          => '/etc/zookeeper/conf',
          'client_ip'        => '172.17.0.3',
          'packages'         => ['zookeeper','zookeeperd'],
          'service_name'     => 'zookeeper',
@@ -43,7 +43,7 @@ describe 'midonet_openstack::profile::zookeeper::midozookeeper' do
        'zookeeper').with(
          'servers'          => ["localhost"],
          'id'               => 1,
-         'cfg_dir'          => '/etc/zookeeper',
+         'cfg_dir'          => '/etc/zookeeper/conf',
          'client_ip'        => '172.17.0.3',
          'packages'         => ['zookeeper'],
          'service_name'     => 'zookeeper',

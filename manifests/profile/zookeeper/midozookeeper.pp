@@ -13,7 +13,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
   $id                   = 1,
   $client_ip            = $::ipaddress_eth0,
   $zk_servers           = zookeeper_servers($midonet_openstack::params::zookeeper_servers),
-  $cfg_dir              = '/etc/zookeeper',
+  $cfg_dir              = '/etc/zookeeper/conf',
   ){
 
     ##midonet_openstack#::resources::firewall { 'Zookeeper': port => '2181'}
