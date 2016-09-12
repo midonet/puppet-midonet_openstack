@@ -31,8 +31,8 @@ class midonet_openstack::role::allinone_analytics (
   $mem_password,
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $controller_ip           = $::midonet_openstack::params::controller_address_api,
-  $is_mem                  = true,
-  $manage_repo             = true,
+  $is_mem                  = undef,
+  $manage_repo             = undef,
   ) inherits ::midonet_openstack::role {
   # class { '::midonet_openstack::profile::firewall::firewall': }
   # contain '::midonet_openstack::profile::firewall::firewall'
@@ -48,7 +48,9 @@ class midonet_openstack::role::allinone_analytics (
     mem_password      => $mem_password
   }
   contain '::midonet::repository'
-  class { '::midonet_openstack::profile::midojava::midojava':}
+  class { '::midonet_openstack::profile::midojava::midojava':
+    version => 7
+  }
   contain '::midonet_openstack::profile::midojava::midojava'
 
   include ::midonet::params
@@ -65,5 +67,6 @@ class midonet_openstack::role::allinone_analytics (
   # Class['midonet_openstack::profile::firewall::firewall']         ->
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
-  Class['midonet_openstack::profile::midojava::midojava']
+  Class['midonet_openstack::profile::midojava::midojava']         ->
+  Class['midonet::analytics']
 }
