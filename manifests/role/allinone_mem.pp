@@ -34,7 +34,9 @@ class midonet_openstack::role::allinone_mem (
   $horizon_extra_aliases   = undef,
   $cluster_ip              = undef,
   $analytics_ip            = undef,
-  $is_insights             = undef
+  $is_insights             = undef,
+  $is_ssl                  = undef,
+  $insights_ssl            = undef
   ) inherits ::midonet_openstack::role {
 
   include ::stdlib
@@ -129,6 +131,8 @@ class midonet_openstack::role::allinone_mem (
       keystone_admin_token => 'testmido',
       keystone_host        => $::midonet_openstack::params::controller_address_management,
       is_insights          => $is_insights,
+      insights_ssl         => $insights_ssl,
+      analytics_ip         => $analytics_ip,
       require              => $zk_requires
   }
   contain '::midonet::cluster'
@@ -160,7 +164,9 @@ class midonet_openstack::role::allinone_mem (
     mem_apache_servername => $mem_apache_servername,
     cluster_ip            => $cluster_ip,
     analytics_ip          => $analytics_ip,
-    is_insights          => $is_insights
+    is_insights           => $is_insights,
+    is_ssl                => $is_ssl,
+    insights_ssl          => $insights_ssl
   }
 
   #Xenial doesnt like daemons..
