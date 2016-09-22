@@ -252,4 +252,26 @@ class midonet_openstack::role::allinone_mem (
   -> Keystone_role<||>
   -> Midonet_openstack::Resources::Keystone_user<||>
   -> Midonet_host_registry[$::fqdn]
+
+  if $is_mem {
+
+    if $::osfamily == 'Debian' {
+      $command = 'cp /tmp/15-horizon_vhost.conf /etc/apache2/sites-available/15-horizon_vhost.conf && service apache2 restart'
+    }
+    else {
+      $command= 'cp /tmp/15-horizon_vhost.conf /etc/httpd/sites-available/15-horizon_vhost.conf && service httpd restart'
+    }
+
+    file { '/tmp/15-horizon_vhost.conf':
+      ensure  => present,
+      require => Class['midonet_openstack::profile::horizon::horizon'],
+      source  => 'puppet:///modules/midonet_openstack/15-horizon_vhost.conf',
+    }
+
+    exec {'reload apache':
+      path    => ['/usr/sbin', '/usr/bin', '/bin', '/sbin'],
+      require => File['/tmp/15-horizon_vhost.conf'],
+      command => $command
+    }
+  }
 }
