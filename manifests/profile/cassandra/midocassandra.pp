@@ -144,9 +144,9 @@ class midonet_openstack::profile::cassandra::midocassandra (
   }
   ## Hard-pin the version here since midonet requires 2.2
   if $::osfamily == 'RedHat' {
-    $version = '2.2.4-1'
+    $cassandra_pkg = 'cassandra22'
   } else {
-    $version = '2.2.4'
+    $cassandra_pkg = 'dsc22'
   }
 
   class {'::cassandra':
@@ -157,7 +157,7 @@ class midonet_openstack::profile::cassandra::midocassandra (
     native_transport_port => $client_port,
     rpc_address           => $seed_address,
     rpc_port              => $client_port_thrift,
-    package_ensure        => $version,
+    package_name          => $cassandra_pkg,
     service_systemd       => $is_systemd,
     require               => Class['cassandra::datastax_repo'],
 #    before                => Class['cassandra::firewall_ports']
