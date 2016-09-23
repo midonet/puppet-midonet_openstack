@@ -10,9 +10,9 @@
 #  [*zk_servers*]
 #    List of zookeeper servers
 class midonet_openstack::profile::zookeeper::midozookeeper(
+  $zk_servers,
   $id                   = 1,
   $client_ip            = $::ipaddress_eth0,
-  $zk_servers           = zookeeper_servers($midonet_openstack::params::zookeeper_servers),
   $cfg_dir              = '/etc/zookeeper/conf',
   ){
 
