@@ -158,6 +158,7 @@ class midonet_openstack::profile::cassandra::midocassandra (
     rpc_address           => $seed_address,
     rpc_port              => $client_port_thrift,
     package_name          => $cassandra_pkg,
+    package_version       => $::osfamily? {'Debian' => '2.2.7', default => undef}
     service_systemd       => $is_systemd,
     require               => Class['cassandra::datastax_repo'],
 #    before                => Class['cassandra::firewall_ports']
