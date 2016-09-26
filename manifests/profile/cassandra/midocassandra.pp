@@ -146,7 +146,7 @@ class midonet_openstack::profile::cassandra::midocassandra (
   if $::osfamily == 'RedHat' {
     $cassandra_pkg = 'cassandra22'
   } else {
-    $cassandra_pkg = 'dsc22'
+    $cassandra_pkg = 'cassandra'
   }
 
   class {'::cassandra':
