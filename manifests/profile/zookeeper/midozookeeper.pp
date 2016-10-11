@@ -30,7 +30,6 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         service_name        => 'zookeeper',
         manage_service      => false,
         manage_service_file => false,
-        require             => Class['midonet::repository'],
       }
       contain '::zookeeper'
 
