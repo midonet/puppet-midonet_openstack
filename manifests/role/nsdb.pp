@@ -61,6 +61,7 @@ class midonet_openstack::role::nsdb (
                                   '::midonet_openstack::profile::zookeeper::midozookeeper']
     }
     contain '::midonet_openstack::profile::cassandra::midocassandra'
-
-
+    if $::osfamily == 'RedHat' {
+      Package<| title = 'zookeeper' |> { ensure => '3.4.5-1'}
+    }
 }
