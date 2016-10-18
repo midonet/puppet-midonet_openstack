@@ -66,7 +66,7 @@ mod 'glance',
 
   mod 'puppetlabs/java'
   mod 'deric/zookeeper'
-  mod 'locp/cassandra'
+  mod 'locp/cassandra' , '1.25.2'
   mod 'midonet',
     :git => 'https://github.com/openstack/puppet-midonet.git',
     :ref => 'master'
@@ -78,4 +78,3 @@ mod 'elasticsearch/elasticsearch'
 mod 'elasticsearch/logstash'
 mod 'electrical/file_concat'
 mod 'richardc/datacat'
-
