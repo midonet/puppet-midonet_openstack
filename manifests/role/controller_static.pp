@@ -188,12 +188,7 @@ class midonet_openstack::role::controller_static (
   }
 
   midonet::resources::network_creation { 'Test Edge Router Setup':
-    api_endpoint            => "http://${::midonet_openstack::params::controller_address_management}/midonet-api",
-    keystone_username       => 'midogod',
-    keystone_password       => 'midogod',
     tenant_name             => 'midokura',
-    controller_ip           => '127.0.0.1',
-    controller_neutron_port => '9696',
     edge_router_name        => 'edge-router',
     edge_network_name       => 'net-edge1-gw1',
     edge_subnet_name        => 'subnet-edge1-gw1',
