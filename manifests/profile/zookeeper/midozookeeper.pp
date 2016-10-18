@@ -34,18 +34,6 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
       }
       contain '::zookeeper'
 
-      file { 'zk service file':
-        ensure  => file,
-        path    => '/lib/systemd/system/zookeeper.service',
-        content => template('midonet_openstack/zookeeper/zookeeper.service.erb'),
-        before  => Class['zookeeper::os::redhat', 'zookeeper::config']
-      }
-
-      #file { 'zookeeper-old-initscript':
-        #ensure => absent,
-        #path   => '/etc/init.d/zookeeper',
-      #}
-
       service { 'zookeeper-service':
         ensure  => 'running',
         name    => 'zookeeper',
@@ -55,10 +43,8 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         ],
       }
 
-      File['zk service file'] ->
       Class['zookeeper::os::redhat'] ->
       Class['zookeeper::config'] ->
-      #File['zookeeper-old-initscript'] ->
       Service['zookeeper-service']
 
     }
