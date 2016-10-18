@@ -38,7 +38,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         name    => 'zookeeper',
         enable  => true,
         require => [
-          File['zk service file',"${cfg_dir}/zoo.cfg"],
+          "${cfg_dir}/zoo.cfg"],
         ],
       }
 
