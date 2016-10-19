@@ -188,17 +188,17 @@ class midonet_openstack::role::controller_static (
   }
 
   midonet::resources::network_creation { 'Test Edge Router Setup':
-    tenant_name             => 'midokura',
-    edge_router_name        => 'edge-router',
-    edge_network_name       => 'net-edge1-gw1',
-    edge_subnet_name        => 'subnet-edge1-gw1',
-    edge_cidr               => '172.19.0.0/30',
-    port_name               => 'testport',
-    port_fixed_ip           => '172.19.0.2',
-    port_interface_name     => 'veth1',
-    gateway_ip              => '172.172.0.1',
-    allocation_pools        => ['start=172.172.0.100,end=172.172.0.200'],
-    subnet_cidr             => '172.172.0.0/24',
+    tenant_name         => 'midokura',
+    edge_router_name    => 'edge-router',
+    edge_network_name   => 'net-edge1-gw1',
+    edge_subnet_name    => 'subnet-edge1-gw1',
+    edge_cidr           => '172.19.0.0/30',
+    port_name           => 'testport',
+    port_fixed_ip       => '172.19.0.2',
+    port_interface_name => 'veth1',
+    gateway_ip          => '172.172.0.1',
+    allocation_pools    => ['start=172.172.0.100,end=172.172.0.200'],
+    subnet_cidr         => '172.172.0.0/24',
   }
 
   class { 'midonet::gateway::static':
