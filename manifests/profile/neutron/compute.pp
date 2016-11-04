@@ -1,7 +1,21 @@
+# == Class: midonet_openstack::profile::neutron::compute
 # The midonet_openstack::profile::neutron::compute
 # configures neutron in compute node
 #
 # Suitable for both Vanilla and Midonet OpenStack installations
+# == Parameters
+#
+#  [*controller_management_address*]
+#    Management IP of controller host
+#
+#  [*controller_api_address*]
+#    API IP of controller host
+#
+#  [*region_name*]
+#    Openstack region name for nova
+#
+#  [*neutron_password*]
+#    Password for neutron user
 
 class midonet_openstack::profile::neutron::compute (
   $controller_management_address = $::midonet_openstack::params::controller_address_management,
