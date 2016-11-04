@@ -8,29 +8,50 @@
 #   Backend to be used by Glance.
 #   (Optional) Defaults to 'file'.
 #
-# [*backend*]
-#   Backend to be used by Glance.
-#   (Optional) Defaults to 'file'.
+# [*controller_management_address*]
+#   Controller Management IP Address
 #
-# [*backend*]
-#   Backend to be used by Glance.
-#   (Optional) Defaults to 'file'.
+# [*controller_api_address*]
+#   Controller API Address
 #
-# [*backend*]
-#   Backend to be used by Glance.
-#   (Optional) Defaults to 'file'.
+# [*crt_file*]
+#   Glance ssl cert file
 #
-# [*backend*]
-#   Backend to be used by Glance.
-#   (Optional) Defaults to 'file'.
+# [*glance_ssl*]
+#   Is glance using ssl?
 #
-# [*backend*]
-#   Backend to be used by Glance.
-#   (Optional) Defaults to 'file'.
+# [*rabbitmq_user*]
+#  Glance Rabbitmq username
 #
-# [*backend*]
-#   Backend to be used by Glance.
-#   (Optional) Defaults to 'file'.
+# [*rabbitmq_password*]
+#   Rabbitmq password
+#
+# [*rabbitmq_hosts*]
+#   Rabbitmq list of hosts
+#
+# [*rabbitmq_ssl*]
+#   Is rabbitmq using SSL?
+#
+# [*mysql_glance_user*]
+#   Glance mysql username
+#
+# [*mysql_glance_pass*]
+#   Glance Mysql glance password
+#
+# [*glance_keystone_pass*]
+#   Glance keystone password
+#
+# [*region_name*]
+#   Glance openstack region name
+#
+# [*keystone_auth_uri*]
+#   Keystone auth URI
+#
+# [*glance_debug*]
+#   Activate debug mode for glance_debug
+#
+# [*keystone_protocol*]
+#   Protocol for Keystone ( http / https )
 # === Authors
 #
 # Midonet (http://midonet.org)
