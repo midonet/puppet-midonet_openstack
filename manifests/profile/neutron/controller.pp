@@ -1,11 +1,61 @@
+# == Class: midonet_openstack::profile::neutron::controller
+
 # The midonet_openstack::profile::neutron::controller
 # configures neutron in controller node , preparing it for midonet
 #
 #
-class midonet_openstack::profile::neutron::controller {
+# == Parameters
+#
+#  [*controller_management_address*]
+#    Management IP of controller host
+#
+#  [*controller_api_address*]
+#    API IP of controller host
+#
+#  [*region_name*]
+#    Openstack region name for nova
+#
+#  [*neutron_password*]
+#    Password for neutron user
+#
+#  [*rabbitmq_user*]
+#   Rabbitmq username
+#
+#  [*rabbitmq_password*]
+#    Rabbitmq password
+#
+#  [*rabbitmq_hosts*]
+#    List of rabbitmq hosts
+#
+#  [*rabbitmq_ssl*]
+#    Is rabbitmq using ssl?
+#
+#  [*mysql_neutron_pass*]
+#    Password for mysql neutron user
+#
+#
+#  [*metadata_proxy_shared_secret*]
+#    Metadata proxy shared secret
+#
+#  [*nova_password*]
+#    Password for nova user
+#
+class midonet_openstack::profile::neutron::controller (
+  $controller_management_address = $::midonet_openstack::params::controller_address_management,
+  $controller_api_address        = $::midonet_openstack::params::controller_address_api,
+  $region_name                   = $::midonet_openstack::params::region,
+  $neutron_password              = $::midonet_openstack::params::neutron_password,
+  $rabbitmq_user                 = $::midonet_openstack::params::neutron_rabbitmq_user,
+  $rabbitmq_password             = $::midonet_openstack::params::neutron_rabbitmq_password,
+  $rabbitmq_hosts                = $::midonet_openstack::params::rabbitmq_hosts,
+  $rabbitmq_ssl                  = $::midonet_openstack::params::rabbitmq_ssl,
+  $mysql_neutron_pass            = $::midonet_openstack::params::mysql_neutron_pass,
+  $neutron_password              = $::midonet_openstack::params::neutron_password,
+  $metadata_proxy_shared_secret  = $::midonet_openstack::params::neutron_shared_secret,
+  $nova_password                 = $::midonet_openstack::params::nova_password
+  ){
   include ::openstack_integration::config
-  $controller_management_address = $::midonet_openstack::params::controller_address_management
-  $controller_api_address        = $::midonet_openstack::params::controller_address_api
+
   if $::osfamily == 'Debian' {
     $ml2_package      = 'neutron-plugin-ml2'
     $nova_api_service = 'nova-api'
@@ -19,34 +69,34 @@ class midonet_openstack::profile::neutron::controller {
   package { 'python-neutron-fwaas': ensure => installed }
 
   class { '::neutron::keystone::auth':
-    password   => $::midonet_openstack::params::neutron_password,
-    region     => $::midonet_openstack::params::region,
+    password   => $neutron_password,
+    region     => $region_name,
     public_url => "http://${controller_api_address}:9696",
     admin_url  => "http://${controller_management_address}:9696"
   }
 
-rabbitmq_user { $::midonet_openstack::params::neutron_rabbitmq_user:
+rabbitmq_user { $rabbitmq_user:
   admin    => true,
-  password => $::midonet_openstack::params::neutron_rabbitmq_password,
+  password => $rabbitmq_password,
   provider => 'rabbitmqctl',
 }
-rabbitmq_user_permissions { 'neutron@/':
+rabbitmq_user_permissions { "${rabbitmq_user}@/":
   configure_permission => '.*',
   write_permission     => '.*',
   read_permission      => '.*',
   provider             => 'rabbitmqctl',
 }
-Rabbitmq_user_permissions['neutron@/'] -> Service<| tag == 'neutron-service' |>
+Rabbitmq_user_permissions["${rabbitmq_user}@/"] -> Service<| tag == 'neutron-service' |>
 class { '::neutron::db::mysql':
-  password      => $::midonet_openstack::params::mysql_neutron_pass,
+  password      => $mysql_neutron_pass,
   allowed_hosts => '%',
 }
 
 class { '::neutron':
-  rabbit_user             => $::midonet_openstack::params::neutron_rabbitmq_user,
-  rabbit_password         => $::midonet_openstack::params::neutron_rabbitmq_password,
-  rabbit_hosts            => $::midonet_openstack::params::rabbitmq_hosts,
-  rabbit_use_ssl          => $::midonet_openstack::params::rabbitmq_ssl,
+  rabbit_user             => $rabbitmq_user,
+  rabbit_password         => $rabbitmq_password,
+  rabbit_hosts            => $rabbitmq_hosts,
+  rabbit_use_ssl          => $rabbitmq_ssl,
   allow_overlapping_ips   => true,
   core_plugin             => 'midonet.neutron.plugin_v2.MidonetPluginV2',
   service_plugins         => [
@@ -61,16 +111,16 @@ class { '::neutron':
 class { '::neutron::client': }
 
 class { '::neutron::server':
-  database_connection => "mysql+pymysql://${::midonet_openstack::params::mysql_neutron_user}:${::midonet_openstack::params::mysql_neutron_pass}@${controller_management_address}/neutron?charset=utf8",
-  password            => $::midonet_openstack::params::neutron_password,
+  database_connection => "mysql+pymysql://${mysql_neutron_user}:${mysql_neutron_pass}@${controller_management_address}/neutron?charset=utf8",
+  password            => $neutron_password,
   sync_db             => true,
   api_workers         => 2,
   rpc_workers         => 2,
   auth_uri            => "http://${controller_api_address}:5000",
   auth_url            => "http://${controller_management_address}:35357",
   service_providers   => ['LOADBALANCER:Midonet:midonet.neutron.services.loadbalancer.driver.MidonetLoadbalancerDriver:default'],
-  region_name         => $::midonet_openstack::params::region,
-  auth_region         => $::midonet_openstack::params::region
+  region_name         => $region_name,
+  auth_region         => $region_name
 }
 
   # Configure [nova] section in neutron.conf
@@ -79,16 +129,16 @@ class { '::neutron::server':
     'nova/auth_plugin':                value => 'password';
     'nova/project_domain_id':          value => 'default';
     'nova/user_domain_id':             value => 'default';
-    'nova/region_name':                value => $::midonet_openstack::params::region;
+    'nova/region_name':                value => $region_name;
     'nova/project_name':               value => 'admin';
     'nova/username':                   value => 'nova';
-    'nova/password':                   value => $::midonet_openstack::params::nova_password;
+    'nova/password':                   value => $nova_password;
   }
   class { '::midonet::neutron_plugin':
       midonet_api_ip    => '127.0.0.1',
       midonet_api_port  => '8181',
       keystone_username => 'neutron',
-      keystone_password => $::midonet_openstack::params::neutron_password,
+      keystone_password => $neutron_password,
       keystone_tenant   => 'services',
       sync_db           => true,
       notify            => Service[$nova_api_service,'neutron-server']
