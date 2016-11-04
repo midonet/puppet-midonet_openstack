@@ -16,10 +16,6 @@
 #
 # == Parameters
 #
-#  [*zookeeper_client_ip*]
-#    Zookeeper Host Ip
-# [*is_mem*]
-#   Using MEM installation?
 # [*mem_username*]
 #   Midonet MEM username
 # [*mem_password*]
@@ -29,10 +25,7 @@
 class midonet_openstack::role::allinone_analytics (
   $mem_username,
   $mem_password,
-  $client_ip               = $::midonet_openstack::params::controller_address_management,
   $controller_ip           = $::midonet_openstack::params::controller_address_api,
-  $is_mem                  = undef,
-  $manage_repo             = undef,
   ) inherits ::midonet_openstack::role {
   # class { '::midonet_openstack::profile::firewall::firewall': }
   # contain '::midonet_openstack::profile::firewall::firewall'
@@ -49,7 +42,6 @@ class midonet_openstack::role::allinone_analytics (
   }
   contain '::midonet::repository'
   class { '::midonet_openstack::profile::midojava::midojava':
-    version => 7
   }
   contain '::midonet_openstack::profile::midojava::midojava'
 
