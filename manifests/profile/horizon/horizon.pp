@@ -2,6 +2,11 @@
 # == Class: midonet_openstack::profile::horizon::horizon
 #
 #  Configure Horizon on a node
+# === Parameters
+#
+# [*extra_aliases*]
+#   List of extra serveraliases for horizon
+#   (Optional) Defaults to [].
 class midonet_openstack::profile::horizon::horizon(
   $extra_aliases = []
   ){
