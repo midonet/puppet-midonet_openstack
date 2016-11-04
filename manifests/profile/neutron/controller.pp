@@ -30,6 +30,9 @@
 #  [*rabbitmq_ssl*]
 #    Is rabbitmq using ssl?
 #
+#  [*mysql_neutron_user*]
+#    mysql neutron user
+#
 #  [*mysql_neutron_pass*]
 #    Password for mysql neutron user
 #
@@ -40,6 +43,25 @@
 #  [*nova_password*]
 #    Password for nova user
 #
+# === Authors
+#
+# Midonet (http://midonet.org)
+#
+# === Copyright
+#
+# Copyright (c) 2015 Midokura SARL, All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 class midonet_openstack::profile::neutron::controller (
   $controller_management_address = $::midonet_openstack::params::controller_address_management,
   $controller_api_address        = $::midonet_openstack::params::controller_address_api,
@@ -49,6 +71,7 @@ class midonet_openstack::profile::neutron::controller (
   $rabbitmq_password             = $::midonet_openstack::params::neutron_rabbitmq_password,
   $rabbitmq_hosts                = $::midonet_openstack::params::rabbitmq_hosts,
   $rabbitmq_ssl                  = $::midonet_openstack::params::rabbitmq_ssl,
+  $mysql_neutron_user            = $::midonet_openstack::params::mysql_neutron_user,
   $mysql_neutron_pass            = $::midonet_openstack::params::mysql_neutron_pass,
   $neutron_password              = $::midonet_openstack::params::neutron_password,
   $metadata_proxy_shared_secret  = $::midonet_openstack::params::neutron_shared_secret,
