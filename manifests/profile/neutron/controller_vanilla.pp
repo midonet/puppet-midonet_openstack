@@ -66,7 +66,6 @@ class midonet_openstack::profile::neutron::controller_vanilla(
   $controller_management_address = $::midonet_openstack::params::controller_address_management,
   $controller_api_address        = $::midonet_openstack::params::controller_address_api,
   $region_name                   = $::midonet_openstack::params::region,
-  $neutron_password              = $::midonet_openstack::params::neutron_password,
   $rabbitmq_user                 = $::midonet_openstack::params::neutron_rabbitmq_user,
   $rabbitmq_password             = $::midonet_openstack::params::neutron_rabbitmq_password,
   $rabbitmq_hosts                = $::midonet_openstack::params::rabbitmq_hosts,
