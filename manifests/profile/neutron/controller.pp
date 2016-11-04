@@ -73,7 +73,6 @@ class midonet_openstack::profile::neutron::controller (
   $rabbitmq_ssl                  = $::midonet_openstack::params::rabbitmq_ssl,
   $mysql_neutron_user            = $::midonet_openstack::params::mysql_neutron_user,
   $mysql_neutron_pass            = $::midonet_openstack::params::mysql_neutron_pass,
-  $neutron_password              = $::midonet_openstack::params::neutron_password,
   $metadata_proxy_shared_secret  = $::midonet_openstack::params::neutron_shared_secret,
   $nova_password                 = $::midonet_openstack::params::nova_password
   ){
