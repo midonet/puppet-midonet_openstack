@@ -1,12 +1,10 @@
 # midonet_openstack
 
-NOW UNDER HEAVY DEVELOPMENT!
-
 # midonet-midonet_openstack
 
 MidoNet Reference and Testing Deployment Module for OpenStack.
 
-Version 5.0 / 2014.2 / Juno
+Version 8.0 / Mitaka
 
 ####Table of Contents
 
@@ -27,7 +25,7 @@ Version 5.0 / 2014.2 / Juno
 ##Overview
 
 The puppetlabs-openstack module is used to deploy a multi-node, all-in-one, or swift-only installation of
-OpenStack Juno. This module superseeds [puppetlabs-openstack](http://github.com/puppetlabs/puppetlabs-openstack)
+OpenStack Mitaka. This module superseeds [puppetlabs-openstack](http://github.com/puppetlabs/puppetlabs-openstack)
 by defining roles and profiles that configure OpenStack with MidoNet as Neutron driver
 
 ##Versioning
@@ -41,18 +39,19 @@ Puppet Module :: OpenStack Version :: OpenStack Codename
 3.0.0         -> 2013.2.0          -> Havana
 4.0.0         -> 2014.1.0          -> Icehouse
 5.0.0         -> 2014.2.0          -> Juno
+8.0.0         -> 2016.04.07        -> Mitaka
 ```
 
 ##Module Description
 
-Using the stable/juno branch of the puppet-openstack modules, midonet-midonet_openstack allows
-for the rapid deployment of an installation of OpenStack Juno. For the multi-node, up to four
+Using the stable/mitaka branch of the puppet-openstack modules, midonet-midonet_openstack allows
+for the rapid deployment of an installation of OpenStack Mitaka. For the multi-node, up to four
 types of nodes are created for the deployment:
 
 * A controller node that hosts databases, message queues and caches, and most api services.
-* A network node that defines Metadata and DHCP services.
 * A compute node to run guest operating systems with the MidoNet agent
-* A coordination node for the nsdb (network state database) for clusterized services.
+* A nsdb node for handling topology, data flow information
+* An analytics node for insights
 
 You can still use the storage and tempest nodes defined in [puppetlabs-openstack](https://github.com/puppetlabs/puppetlabs-openstack/blob/master/README.md#module-description)
 
@@ -61,7 +60,7 @@ You can still use the storage and tempest nodes defined in [puppetlabs-openstack
 ###Setup Requirements
 
 This module assumes nodes running on a RedHat 7 variant (RHEL, CentOS, or Scientific Linux)
-or Ubuntu 14.04 (Trusty) with either Puppet Enterprise or Puppet.
+or Ubuntu 14.04 (Trusty) or Ubuntu 16.04 (Xenial Xerus) with either Puppet Enterprise or Puppet.
 
 Each node needs a minimum of two network interfaces, and up to four.
 The network interfaces are divided into two groups.
@@ -73,7 +72,7 @@ The network interfaces are divided into two groups.
   * Management network.
   * Data network.
 
-This module have been tested with Puppet 3.5 and Puppet Enterprise. This module depends upon Hiera. Object
+This module have been tested with Puppet 4.X and Puppet Enterprise. This module depends upon Hiera. Object
 store support (Swift) depends upon exported resources and PuppetDB.
 
 ###Beginning with OpenStack
@@ -91,13 +90,10 @@ or swift-only deployments.
 
 ##Usage
 
-###Hiera Configuration
-The first step to using the puppetlabs-openstack module is to configure hiera with settings specific
-to your installation. In this module, the example directory contains sample common.yaml (for multi-node)
-and allinone.yaml (for all-in-one) files with all of the settings required by this module, as well as an
-example user and networks to test your deployment with. These configuration options include network settings,
-locations of specific nodes, and passwords for Keystone and databases. If any of these settings are
-undefined or not properly set, your deployment may fail.
+###Params Configuration
+The first step to using the puppetlabs-openstack module is to configure params.pp with settings specific
+to your installation. In this module, the example directory contains sample params.pp (for multi-node)
+and for all-in-one files with all of the settings required by this module
 
 ###Controller Node
 For your controller node, you need to assign your node the controller role. For example:
@@ -116,21 +112,25 @@ node.
 
 For the remainder nodes, there are roles to assign for each. For example:
 ```
-node 'storage.localdomain' {
-  include ::openstack::role::storage
-}
-
-node 'network.localdomain' {
-  include ::openstack::role::network
-}
 
 node /compute[0-9]+.localdomain/ {
   include ::openstack::role::compute
 }
+
+node /nsdb[0-9]+.localdomain/ {
+  class {'::openstack::role::nsdb' :
+    zk_servers =>  [{
+              'ip' => $::ipaddress}
+              ]
+}
+
+node /analytics.localdomain/ {
+  include ::openstack::role::allinone_analytics
+}
+
 ```
 
-For this deployment, it's assumed that there is only one storage node and one network
-node. There may be multiple compute nodes.
+For this deployment, it's assumed that there is only one analytics node ( there can't be more than one). There may be multiple compute nodes.
 
 After applying the configuration to the controller node, apply the remaining
 configurations to the worker nodes.
@@ -150,10 +150,11 @@ and maintainable OpenStack deployments.
 ##Limitations
 
 * High availability and SSL-enabled endpoints are not provided by this module.
+* Only one Analytics node is supported
 
 ##License
 
-Copyright (c) 2015 Midokura SARL, All Rights Reserved.
+Copyright (c) 2016 Midokura SARL, All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -169,7 +170,7 @@ limitations under the License.
 
 **strongly based on**
 
-Puppet Labs OpenStack - A Puppet Module for a Multi-Node OpenStack Juno Installation.
+Puppet Labs OpenStack - A Puppet Module for a Multi-Node OpenStack Mitaka Installation.
 
 Copyright (C) 2013, 2014 Puppet Labs, Inc. and Authors
 
