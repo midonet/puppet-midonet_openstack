@@ -32,7 +32,7 @@ class midonet_openstack::role::allinone_analytics (
   class { '::midonet_openstack::profile::repos': }
   contain '::midonet_openstack::profile::repos'
   class { '::midonet::repository':
-    is_mem            => $is_mem,
+    is_mem            => true,
     midonet_version   => undef,
     midonet_stage     => undef,
     openstack_release => undef,
@@ -51,7 +51,7 @@ class midonet_openstack::role::allinone_analytics (
     zookeeper_hosts => [{
       'ip' => $controller_ip}
       ],
-    is_mem          => $is_mem,
+    is_mem          => true,
     mem_username    => $mem_username,
     mem_password    => $mem_password
   }
