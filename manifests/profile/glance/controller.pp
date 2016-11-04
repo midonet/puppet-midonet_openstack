@@ -103,12 +103,12 @@ class midonet_openstack::profile::glance::controller (
       }
       Package<| tag == 'glance-package' |> -> File['/etc/glance/ssl']
       $key_file  = "/etc/glance/ssl/private/${::fqdn}.pem"
-      $crt_file = $crt_file
+      $crt_file_real = $crt_file
       Exec['update-ca-certificates'] ~> Service['glance-api']
       Exec['update-ca-certificates'] ~> Service['glance-registry']
     } else {
       $key_file = undef
-      $crt_file  = undef
+      $crt_file_real  = undef
     }
 
     rabbitmq_user { $rabbitmq_user:
@@ -181,10 +181,10 @@ class midonet_openstack::profile::glance::controller (
       auth_uri                  => "http://${controller_api_address}:5000",
       identity_uri              => "http://${controller_api_address}:35357",
       registry_client_protocol  => $keystone_protocol,
-      registry_client_cert_file => $crt_file,
+      registry_client_cert_file => $crt_file_real,
       registry_client_key_file  => $key_file,
       registry_host             => $controller_management_address,
-      cert_file                 => $crt_file,
+      cert_file                 => $crt_file_real,
       key_file                  => $key_file,
       os_region_name            => $region_name,
     }
@@ -196,7 +196,7 @@ class midonet_openstack::profile::glance::controller (
       workers             => 2,
       auth_uri            => "http://${controller_api_address}:5000",
       identity_uri        => "http://${controller_management_address}:35357",
-      cert_file           => $crt_file,
+      cert_file           => $crt_file_real,
       key_file            => $key_file,
       os_region_name      => $region_name,
     }
