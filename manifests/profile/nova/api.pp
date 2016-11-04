@@ -32,10 +32,6 @@ class midonet_openstack::profile::nova::api(
   $nova_rabbitmq_password        = $::midonet_openstack::params::nova_rabbitmq_password,
   $region_name                   = $::midonet_openstack::params::region,
   $nova_password                 = $::midonet_openstack::params::nova_password,
-  $mysql_nova_user               = $::midonet_openstack::params::mysql_nova_user,
-  $mysql_nova_pass               = $::midonet_openstack::params::mysql_nova_password,
-  $mysql_nova_api_user           = $::midonet_openstack::params::mysql_nova_api_user,
-  $mysql_nova_api_pass           = $::midonet_openstack::params::mysql_nova_api_password,
   $rabbitmq_hosts                = $::midonet_openstack::params::rabbitmq_hosts,
   $glance_api_servers            = $::midonet_openstack::params::glance_api_servers,
   $nova_verbose                  = $::midonet_openstack::params::verbose,
@@ -76,13 +72,13 @@ class midonet_openstack::profile::nova::api(
   }
   Rabbitmq_user_permissions["${nova_rabbitmq_user}@/"] -> Service<| tag == 'nova-service' |>
   class { '::nova::db::mysql':
-    user          => $mysql_nova_user,
-    password      => $mysql_nova_pass,
+    user          => $user,
+    password      => $pass,
     allowed_hosts => '%',
   }
   class { '::nova::db::mysql_api':
-    user          => $mysql_nova_api_user,
-    password      => $mysql_nova_api_pass,
+    user          => $api_user,
+    password      => $api_pass,
     allowed_hosts => '%',
   }
   class { '::nova':
