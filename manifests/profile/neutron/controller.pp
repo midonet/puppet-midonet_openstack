@@ -1,5 +1,4 @@
 # == Class: midonet_openstack::profile::neutron::controller
-
 # The midonet_openstack::profile::neutron::controller
 # configures neutron in controller node , preparing it for midonet
 #
