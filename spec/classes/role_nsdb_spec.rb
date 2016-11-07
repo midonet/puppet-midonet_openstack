@@ -8,6 +8,7 @@ describe 'midonet_openstack::role::nsdb' do
 
   let :default_params do
     {
+      :id        => '1',
       :client_ip => '172.17.0.3'
     }
   end
@@ -41,7 +42,8 @@ describe 'midonet_openstack::role::nsdb' do
    context 'with no manage midonet repos' do
      let :params do
        {
-         :client_ip         => '172.17.0.3',
+         :id           => '1',
+         :client_ip    => '172.17.0.3',
          :manage_repos => false
        }
      end

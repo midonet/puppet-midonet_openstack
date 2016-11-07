@@ -351,6 +351,11 @@
 #   Boolean. If Swift services are available.
 #
 class midonet_openstack::params {
+
+  #
+  # TODO: Make this file pretty as soon as we're done finishing it
+  #
+
   $region = 'openstack'
   $allinone = true
 
@@ -526,9 +531,18 @@ class midonet_openstack::params {
   },
   ]
 
+  # NSDB
+  $nsdb_client_ip     = $::ipaddress
+  $nsdb_manage_repos  = true
+  $nsdb_manage_java   = true
+
   ######## Cassandra
 
-  $cassandra_seeds = $::ipaddress
+  $cassandra_seeds               = $::ipaddress
+  $cassandra_storage_port        = '7000'
+  $cassandra_ssl_storage_port    = '7001'
+  $cassandra_client_port         = '9042'
+  $cassandra_client_port_thrift  = '9160'
 
   ######## Log levels
   $verbose = 'True'
