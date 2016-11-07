@@ -15,11 +15,61 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# == Parameters
+#
+#  [*management_network*]
+#    CIDR of the management network
+#
+#  [*management_address*]
+#    Self ip on the management network
+#
+#  [*controller_management_address*]
+#    Controller management address
+#
+#  [*controller_address_api*]
+#    API address of the controller
+#
+#  [*user*]
+#    Nova Mysql username
+#
+#  [*pass*]
+#    Nova Mysql Password
+#
+#  [*api_pass*]
+#    Nova API password
+#
+#  [*rabbitmq_hosts*]
+#    List of rabbitmq hosts
+#
+#  [*nova_rabbitmq_user*]
+#    Nova Rabbitmq username
+#
+#  [*nova_rabbitmq_password*]
+#    Nova Rabbitmq password
+#
+#  [*glance_api_servers*]
+#    List of glance api servers
+#
+#  [*nova_debug*]
+#    Enable debug output on nova logs
+#
+#  [*nova_verbose*]
+#    Enable verbose output on nova logs
+#
+#  [*nova_libvirt_type*]
+#    Which libvirt type to use
+#
+#  [*neutron_password*]
+#    Password for neutron
+#
+#  [*region_name*]
+#    Openstack region
+
+
 class midonet_openstack::profile::nova::compute_vanilla (
   $management_network            = $::midonet_openstack::params::network_management,
   $management_address            = ip_for_network($management_network),
 
-  $storage_management_address    = $::midonet_openstack::params::storage_address_management,
   $controller_management_address = $::midonet_openstack::params::controller_address_management,
   $controller_address_api        = $::midonet_openstack::params::controller_address_api,
 
