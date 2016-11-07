@@ -18,17 +18,97 @@
 #
 #  [*zookeeper_client_ip*]
 #    Zookeeper Host Ip
-# [*is_mem*]
-#   Using MEM installation?
 # [*mem_username*]
 #   Midonet MEM username
 # [*mem_password*]
 #   Midonet MEM password
+# [*midonet_username*]
+#   A user with admin privileges to be used with MidoNet
+#
+# [*midonet_password*]
+#   Password for this user
+#
+# [*midonet_tenant_name*]
+#   Tenant which this user uses
+#
+# [*nc_edge_router_name*]
+#   Name that will be assigned to the edge router
+#
+# [*nc_edge_network_name*]
+#   Name of the external network of the edge router
+#
+# [*nc_edge_subnet_name*]
+#   Name of the subnet on that network
+#
+# [*nc_edge_cidr*]
+#   Network on which the physical port that is bound to the edge router is
+#
+# [*nc_port_name*]
+#   Name of the Neutron binding port
+#
+# [*nc_port_fixed_ip*]
+#   IP assigned on that port
+#
+# [*nc_port_interface_name*]
+#   Physical interface bound to the edge router
+#
+# [*nc_gateway_ip*]
+#   IP on the FIP range that will be assigned to the gateway
+#
+# [*nc_allocation_pools*]
+#   Start/end range used in the FIP network
+#
+# [*nc_subnet_cidr*]
+#   CIDR for the FIP network
+#
+# [*gw_bgp_local_asn_number*]
+#   Local AS number
+#
+# [*gw_bgp_advertised_networks*]
+#   Network that is going to be advertised (FIP network)
+#
+# [*gw_bgp_neighbors_ips*]
+#   BGP neighbors IPs
+#
+# [*gw_bgp_neighbors_asns*]
+#   BGP neighbors AS numbers
+#
+# [*gw_bgp_neighbors_nets*]
+#   BGP neighbors networks
 class midonet_openstack::role::allinone (
-  $client_ip               = $::midonet_openstack::params::controller_address_management,
-  $is_mem                  = false,
-  $mem_username            = undef,
-  $mem_password            = undef,
+  $client_ip                     = $::midonet_openstack::params::controller_address_management,
+  $manage_repo                   = true,
+  $mem_apache_servername         = $::ipaddress,
+  $horizon_extra_aliases         = undef,
+  $cluster_ip                    = undef,
+  $analytics_ip                  = undef,
+  $is_insights                   = undef,
+  $is_ssl                        = undef,
+  $insights_ssl                  = undef,
+  $admin_user                    = 'admin',
+  $admin_password                = $::midonet_openstack::params::keystone_admin_password,
+  $zookeeper_servers             = $::midonet_openstack::params::zookeeper_servers,
+  $cassandra_seeds               = $::midonet_openstack::params::cassandra_seeds,
+  $controller_address_management = $::midonet_openstack::params::controller_address_management,
+  $neutron_shared_secret         = $::midonet_openstack::params::neutron_shared_secret,
+  $midonet_username              = 'midogod',
+  $midonet_password              = 'midogod',
+  $midonet_tenant_name           = 'midokura',
+  $nc_edge_router_name           = 'edge-router',
+  $nc_edge_network_name          = 'net-edge1-gw1',
+  $nc_edge_subnet_name           = 'subnet-edge1-gw1',
+  $nc_edge_cidr                  = '172.19.0.0/30',
+  $nc_port_name                  = 'testport',
+  $nc_port_fixed_ip              = '172.19.0.2',
+  $nc_port_interface_name        = 'enp0s3',
+  $nc_gateway_ip                 = '172.172.0.1',
+  $nc_allocation_pools           = ['start=172.172.0.100,end=172.172.0.200'],
+  $nc_subnet_cidr                = '172.172.0.0/24',
+  $gw_bgp_local_asn_number       = '12345',
+  $gw_bgp_advertised_networks    = ['172.172.0.0/24'],
+  $gw_bgp_neighbors_ips          = ['10.88.88.5'],
+  $gw_bgp_neighbors_asns         = ['65535'],
+  $gw_bgp_neighbors_nets         = ['10.88.88.0/29']
   ) inherits ::midonet_openstack::role {
 
 
@@ -37,19 +117,19 @@ class midonet_openstack::role::allinone (
   class { '::midonet_openstack::profile::repos': }
   contain '::midonet_openstack::profile::repos'
   class { '::midonet::repository':
-    is_mem            => $is_mem,
+    is_mem            => false,
     midonet_version   => undef,
     midonet_stage     => undef,
     openstack_release => undef,
     mem_version       => undef,
-    mem_username      => $mem_username,
-    mem_password      => $mem_password
+    mem_username      => undef,
+    mem_password      => undef
   }
   contain '::midonet::repository'
   class { '::midonet_openstack::profile::midojava::midojava':}
   contain '::midonet_openstack::profile::midojava::midojava'
   class { '::midonet_openstack::profile::zookeeper::midozookeeper':
-    zk_servers => zookeeper_servers($midonet_openstack::params::zookeeper_servers),
+    zk_servers => zookeeper_servers(zookeeper_servers),
     id         => 1,
     client_ip  => $client_ip,
     before     => Class[
@@ -63,7 +143,7 @@ class midonet_openstack::role::allinone (
   contain '::midonet_openstack::profile::zookeeper::midozookeeper'
 
   class {'::midonet_openstack::profile::cassandra::midocassandra':
-    seeds              => $::midonet_openstack::params::cassandra_seeds,
+    seeds              => $cassandra_seeds,
     seed_address       => $client_ip,
     storage_port       => '7000',
     ssl_storage_port   => '7001',
@@ -119,7 +199,7 @@ class midonet_openstack::role::allinone (
       cassandra_servers    => ['127.0.0.1'],
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
-      keystone_host        => $::midonet_openstack::params::controller_address_management,
+      keystone_host        => $controller_address_management,
       require              => $zk_requires
   }
   contain '::midonet::cluster'
@@ -127,17 +207,15 @@ class midonet_openstack::role::allinone (
   class { 'midonet::agent':
     controller_host => '127.0.0.1',
     metadata_port   => '8775',
-    shared_secret   => $::midonet_openstack::params::neutron_shared_secret,
-    zookeeper_hosts => [{
-        'ip' => $client_ip}
-        ],
+    shared_secret   => $neutron_shared_secret,
+    zookeeper_hosts => $zookeeper_servers,
     require         => $zk_requires
   }
   contain '::midonet::agent'
   # Add midonet-cli
-  class {'midonet::cli':
-    username => 'admin',
-    password => 'testmido',
+  class { 'midonet::cli':
+    username => $admin_user,
+    password => $admin_password,
     require  => $zk_requires
   }
   contain '::midonet::cli'
@@ -162,43 +240,41 @@ class midonet_openstack::role::allinone (
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
-    midonet_api_url => 'http://127.0.0.1:8181',
-    username        => 'midogod',
-    password        => 'midogod',
-    tenant_name     => 'midokura',
-    require         => Class['glance::api'],
+    midonet_api_url => "http://${controller_address_management}:8181",
+    username        => $midonet_username,
+    password        => $midonet_password,
+    tenant_name     => $midonet_tenant_name,
+    require         => Anchor['keystone::service::end']
   }
 
-  midonet::resources::network_creation { 'Test Edge Router Setup':
-    tenant_name         => 'midokura',
-    edge_router_name    => 'edge-router',
-    edge_network_name   => 'net-edge1-gw1',
-    edge_subnet_name    => 'subnet-edge1-gw1',
-    edge_cidr           => '192.168.1.0/24',
-    port_name           => 'testport',
-    port_fixed_ip       => '192.168.1.9',
-    port_interface_name => 'eth1',
-    gateway_ip          => '172.172.0.1',
-    allocation_pools    => ['start=172.172.0.100,end=172.172.0.200'],
-    subnet_cidr         => '172.172.0.0/24',
+  midonet::resources::network_creation { 'Edge Router Setup':
+    tenant_name         => $midonet_tenant_name,
+    edge_router_name    => $nc_edge_router_name,
+    edge_network_name   => $nc_edge_network_name,
+    edge_subnet_name    => $nc_edge_subnet_name,
+    edge_cidr           => $nc_edge_cidr,
+    port_name           => $nc_port_name,
+    port_fixed_ip       => $nc_port_fixed_ip,
+    port_interface_name => $nc_port_interface_name,
+    gateway_ip          => $nc_gateway_ip,
+    allocation_pools    => $nc_allocation_pools,
+    subnet_cidr         => $nc_subnet_cidr,
   }
 
   midonet_gateway_bgp { 'edge-router':
     ensure                  => present,
-    bgp_local_as_number     => '65520',
-    bgp_advertised_networks => [ '172.172.0.0/24' ],
-    bgp_neighbors           => [
-      {
-        'ip_address' => '192.168.1.6',
-        'remote_asn' => '65506',
-        'remote_net' =>  '192.168.1.0/24'
-      }
-    ],
+    bgp_local_as_number     => $gw_bgp_local_asn_number,
+    bgp_advertised_networks => $gw_bgp_advertised_networks,
+    bgp_neighbors           => generate_bgp_neighbors(
+      $gw_bgp_neighbors_ips,
+      $gw_bgp_neighbors_asns,
+      $gw_bgp_neighbors_nets
+    ),
     midonet_api_url         => 'http://127.0.0.1:8181',
-    username                => 'midogod',
-    password                => 'midogod',
-    tenant_name             => 'midokura',
-    require                 => Midonet::Resources::Network_creation['Test Edge Router Setup'],
+    username                => $admin_user,
+    password                => $admin_password,
+    tenant_name             => $midonet_tenant_name,
+    require                 => Midonet::Resources::Network_creation['Edge Router Setup'],
   }
 
   midonet::resources::interface_up { 'Bring eth1 up': mac_address => 'fa:16:3e:5a:60:17', }
