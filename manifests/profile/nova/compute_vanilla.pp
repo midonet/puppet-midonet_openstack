@@ -1,4 +1,5 @@
-# == Class: midonet_openstack::params::profile::nova::compute
+# == Class: midonet_openstack::params::profile::nova::compute_vanilla
+# Installs nova compute for vanilla OST installations
 #
 # Copyright (c) 2015 Midokura SARL, All Rights Reserved.
 #
@@ -14,20 +15,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class midonet_openstack::profile::nova::compute_vanilla {
+class midonet_openstack::profile::nova::compute_vanilla (
+  $management_network            = $::midonet_openstack::params::network_management,
+  $management_address            = ip_for_network($management_network),
 
-    $management_network = $::midonet_openstack::params::network_management
-    $management_address = ip_for_network($management_network)
+  $storage_management_address    = $::midonet_openstack::params::storage_address_management,
+  $controller_management_address = $::midonet_openstack::params::controller_address_management,
+  $controller_address_api        = $::midonet_openstack::params::controller_address_api,
 
-    $storage_management_address = $::midonet_openstack::params::storage_address_management
-    $controller_management_address = $::midonet_openstack::params::controller_address_management
+  $user                          = $::midonet_openstack::params::mysql_nova_user,
+  $pass                          = $::midonet_openstack::params::mysql_nova_pass,
+  $api_user                      = $::midonet_openstack::params::mysql_nova_api_user,
+  $api_pass                      = $::midonet_openstack::params::mysql_nova_api_pass,
 
-    $user                = $::midonet_openstack::params::mysql_nova_user
-    $pass                = $::midonet_openstack::params::mysql_nova_pass
-    $api_user            = $::midonet_openstack::params::mysql_nova_api_user
-    $api_pass            = $::midonet_openstack::params::mysql_nova_api_pass
-    $database_connection = "mysql+pymysql://${user}:${pass}@127.0.0.1/nova"
-    $api_database_connection = "mysql+pymysql://${api_user}:${api_pass}@127.0.0.1/nova_api"
+  $rabbitmq_hosts                = $::midonet_openstack::params::rabbitmq_hosts,
+  $nova_rabbitmq_user            = $::midonet_openstack::params::nova_rabbitmq_user,
+  $nova_rabbitmq_password        = $::midonet_openstack::params::nova_rabbitmq_password,
+  $glance_api_servers            = $::midonet_openstack::params::glance_api_servers,
+
+  $nova_debug                    = $::midonet_openstack::params::debug,
+  $nova_verbose                  = $::midonet_openstack::params::verbose,
+  $nova_libvirt_type             = $::midonet_openstack::params::nova_libvirt_type,
+
+  $neutron_password              = $::midonet_openstack::params::neutron_password,
+
+  $region_name                   = $::midonet_openstack::params::region
+  ){
+
+
+    $database_connection = "mysql+pymysql://${user}:${pass}@${controller_management_address}/nova"
+    $api_database_connection = "mysql+pymysql://${api_user}:${api_pass}@${controller_management_address}/nova_api"
 
     #midonet_openstack#::resources::firewall { 'Nova Endpoint': port => '8774', }
 
@@ -36,21 +53,21 @@ class midonet_openstack::profile::nova::compute_vanilla {
       class { '::nova':
         database_connection     => $database_connection,
         api_database_connection => $api_database_connection,
-        rabbit_hosts            => $::midonet_openstack::params::rabbitmq_hosts,
-        rabbit_userid           => $::midonet_openstack::params::nova_rabbitmq_user,
-        rabbit_password         => $::midonet_openstack::params::nova_rabbitmq_password,
-        glance_api_servers      => join($::midonet_openstack::params::glance_api_servers, ','),
-        memcached_servers       => ["${::midonet_openstack::params::controller_address_management}:11211"],
-        verbose                 => $::midonet_openstack::params::verbose,
-        debug                   => $::midonet_openstack::params::debug,
+        rabbit_hosts            => $rabbitmq_hosts,
+        rabbit_userid           => $nova_rabbitmq_user,
+        rabbit_password         => $nova_rabbitmq_password,
+        glance_api_servers      => join($glance_api_servers, ','),
+        memcached_servers       => ["${controller_management_address}:11211"],
+        verbose                 => $nova_verbose,
+        debug                   => $nova_debug,
       }
 
 
       nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
 
       class { '::nova::network::neutron':
-        neutron_password      => $::midonet_openstack::params::neutron_password,
-        neutron_region_name   => $::midonet_openstack::params::region,
+        neutron_password      => $neutron_password,
+        neutron_region_name   => $region_name,
         neutron_auth_url      => "http://${controller_management_address}:35357/v3",
         neutron_url           => "http://${controller_management_address}:9696",
         vif_plugging_is_fatal => false,
@@ -67,11 +84,11 @@ class midonet_openstack::profile::nova::compute_vanilla {
     enabled                       => true,
     vnc_enabled                   => true,
     vncserver_proxyclient_address => $management_address,
-    vncproxy_host                 => $::midonet_openstack::params::controller_address_api,
+    vncproxy_host                 => $controller_address_api,
   }
 
   class { '::nova::compute::libvirt':
-    libvirt_virt_type => $::midonet_openstack::params::nova_libvirt_type,
+    libvirt_virt_type => $nova_libvirt_type,
     vncserver_listen  => $management_address,
   }
 
