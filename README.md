@@ -15,7 +15,6 @@ Version 8.0 / Mitaka
     * [Setup Requirements](#setup-requirements)
     * [Beginning with OpenStack](#beginning-with-openstack)
 4. [Usage - Configuration and customization options](#usage)
-    * [Hiera configuration](#hiera-configuration)
     * [Controller Node](#controller-node)
     * [Storage, Network, and Compute Nodes](#other-nodes)
 5. [Reference - An under-the-hood peek at what the module is doing](#reference)
