@@ -1,8 +1,60 @@
-
+# == Class: midonet_openstack::profile::nova::api
 # The profile to set up the Nova controller !
 # === Authors
 #
 # Midonet (http://midonet.org)
+# == Parameters
+#
+#  [*management_network*]
+#   CIDR of the management network_id
+#
+#  [*controller_management_address*]
+#    Management IP of controller host
+#
+#  [*controller_api_address*]
+#    API IP of controller host
+#
+#  [*user*]
+#    Nova mysql username
+#
+#  [*pass*]
+#    Nova Mysql password
+#
+#  [*api_user*]
+#    Nova API Mysql username
+#
+#  [*api_pass*]
+#    Nova API Mysql password
+#
+#  [*nova_rabbitmq_user*]
+#    Nova Rabbitmq Username
+#
+#  [*nova_rabbitmq_password*]
+#    Nova Rabbitmq password
+#
+#  [*region_name*]
+#    Keystone Region name
+#
+#  [*nova_password*]
+#    Nova Keystone Auth password
+#
+#  [*rabbitmq_hosts*]
+#    List of rabbitmq hosts
+#
+#  [*glance_api_servers*]
+#    List of Glance API servers
+#
+#  [*nova_verbose*]
+#    Enable verbose logs for nova
+#
+#  [*nova_debug*]
+#    Enable debug logs for nova
+#
+#  [*neutron_password*]
+#    nova neutron password
+#
+#  [*neutron_shared_secret*]
+#    Neutron shared secret
 #
 # === Copyright
 #
@@ -21,7 +73,6 @@
 # limitations under the License.
 class midonet_openstack::profile::nova::api(
   $management_network            = $::midonet_openstack::params::network_management,
-  $storage_management_address    = $::midonet_openstack::params::storage_address_management,
   $controller_management_address = $::midonet_openstack::params::controller_address_management,
   $controller_api_address        = $::midonet_openstack::params::controller_address_api,
   $user                          = $::midonet_openstack::params::mysql_nova_user,
