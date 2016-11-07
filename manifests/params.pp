@@ -559,7 +559,7 @@ class midonet_openstack::params {
 
   ######## Cassandra
 
-  $cassandra_seeds               = $::ipaddress
+  $cassandra_seeds               = ["${::ipaddress}"]
   $cassandra_storage_port        = '7000'
   $cassandra_ssl_storage_port    = '7001'
   $cassandra_client_port         = '9042'

@@ -529,7 +529,7 @@ class midonet_openstack::params {
 
   ######## Cassandra
 
-  $cassandra_seeds = 'bridged_ip'
+  $cassandra_seeds = ['bridged_ip']
 
   ######## Log levels
   $verbose = 'True'

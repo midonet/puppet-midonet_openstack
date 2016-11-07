@@ -16,6 +16,9 @@
 #
 # == Parameters
 #
+#  [*zk_id*]
+#    Zookeeper ID
+#
 #  [*client_ip*]
 #    Self management ip
 #
@@ -112,6 +115,7 @@
 # [*gw_bgp_neighbors_nets*]
 #   BGP neighbors networks
 class midonet_openstack::role::allinone (
+  $zk_id                         ,
   $client_ip                     = $::midonet_openstack::params::controller_address_management,
   $manage_repo                   = true,
   $mem_apache_servername         = $::ipaddress,
@@ -166,7 +170,7 @@ class midonet_openstack::role::allinone (
   contain '::midonet_openstack::profile::midojava::midojava'
   class { '::midonet_openstack::profile::zookeeper::midozookeeper':
     zk_servers => zookeeper_servers($zookeeper_servers),
-    id         => 1,
+    id         => $zk_id,
     client_ip  => $client_ip,
     before     => Class[
       'midonet::cluster::install',
