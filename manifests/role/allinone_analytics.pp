@@ -18,14 +18,21 @@
 #
 # [*mem_username*]
 #   Midonet MEM username
+#
 # [*mem_password*]
 #   Midonet MEM password
+#
 # [*controller_ip*]
 #   Controller node ip address
+#
+# [*zookeeper_hosts*]
+#   List of zookeeper hosts
 class midonet_openstack::role::allinone_analytics (
   $mem_username,
   $mem_password,
   $controller_ip           = $::midonet_openstack::params::controller_address_api,
+  $zookeeper_hosts         = $::midonet_openstack::params::zookeeper_servers,
+
   ) inherits ::midonet_openstack::role {
   # class { '::midonet_openstack::profile::firewall::firewall': }
   # contain '::midonet_openstack::profile::firewall::firewall'
@@ -48,9 +55,7 @@ class midonet_openstack::role::allinone_analytics (
   include ::midonet::params
 
   class { '::midonet::analytics':
-    zookeeper_hosts => [{
-      'ip' => $controller_ip}
-      ],
+    zookeeper_hosts => $zookeeper_hosts,
     is_mem          => true,
     mem_username    => $mem_username,
     mem_password    => $mem_password
