@@ -1,6 +1,6 @@
 {
   "name": "midonet-midonet_openstack",
-  "version": "5.0.1",
+  "version": "8.0.1",
   "author": "MidoNet",
   "summary": "Define profiles and roles for deploy MidoNet with OpenStack",
   "license": "Apache-2.0",
