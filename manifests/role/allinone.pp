@@ -165,7 +165,7 @@ class midonet_openstack::role::allinone (
   class { '::midonet_openstack::profile::midojava::midojava':}
   contain '::midonet_openstack::profile::midojava::midojava'
   class { '::midonet_openstack::profile::zookeeper::midozookeeper':
-    zk_servers => zookeeper_servers(zookeeper_servers),
+    zk_servers => zookeeper_servers($zookeeper_servers),
     id         => 1,
     client_ip  => $client_ip,
     before     => Class[
