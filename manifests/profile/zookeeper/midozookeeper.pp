@@ -1,14 +1,19 @@
-# == Class: midonet_openstack::profile::zookeeper::zookeeper
+# == Class: midonet_openstack::profile::zookeeper::midozookeeper
 #
 #  Configure Zookeeper
 # == Parameters
 #
 #  [*id*]
 #    Zookeeper Host Id
+#
 #  [*client_ip*]
 #    Zookeeper client ip
+#
 #  [*zk_servers*]
 #    List of zookeeper servers
+#
+#  [*cfg_dir*]
+#    Zookeeper config directory
 # === Authors
 #
 # Midonet (http://midonet.org)
@@ -41,7 +46,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
     {
       $zk_packages = ['zookeeper']
 
-      class {'::zookeeper':
+      class { '::zookeeper':
         servers             => $zk_servers,
         id                  => $id,
         cfg_dir             => $cfg_dir,
@@ -73,7 +78,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
     {
       $zk_packages = ['zookeeper','zookeeperd']
 
-      class {'::zookeeper':
+      class { '::zookeeper':
         servers      => $zk_servers,
         id           => $id,
         cfg_dir      => $cfg_dir,
