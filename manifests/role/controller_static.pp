@@ -16,19 +16,118 @@
 #
 # == Parameters
 #
-#  [*zookeeper_client_ip*]
-#    Zookeeper Host Ip
+#  [*zookeeper_and_cassandra*]
+#    Should install zookeeper and cassandra on this node?
+#
+# [*client_ip*]
+#   Self management ip
+#
+# [*cassandra_seeds*]
+#   List of cassandra seeds
+#
+# [*zk_id*]
+#   Zookeeper ID of this node in case the zookeeper_and_cassandra is true
+#
+# [*zk_servers*]
+#   List of zookeeper servers
+#
 # [*is_mem*]
-#   Using MEM installation?
+#   Boolean specifying whether using MEM or not
+#
 # [*mem_username*]
-#   Midonet MEM username
+#   Username for MEM
+#
 # [*mem_password*]
-#   Midonet MEM password
+#   Password for MEM
+#
+# [*mem_apache_servername*]
+#   MEM servername
+#
+# [*metadata_port*]
+#   Midonet metadata port
+#
+# [*shared_secret*]
+#   Neutron shared secret
+#
+# [*horizon_extra_aliases*]
+#   List of extra ServerAlias for horizon
+#
+# [*cluster_ip*]
+#   IP Where cluster is listerning
+#
+# [*analytics_ip*]
+#   IP Where analytics service is running
+#
+# [*admin_user*]
+#   Keystone admin username
+#
+# [*admin_password*]
+#   Keystone admin password
+#
+# [*midonet_username*]
+#   A user with admin privileges to be used with MidoNet
+#
+# [*midonet_password*]
+#   Password for this user
+#
+# [*midonet_tenant_name*]
+#   Tenant which this user uses
+#
+# [*nc_edge_router_name*]
+#   Name that will be assigned to the edge router
+#
+# [*nc_edge_network_name*]
+#   Name of the external network of the edge router
+#
+# [*nc_edge_subnet_name*]
+#   Name of the subnet on that network
+#
+# [*nc_edge_cidr*]
+#   Network on which the physical port that is bound to the edge router is
+#
+# [*nc_port_name*]
+#   Name of the Neutron binding port
+#
+# [*nc_port_fixed_ip*]
+#   IP assigned on that port
+#
+# [*nc_port_interface_name*]
+#   Physical interface bound to the edge router
+#
+# [*nc_gateway_ip*]
+#   IP on the FIP range that will be assigned to the gateway
+#
+# [*nc_allocation_pools*]
+#   Start/end range used in the FIP network
+#
+# [*nc_subnet_cidr*]
+#   CIDR for the FIP network
+#
+# [*gw_nic*]
+#   Gateway NIC interface
+#
+# [*gw_fip*]
+#   Gateway FIP Network
+#
+# [*gw_edge_router*]
+#   Name of the edge router
+#
+# [*gw_veth0_ip*]
+#   Veth0 ip
+#
+# [*gw_veth1_ip*]
+#   Veth1 ip
+#
+# [*gw_veth_network*]
+#   CIDR of the VETH network
+#
+
 class midonet_openstack::role::controller_static (
-  $zk_id,
+  $zookeeper_and_cassandra = true,
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $cassandra_seeds         = $::midonet_openstack::params::cassandra_seeds,
   $cassandra_rep_factor    = '1',
+  $zk_id                   = undef,
   $zk_servers              = $::midonet_openstack::params::zookeeper_servers,
   $is_mem                  = false,
   $mem_username            = undef,
@@ -111,6 +210,8 @@ class midonet_openstack::role::controller_static (
   class { '::midonet_openstack::profile::midojava::midojava':}
   contain '::midonet_openstack::profile::midojava::midojava'
 
+  if ($zookeeper_and_cassandra) {
+
   # Install Zookeeper
   class { '::midonet_openstack::profile::zookeeper::midozookeeper':
     id         => $zk_id,
@@ -132,6 +233,11 @@ class midonet_openstack::role::controller_static (
     seed_address => $client_ip,
   }
   contain '::midonet_openstack::profile::cassandra::midocassandra'
+
+  Class['midonet_openstack::profile::zookeeper::midozookeeper' ] ->
+  Class['midonet_openstack::profile::cassandra::midocassandra' ] ->
+  Class['midonet_openstack::profile::mysql::controller' ]
+}
 
   # Core OpenStack components
   class { '::midonet_openstack::profile::memcache::memcache':}
@@ -235,8 +341,6 @@ class midonet_openstack::role::controller_static (
   Class['midonet::repository']                                   ->
   Class['midonet_openstack::profile::midojava::midojava']        ->
   Anchor['rabbitmq::end']                                        ->
-  Class['midonet_openstack::profile::zookeeper::midozookeeper' ] ->
-  Class['midonet_openstack::profile::cassandra::midocassandra' ] ->
   Class['midonet_openstack::profile::mysql::controller' ]        ->
   Class['midonet_openstack::profile::memcache::memcache' ]       ->
   Class['midonet_openstack::profile::keystone::controller' ]     ->
