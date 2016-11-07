@@ -229,10 +229,8 @@ class midonet_openstack::role::allinone (
   include ::midonet::params
   # Add midonet-cluster
   class {'midonet::cluster':
-      zookeeper_hosts      => [{
-        'ip' => $client_ip}
-        ],
-      cassandra_servers    => ['127.0.0.1'],
+      zookeeper_hosts      => $zookeeper_servers,
+      cassandra_servers    => $cassandra_seeds,
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $controller_address_management,

@@ -247,10 +247,8 @@ class midonet_openstack::role::allinone_mem (
   # Add midonet-cluster
   class {'midonet::cluster':
       is_mem               => true,
-      zookeeper_hosts      => [{
-        'ip' => $client_ip}
-        ],
-      cassandra_servers    => ['127.0.0.1'],
+      zookeeper_hosts      => $zookeeper_servers,
+      cassandra_servers    => $cassandra_seeds,
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $controller_address_management,
@@ -265,9 +263,7 @@ class midonet_openstack::role::allinone_mem (
     controller_host => '127.0.0.1',
     metadata_port   => '8775',
     shared_secret   => $neutron_shared_secret,
-    zookeeper_hosts => [{
-      'ip' => $client_ip}
-      ],
+    zookeeper_hosts => $zookeeper_servers,
     is_mem          => true,
     manage_repo     => $manage_repo,
     mem_username    => $mem_username,
