@@ -1,5 +1,7 @@
 # == Class: midonet_openstack::params::profile::nova::compute
 #
+# Configures nova on a compute node
+#
 # Copyright (c) 2015 Midokura SARL, All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,35 +19,91 @@
 # == Parameters
 #
 #  [*rabbitmq_hosts*]
-#    Rabbitmq hosts
+#    Rabbitmq hosts as a list
+#
+#  [*rabbitmq_user*]
+#    Rabbitmq Username
+#
+#  [*rabbitmq_password*]
+#    Rabbitmq password
+#
 #  [*glance_api_servers*]
-#    Glance API hosts
+#    List of glance api servers
+#
 #  [*memcached_servers*]
-#    Memcached hosts
+#    List of memcached servers
+#
 #  [*compute_mgmnt_address*]
-#    Management address of the compute node
+#    Self binding address
+#
+#  [*management_network*]
+#    CIDR of management network
+#
+#  [*management_address*]
+#    Self address on management network
+#
+#  [*controller_management_address*]
+#    Controller management address
+#
+#  [*controller_api_address*]
+#    Controller api address
+#
+#  [*user*]
+#    Nova mysql username
+#
+#  [*pass*]
+#    Nova Mysql password
+#
+#  [*verbose*]
+#    Activate verbose output for nova logs
+#
+#  [*debug*]
+#    Activate debug output for nova logs
+#
+#  [*neutron_password*]
+#    Neutron password
+#
+#  [*region_name*]
+#    Openstack region_name
+#
+#  [*nova_libvirt_type*]
+#    Nova libvirt type
 #
 class midonet_openstack::profile::nova::compute(
-  $rabbitmq_hosts        =    $::midonet_openstack::params::rabbitmq_hosts,
-  $glance_api_servers    =    $::midonet_openstack::params::glance_api_servers,
-  $memcached_servers     =    ["${::midonet_openstack::params::controller_address_management}:11211"],
-  $compute_mgmnt_address =    $::ipaddress
+  $rabbitmq_hosts                = $::midonet_openstack::params::rabbitmq_hosts,
+  $rabbitmq_user                 = $::midonet_openstack::params::nova_rabbitmq_user,
+  $rabbitmq_password             = $::midonet_openstack::params::nova_rabbitmq_password,
+
+  $glance_api_servers            = $::midonet_openstack::params::glance_api_servers,
+  $memcached_servers             = ["${::midonet_openstack::params::controller_address_management}:11211"],
+
+  $compute_mgmnt_address         = $::ipaddress,
+  $management_network            = $::midonet_openstack::params::network_management,
+  $management_address            = ip_for_network($management_network),
+  $controller_management_address = $::midonet_openstack::params::controller_address_management,
+  $controller_api_address        = $::midonet_openstack::params::controller_address_api,
+
+  $user                          = $::midonet_openstack::params::mysql_nova_user,
+  $pass                          = $::midonet_openstack::params::mysql_nova_pass,
+  $api_user                      = $::midonet_openstack::params::mysql_nova_api_user,
+  $api_pass                      = $::midonet_openstack::params::mysql_nova_api_pass,
+
+  $verbose                       = $::midonet_openstack::params::verbose,
+  $debug                         = $::midonet_openstack::params::debug,
+
+  $neutron_password              = $::midonet_openstack::params::neutron_password,
+  $region_name                   = $::midonet_openstack::params::region,
+
+  $nova_libvirt_type             = $::midonet_openstack::params::nova_libvirt_type
+
   ) {
 
     include stdlib
-    $management_network = $::midonet_openstack::params::network_management
-    $management_address = ip_for_network($management_network)
 
-    $storage_management_address = $::midonet_openstack::params::storage_address_management
-    $controller_management_address = $::midonet_openstack::params::controller_address_management
-    $controller_api_address        = $::midonet_openstack::params::controller_address_api
 
-    $user                = $::midonet_openstack::params::mysql_nova_user
-    $pass                = $::midonet_openstack::params::mysql_nova_pass
-    $api_user            = $::midonet_openstack::params::mysql_nova_api_user
-    $api_pass            = $::midonet_openstack::params::mysql_nova_api_pass
-    $database_connection = "mysql+pymysql://${user}:${pass}@${::midonet_openstack::params::controller_address_management}/nova"
-    $api_database_connection = "mysql+pymysql://${api_user}:${api_pass}@${::midonet_openstack::params::controller_address_management}/nova_api"
+
+    $database_connection = "mysql+pymysql://${user}:${pass}@${controller_management_address}/nova"
+    $api_database_connection = "mysql+pymysql://${api_user}:${api_pass}@${controller_management_address}/nova_api"
 
     ##midonet_openstack#::resources::firewall { 'Nova Endpoint': port => '8774', }
 
@@ -55,20 +113,20 @@ class midonet_openstack::profile::nova::compute(
         api_database_connection => $api_database_connection,
         database_connection     => $database_connection,
         rabbit_hosts            => $rabbitmq_hosts,
-        rabbit_userid           => $::midonet_openstack::params::nova_rabbitmq_user,
-        rabbit_password         => $::midonet_openstack::params::nova_rabbitmq_password,
+        rabbit_userid           => $rabbitmq_user,
+        rabbit_password         => $rabbitmq_password,
         glance_api_servers      => join($glance_api_servers, ','),
         memcached_servers       => $memcached_servers,
-        verbose                 => $::midonet_openstack::params::verbose,
-        debug                   => $::midonet_openstack::params::debug,
+        verbose                 => $verbose,
+        debug                   => $debug,
       }
 
 
       nova_config { 'DEFAULT/default_floating_pool': value => 'public' }
 
       class { '::nova::network::neutron':
-        neutron_password      => $::midonet_openstack::params::neutron_password,
-        neutron_region_name   => $::midonet_openstack::params::region,
+        neutron_password      => $neutron_password,
+        neutron_region_name   => $region_name,
         neutron_auth_url      => "http://${controller_management_address}:35357/v3",
         neutron_url           => "http://${controller_management_address}:9696",
         vif_plugging_is_fatal => false,
@@ -84,7 +142,7 @@ class midonet_openstack::profile::nova::compute(
     enabled                       => true,
     vnc_enabled                   => true,
     vncserver_proxyclient_address => $management_address,
-    vncproxy_host                 => $::midonet_openstack::params::controller_address_api,
+    vncproxy_host                 => $controller_api_address,
   }
 
   if $::osfamily == 'RedHat' {
@@ -96,7 +154,7 @@ class midonet_openstack::profile::nova::compute(
     }
   }
   class { '::nova::compute::libvirt':
-    libvirt_virt_type => $::midonet_openstack::params::nova_libvirt_type,
+    libvirt_virt_type => $nova_libvirt_type,
     vncserver_listen  => '0.0.0.0',
   }
 
