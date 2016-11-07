@@ -1,4 +1,4 @@
-# == Class: midonet_openstack::role::compute_static
+# == Class: midonet_openstack::role::compute_bgp
 #
 # Copyright (c) 2016 Midokura SARL, All Rights Reserved.
 #
@@ -43,7 +43,7 @@
 # [* $midonet_tenant_name*]
 #   Tenant which this user uses
 #
-class midonet_openstack::role::compute_static (
+class midonet_openstack::role::compute_bgp (
   $client_ip               = $::midonet_openstack::params::controller_address_management,
   $is_mem                  = false,
   $mem_username            = undef,
