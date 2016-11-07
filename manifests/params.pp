@@ -350,6 +350,27 @@
 # [*tempest_swift_available*]
 #   Boolean. If Swift services are available.
 #
+# == Zookeeper
+# [*zookeeper_servers*]
+#   List of zookeeper server, with its id and IP or hostname
+#       $zookeeper_servers = [
+#   {
+#      'id'     => '1',
+#      'host'   => 'localhost',
+#   },
+#    ]
+# == Cassandra
+# [*cassandra_seeds*]
+#   List of cassandra seeds
+#
+# == Log Levels
+# [*verbose*]
+#   Ebable verbose output for logs? 'True' or 'False'
+#
+# [*debug*]
+#   Ebable debug output for logs? 'True' or 'False'
+#
+
 class midonet_openstack::params {
 
   #
