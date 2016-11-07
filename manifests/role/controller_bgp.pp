@@ -133,7 +133,7 @@ class midonet_openstack::role::controller_bgp (
   $shared_secret               = $::midonet_openstack::params::neutron_shared_secret,
   $horizon_extra_aliases       = undef,
   $cluster_ip                  = undef,
-  $analytics_ip                = undef
+  $analytics_ip                = undef,
   $admin_user                  = 'admin',
   $admin_password              = $::midonet_openstack::params::keystone_admin_password,
   $midonet_username            = 'midogod',

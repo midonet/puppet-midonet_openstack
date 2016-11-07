@@ -16,14 +16,50 @@
 #
 # == Parameters
 #
-#  [*zookeeper_client_ip*]
-#    Zookeeper Host Ip
-# [*mem_username*]
-#   Midonet MEM username
-# [*mem_password*]
-#   Midonet MEM password
+#  [*client_ip*]
+#    Self management ip
+#
+# [*manage_repo*]
+#   Manage midonet repos
+#
+# [*horizon_extra_aliases*]
+#   List of extra aliases for horizon
+#
+# [*cluster_ip*]
+#   IP of the node hosting the cluster
+#
+# [*analytics_ip*]
+#   IP of the node hosting the analytics service
+#
+# [*is_insights*]
+#   Using insights?
+#
+# [*is_ssl*]
+#   Using SSL for Horizon/MEM?
+#
+# [*insights_ssl*]
+#   Is MEM insights using SSL?
+#
+# [*admin_user*]
+#   Keystone Admin User
+#
+# [*admin_password*]
+#   Keystone Admin Password
+#
+# [*zookeeper_servers*]
+#   List of zookeeper servers
+#
+# [*cassandra_seeds*]
+#   List of cassandra servers
+#
+# [*controller_address_management*]
+#   Management Address of the Controller
+#
+# [*neutron_shared_secret*]
+#   Neutron shared secret
+#
 # [*midonet_username*]
-#   A user with admin privileges to be used with MidoNet
+#   Username for midonet cli
 #
 # [*midonet_password*]
 #   Password for this user
