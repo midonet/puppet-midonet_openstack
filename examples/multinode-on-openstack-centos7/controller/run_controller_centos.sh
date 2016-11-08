@@ -72,7 +72,7 @@ cp -R ${OPENSTACK_AIO_DIR}/* ${PUPPET_MODULEDIR}/midonet_openstack/
 iptables -F
 
 /opt/puppetlabs/puppet/bin/gem install faraday multipart-post
-puppet apply -e "include ::midonet_openstack::role::controller_static"  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+puppet apply -e "class { ::midonet_openstack::role::controller_static: zk_id => 1}"  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
 #sed -i 's/\(novncproxy_base_url=http:\/\/\)[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+\(:6080\/vnc_auto.html\)$/\1'"${1}"'\2/' /etc/nova/nova.conf
 #service openstack-nova-compute restart
 #ip link set dev eth1 up
