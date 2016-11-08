@@ -1,7 +1,0 @@
----
-:backends:
-    - yaml
-    - module_data
-:yaml:
-    :datadir: /var/lib/hiera
-:logger: console

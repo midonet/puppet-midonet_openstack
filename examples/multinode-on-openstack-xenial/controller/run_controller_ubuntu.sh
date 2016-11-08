@@ -62,7 +62,7 @@ cp -R /ali-g /etc/puppetlabs/code/modules/midonet
 iptables -F
 # Run the puppet manifest. Comment this line if you want to perform
 # some changes in the manifest
-puppet apply -e "include ::midonet_openstack::role::controller_static" --debug --trace  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
+puppet apply -e "class { ::midonet_openstack::role::controller_static: zk_id => 1}" --debug --trace  2>&1 | tee /tmp/puppet-$(date +"%Y-%m-%d_%H-%M-%S").out
 # Fuck the iptables
 iptables -F
 #Add the FIP to Horizon Vhost
