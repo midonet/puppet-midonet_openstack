@@ -270,7 +270,7 @@ class midonet_openstack::role::allinone (
     ensure => installed,
     before => [
       Midonet_host_registry[$::fqdn],
-      Midonet::Resources::Network_creation['Test Edge Router Setup']
+      Midonet::Resources::Network_creation['Edge Router Setup']
     ]
   }
 
@@ -335,7 +335,7 @@ class midonet_openstack::role::allinone (
   Class['midonet::agent']                                         ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
-  Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
+  Midonet::Resources::Network_creation['Edge Router Setup']  ->
   Midonet_gateway_bgp['edge-router']                              ->
   Midonet::Resources::Interface_up['Bring eth1 up']
 

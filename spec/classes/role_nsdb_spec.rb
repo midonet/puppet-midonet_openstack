@@ -30,7 +30,7 @@ describe 'midonet_openstack::role::nsdb' do
       }
 
       it { is_expected.to contain_class('midonet_openstack::profile::cassandra::midocassandra').with(
-        'seeds'               => '172.17.0.3',
+        'seeds'               => '["172.17.0.3"]',
         'seed_address'        => '172.17.0.3',
         'storage_port'        => '7000',
         'ssl_storage_port'    => '7001',
@@ -56,7 +56,7 @@ describe 'midonet_openstack::role::nsdb' do
     }
 
     it { is_expected.to contain_class('midonet_openstack::profile::cassandra::midocassandra').with(
-      'seeds'               => '172.17.0.3',
+      'seeds'               => '["172.17.0.3"]',
       'seed_address'        => '172.17.0.3',
       'storage_port'        => '7000',
       'ssl_storage_port'    => '7001',

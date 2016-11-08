@@ -301,7 +301,7 @@ class midonet_openstack::role::allinone_mem (
     package {'bridge-utils':
       ensure => installed,
       before => [Midonet_host_registry[$::fqdn],
-      Midonet::Resources::Network_creation['Test Edge Router Setup']]
+      Midonet::Resources::Network_creation['Edge Router Setup']]
     }
   }
 
@@ -362,7 +362,7 @@ class midonet_openstack::role::allinone_mem (
   Class['midonet::agent']                                         ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
-  Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
+  Midonet::Resources::Network_creation['Edge Router Setup']  ->
   Class['midonet::gateway::static']
 
   Keystone_tenant<||>

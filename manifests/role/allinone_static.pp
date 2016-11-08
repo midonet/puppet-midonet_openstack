@@ -39,7 +39,6 @@ class midonet_openstack::role::allinone_static (
   $analytics_ip            = undef,
   $admin_user              = 'admin',
   $admin_password          = $::midonet_openstack::params::keystone_admin_password,
-  $admin_token             = $::midonet_openstack::params::keystone_admin_token,
   $midonet_username        = 'midogod',
   $midonet_password        = 'midogod',
   $midonet_tenant_name     = 'midokura',
@@ -157,10 +156,10 @@ class midonet_openstack::role::allinone_static (
 
   # MidoNet Cluster (API)
   class { 'midonet::cluster':
-    zookeeper_hosts      => $zk_servers,
-    cassandra_servers    => $cassandra_seeds,
+    zookeeper_hosts      => [ { 'ip' => $client_ip } ],
+    cassandra_servers    => [ $controller_address_management ],
     cassandra_rep_factor => $cassandra_rep_factor,
-    keystone_admin_token => $admin_token,
+    keystone_admin_token => $midonet_openstack::params::keystone_admin_token,
     keystone_host        => $controller_address_management,
     require              => $zk_requires,
   }
@@ -188,7 +187,7 @@ class midonet_openstack::role::allinone_static (
     controller_host => '127.0.0.1',
     metadata_port   => $metadata_port,
     shared_secret   => $shared_secret,
-    zookeeper_hosts => $zk_servers,
+    zookeeper_hosts => [ { 'ip' => $client_ip} ],
     require         => concat(
       $zk_requires,
       Class['::midonet::cluster::install', '::midonet::cluster::run']
@@ -251,7 +250,7 @@ class midonet_openstack::role::allinone_static (
   Class['midonet::agent']                                         ->
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
-  Midonet::Resources::Network_creation['Test Edge Router Setup']  ->
+  Midonet::Resources::Network_creation['Edge Router Setup']  ->
   Class['midonet::gateway::static']
 
   Keystone_tenant<||>

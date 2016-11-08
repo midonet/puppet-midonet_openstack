@@ -64,6 +64,12 @@ describe 'midonet_openstack::role::allinone' do
       {}
     end
 
+    let :params do
+      {
+        :zk_id           => '1',
+      }
+    end
+
     it_configures 'set up the allinone node'
   end
 
@@ -93,6 +99,13 @@ describe 'midonet_openstack::role::allinone' do
       {}
     end
 
+    let :params do
+      {
+        :zk_id           => '1',
+      }
+    end
+
+
     it_configures 'set up the allinone node'
   end
 
@@ -117,6 +130,13 @@ describe 'midonet_openstack::role::allinone' do
     let :platform_params do
       {}
     end
+
+    let :params do
+      {
+        :zk_id           => '1',
+      }
+    end
+
 
     it_configures 'set up the allinone node'
   end

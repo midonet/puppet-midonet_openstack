@@ -187,7 +187,7 @@ class midonet_openstack::role::controller_bgp (
   package { 'bridge-utils':
     ensure => installed,
     before => [Midonet_host_registry[$::fqdn],
-    Midonet::Resources::Network_creation['Test Edge Router Setup']]
+    Midonet::Resources::Network_creation['Edge Router Setup']]
   }
 
   # Add main OpenStack repositories
