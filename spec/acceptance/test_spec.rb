@@ -6,13 +6,14 @@ describe 'midonet_openstack class' do
     it 'should work without any errors' do
       pp = <<-EOS
       class {'::midonet_openstack::role::allinone':
-        client_ip => '172.17.0.3'
+        client_ip => '172.17.0.3',
+        zk_id     => 1
       }
       EOS
 
       # Run it twice and test for idempotency
       expect(apply_manifest(pp, debug: true).exit_code).to_not eq(1)
-      #expect(apply_manifest(pp).exit_code).to eq(0)
+      expect(apply_manifest(pp).exit_code).to eq(0)
     end
 
     # **************************************************************************
