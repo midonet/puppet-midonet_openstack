@@ -69,7 +69,7 @@ class midonet_openstack::role::nsdb (
 
   if $manage_java and !defined(Class['::midonet_openstack::profile::midojava::midojava']) {
     class { '::midonet_openstack::profile::midojava::midojava': }
-    contain '::midonet_openstack::profile::midojava::midojava'
+    contain midonet_openstack::profile::midojava::midojava
   }
 
   class { '::midonet_openstack::profile::zookeeper::midozookeeper':
@@ -78,7 +78,7 @@ class midonet_openstack::role::nsdb (
     client_ip  => $client_ip,
     require    => Class['::midonet_openstack::profile::midojava::midojava']
   }
-  contain '::midonet_openstack::profile::zookeeper::midozookeeper'
+  contain midonet_openstack::profile::zookeeper::midozookeeper
 
   class { '::midonet_openstack::profile::cassandra::midocassandra':
     seeds              => $cassandra_seeds,
@@ -92,5 +92,5 @@ class midonet_openstack::role::nsdb (
       '::midonet_openstack::profile::zookeeper::midozookeeper'
     ]
   }
-  contain '::midonet_openstack::profile::cassandra::midocassandra'
+  contain midonet_openstack::profile::cassandra::midocassandra
 }
