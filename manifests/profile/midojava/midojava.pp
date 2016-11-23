@@ -69,7 +69,7 @@ class midonet_openstack::profile::midojava::midojava(
           java_alternative      => "java-1.${version}.0-openjdk-amd64",
           java_alternative_path => "/usr/lib/jvm/java-1.${version}.0-openjdk-amd64"
         }
-        contain '::java'
+        contain java
 
         file { '/usr/java/default':
           ensure  => 'link',
@@ -83,7 +83,7 @@ class midonet_openstack::profile::midojava::midojava(
         class {'::java':
           package => $package_name_redhat,
         }
-        contain '::java'
+        contain java
 
         file { '/usr/java/default':
           ensure  => 'link',

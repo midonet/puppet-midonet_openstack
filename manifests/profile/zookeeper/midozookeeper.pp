@@ -56,7 +56,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         manage_service      => false,
         manage_service_file => false,
       }
-      contain '::zookeeper'
+      contain zookeeper
 
       service { 'zookeeper-service':
         ensure  => 'running',
@@ -86,7 +86,7 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         service_name => 'zookeeper',
         require      => [ File['/usr/java/default'] ],
       }
-      contain 'zookeeper'
+      contain zookeeper
     }
     else {
       fail("Unsupported Operating System Family ${::osfamily}")
