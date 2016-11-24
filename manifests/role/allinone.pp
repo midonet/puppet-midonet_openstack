@@ -131,6 +131,8 @@ class midonet_openstack::role::allinone (
   $cassandra_seeds               = $::midonet_openstack::params::cassandra_seeds,
   $controller_address_management = $::midonet_openstack::params::controller_address_management,
   $neutron_shared_secret         = $::midonet_openstack::params::neutron_shared_secret,
+  $cassandra_rep_factor          = '1',
+  $metadata_port                 = '8775',
   $midonet_username              = 'midogod',
   $midonet_password              = 'midogod',
   $midonet_tenant_name           = 'midokura',
@@ -244,7 +246,7 @@ class midonet_openstack::role::allinone (
   class { 'midonet::agent':
     controller_host => '127.0.0.1',
     metadata_port   => $metadata_port,
-    shared_secret   => $shared_secret,
+    shared_secret   => $neutron_shared_secret,
     zookeeper_hosts => [ { 'ip' => $client_ip} ],
     require         => concat(
       $zk_requires,
