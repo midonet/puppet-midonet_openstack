@@ -312,9 +312,9 @@ class midonet_openstack::role::allinone (
       $gw_bgp_neighbors_asns,
       $gw_bgp_neighbors_nets
     ),
-    midonet_api_url         => 'http://127.0.0.1:8181',
-    username                => $admin_user,
-    password                => $admin_password,
+    midonet_api_url         => 'http://127.0.0.1:8181/midonet-api',
+    username                => $midonet_username,
+    password                => $midonet_password,
     tenant_name             => $midonet_tenant_name,
     require                 => Midonet::Resources::Network_creation['Edge Router Setup'],
   }
