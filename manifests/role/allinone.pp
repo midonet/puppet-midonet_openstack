@@ -231,23 +231,25 @@ class midonet_openstack::role::allinone (
   class { '::midonet_openstack::profile::horizon::horizon':}
   contain '::midonet_openstack::profile::horizon::horizon'
   include ::midonet::params
-  # Add midonet-cluster
-  class {'midonet::cluster':
-      zookeeper_hosts      => $zookeeper_servers,
-      cassandra_servers    => $cassandra_seeds,
-      cassandra_rep_factor => '1',
-      keystone_admin_token => 'testmido',
-      keystone_host        => $controller_address_management,
-      require              => $zk_requires
+  class { 'midonet::cluster':
+    zookeeper_hosts      => [ { 'ip' => $client_ip } ],
+    cassandra_servers    => [ $controller_address_management ],
+    cassandra_rep_factor => $cassandra_rep_factor,
+    keystone_admin_token => $midonet_openstack::params::keystone_admin_token,
+    keystone_host        => $controller_address_management,
+    require              => $zk_requires,
   }
   contain '::midonet::cluster'
-  # Add midonet-agent
+  # MidoNet Agent (a.k.a. Midolman)
   class { 'midonet::agent':
     controller_host => '127.0.0.1',
-    metadata_port   => '8775',
-    shared_secret   => $neutron_shared_secret,
-    zookeeper_hosts => $zookeeper_servers,
-    require         => $zk_requires
+    metadata_port   => $metadata_port,
+    shared_secret   => $shared_secret,
+    zookeeper_hosts => [ { 'ip' => $client_ip} ],
+    require         => concat(
+      $zk_requires,
+      Class['::midonet::cluster::install', '::midonet::cluster::run']
+    )
   }
   contain '::midonet::agent'
   # Add midonet-cli
