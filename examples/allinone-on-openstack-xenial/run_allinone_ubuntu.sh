@@ -55,7 +55,7 @@ sed -i "s,allowed_host_network,${ALLOWED_HOST_NETWORK}," /vagrant/params.pp
 
 cp /vagrant/params.pp /opt/puppetlabs/puppet/modules/midonet_openstack/manifests/params.pp
 # Make sure puppet-midonet has the latest changes
-rm -rf /etc/puppetlabs/code/modules/midonet
+rm -rf /opt/puppetlabs/puppet/modules/midonet
 cp -R /ali-g /opt/puppetlabs/puppet/modules/midonet
 
 # Fuck the iptables
