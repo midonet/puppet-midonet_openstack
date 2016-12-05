@@ -81,18 +81,6 @@ describe 'midonet_openstack::profile::neutron::controller' do
       )
     end
 
-    it 'should install the neutron lbaas python client' do
-      is_expected.to contain_package('python-neutron-lbaas').with(
-      'ensure' => 'installed',
-      )
-    end
-
-    it 'should configure the neutron lbaas python package' do
-      is_expected.to contain_package('python-neutron-fwaas').with(
-      'ensure' => 'installed',
-      )
-    end
-
 
   end
 
