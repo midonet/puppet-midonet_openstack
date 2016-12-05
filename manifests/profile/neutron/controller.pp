@@ -86,8 +86,6 @@ class midonet_openstack::profile::neutron::controller (
     $nova_api_service = 'openstack-nova-api'
   }
   ##midonet_openstack#::resources::firewall { 'Neutron': port => '9696', }
-  package { 'python-neutron-lbaas': ensure => installed }
-  package { 'python-neutron-fwaas': ensure => installed }
 
   class { '::neutron::keystone::auth':
     password   => $neutron_password,
