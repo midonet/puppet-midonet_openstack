@@ -22,7 +22,7 @@ wget http://yum.puppetlabs.com/${PUPPET_RELEASE_FILE}-el-7.noarch.rpm
 if [ $(rpm -qa|grep -c ${PUPPET_RELEASE_FILE}) -le 0 ]; then
   rpm -ivh ${PUPPET_RELEASE_FILE}-el-7.noarch.rpm
 fi
-yum install -y ${PUPPET_PKG}
+yum install -y --nogpg ${PUPPET_PKG}
 
 # Gems
 gem install bundler --no-rdoc --no-ri --verbose
