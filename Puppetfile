@@ -65,7 +65,7 @@ mod 'glance',
     :ref => 'stable/mitaka'
 
   mod 'puppetlabs/java'
-  mod 'deric/zookeeper'
+  mod 'deric/zookeeper' , '0.6.1'
   mod 'locp/cassandra' , '1.25.2'
   mod 'midonet',
     :git => 'https://github.com/openstack/puppet-midonet.git',
