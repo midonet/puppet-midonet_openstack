@@ -213,7 +213,6 @@ class midonet_openstack::role::allinone_mem (
     File['/etc/zookeeper/conf/zoo.cfg']
   ]
 
-
   }
   if $::osfamily == 'Debian'
   {
@@ -230,7 +229,9 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet_openstack::profile::mysql::controller'
   class { '::midonet_openstack::profile::rabbitmq::controller': }
   contain '::midonet_openstack::profile::rabbitmq::controller'
-  class { '::midonet_openstack::profile::glance::controller':  }
+  class { '::midonet_openstack::profile::glance::controller':
+    require => Class['::midonet_openstack::profile::keystone::controller'],
+  }
   contain '::midonet_openstack::profile::glance::controller'
   class { '::midonet_openstack::profile::neutron::controller': }
   contain '::midonet_openstack::profile::neutron::controller'
@@ -239,19 +240,17 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet_openstack::profile::nova::api'
   class { '::midonet_openstack::profile::nova::compute':}
   contain '::midonet_openstack::profile::nova::compute'
-  class { '::midonet_openstack::profile::horizon::horizon':
-    extra_aliases => $horizon_extra_aliases
-  }
+  class { '::midonet_openstack::profile::horizon::horizon':}
   contain '::midonet_openstack::profile::horizon::horizon'
   include ::midonet::params
   # Add midonet-cluster
   class {'midonet::cluster':
-      is_mem               => true,
       zookeeper_hosts      => [ { 'ip' => $client_ip } ],
       cassandra_servers    => $cassandra_seeds,
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $controller_address_management,
+      is_mem               => true,
       is_insights          => $is_insights,
       insights_ssl         => $insights_ssl,
       analytics_ip         => $analytics_ip,
@@ -268,7 +267,10 @@ class midonet_openstack::role::allinone_mem (
     manage_repo     => $manage_repo,
     mem_username    => $mem_username,
     mem_password    => $mem_password,
-    require         => $zk_requires
+    require         => concat(
+      $zk_requires,
+      Class['::midonet::cluster::install', '::midonet::cluster::run']
+    )
   }
   contain '::midonet::agent'
   # Add midonet-cli
@@ -281,7 +283,6 @@ class midonet_openstack::role::allinone_mem (
 
   #Add MEM manager class
   class {'midonet::mem':
-    mem_apache_servername => $mem_apache_servername,
     cluster_ip            => $cluster_ip,
     analytics_ip          => $analytics_ip,
     is_insights           => $is_insights,
@@ -300,13 +301,14 @@ class midonet_openstack::role::allinone_mem (
   {
     package {'bridge-utils':
       ensure => installed,
-      before => [Midonet_host_registry[$::fqdn],
-      Midonet::Resources::Network_creation['Edge Router Setup']]
+      before => [
+        Midonet_host_registry[$::fqdn],
+        Midonet::Resources::Network_creation['Edge Router Setup']
+      ]
     }
   }
 
-  ##midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
-  # Register the host
+  #midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
@@ -370,23 +372,4 @@ class midonet_openstack::role::allinone_mem (
   -> Midonet_openstack::Resources::Keystone_user<||>
   -> Midonet_host_registry[$::fqdn]
 
-
-    if $::osfamily == 'Debian' {
-      $command = 'cp /tmp/15-horizon_vhost.conf /etc/apache2/sites-available/15-horizon_vhost.conf && service apache2 restart'
-    }
-    else {
-      $command= 'cp /tmp/15-horizon_vhost.conf /etc/httpd/sites-available/15-horizon_vhost.conf && service httpd restart'
-    }
-
-    file { '/tmp/15-horizon_vhost.conf':
-      ensure  => present,
-      require => Class['midonet_openstack::profile::horizon::horizon'],
-      source  => 'puppet:///modules/midonet_openstack/15-horizon_vhost.conf',
-    }
-
-    exec {'reload apache':
-      path    => ['/usr/sbin', '/usr/bin', '/bin', '/sbin'],
-      require => File['/tmp/15-horizon_vhost.conf'],
-      command => $command
-    }
 }

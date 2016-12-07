@@ -22,21 +22,21 @@ wget http://yum.puppetlabs.com/${PUPPET_RELEASE_FILE}-el-7.noarch.rpm
 if [ $(rpm -qa|grep -c ${PUPPET_RELEASE_FILE}) -le 0 ]; then
   rpm -ivh ${PUPPET_RELEASE_FILE}-el-7.noarch.rpm
 fi
-yum install -y ${PUPPET_PKG}
+yum install -y --nogpg ${PUPPET_PKG}
 
 # Gems
 gem install bundler --no-rdoc --no-ri --verbose
 cd ${OPENSTACK_AIO_DIR}
 
 # Hack the module 'openstack'
-IP=$(ip -4 a | grep inet | grep -e '192.168.1\.' | sed 's/^[[:space:]]*//' | cut -d' ' -f2 | cut -d'/' -f1)
+IP=$(ip -4 a | grep inet | grep -e '192.168.0\.' | sed 's/^[[:space:]]*//' | cut -d' ' -f2 | cut -d'/' -f1)
 sed -i "s/bridged_ip/${1}/" examples/allinone_mem_midokura_centos7/params.pp
 
 # get the network of the bridged interface and replace some variables
-NETWORK=$(ip r | grep -v default | grep -e '^192.168.1\.' | cut -d' ' -f1)
+NETWORK=$(ip r | grep -v default | grep -e '^192.168.0\.' | cut -d' ' -f1)
 sed -i "s%bridged_network%${NETWORK}%" examples/allinone_mem_midokura_centos7/params.pp
 
-ALLOWED_HOST_NETWORK=$(ip r | grep -v default | grep -e '^192.168.1\.' | cut -d' ' -f1 | cut -d'/' -f1 | cut -d'.' -f1,2,3).%
+ALLOWED_HOST_NETWORK=$(ip r | grep -v default | grep -e '^192.168.0\.' | cut -d' ' -f1 | cut -d'/' -f1 | cut -d'.' -f1,2,3).%
 sed -i "s,allowed_host_network,${ALLOWED_HOST_NETWORK}," examples/allinone_mem_midokura_centos7/params.pp
 
 #Override the params.pp
