@@ -135,7 +135,7 @@ class midonet_openstack::role::allinone_mem (
   $horizon_extra_aliases         = undef,
   $cluster_ip                    = undef,
   $analytics_ip                  = undef,
-  $is_insights                   = undef,
+  $is_insights                   = true,
   $is_ssl                        = undef,
   $insights_ssl                  = undef,
   $zookeeper_servers             = $midonet_openstack::params::zookeeper_servers,
@@ -195,7 +195,7 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet_openstack::profile::zookeeper::midozookeeper'
 
   class {'::midonet_openstack::profile::cassandra::midocassandra':
-    seeds              => $cassandra_seeds,
+    seeds              => $client_ip,
     seed_address       => $client_ip,
     storage_port       => '7000',
     ssl_storage_port   => '7001',
@@ -213,7 +213,6 @@ class midonet_openstack::role::allinone_mem (
     File['/etc/zookeeper/conf/zoo.cfg']
   ]
 
-
   }
   if $::osfamily == 'Debian'
   {
@@ -230,7 +229,9 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet_openstack::profile::mysql::controller'
   class { '::midonet_openstack::profile::rabbitmq::controller': }
   contain '::midonet_openstack::profile::rabbitmq::controller'
-  class { '::midonet_openstack::profile::glance::controller':  }
+  class { '::midonet_openstack::profile::glance::controller':
+    require => Class['::midonet_openstack::profile::keystone::controller'],
+  }
   contain '::midonet_openstack::profile::glance::controller'
   class { '::midonet_openstack::profile::neutron::controller': }
   contain '::midonet_openstack::profile::neutron::controller'
@@ -239,19 +240,17 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet_openstack::profile::nova::api'
   class { '::midonet_openstack::profile::nova::compute':}
   contain '::midonet_openstack::profile::nova::compute'
-  class { '::midonet_openstack::profile::horizon::horizon':
-    extra_aliases => $horizon_extra_aliases
-  }
+  class { '::midonet_openstack::profile::horizon::horizon':}
   contain '::midonet_openstack::profile::horizon::horizon'
   include ::midonet::params
   # Add midonet-cluster
   class {'midonet::cluster':
-      is_mem               => true,
       zookeeper_hosts      => [ { 'ip' => $client_ip } ],
       cassandra_servers    => $cassandra_seeds,
       cassandra_rep_factor => '1',
       keystone_admin_token => 'testmido',
       keystone_host        => $controller_address_management,
+      is_mem               => true,
       is_insights          => $is_insights,
       insights_ssl         => $insights_ssl,
       analytics_ip         => $analytics_ip,
@@ -268,7 +267,10 @@ class midonet_openstack::role::allinone_mem (
     manage_repo     => $manage_repo,
     mem_username    => $mem_username,
     mem_password    => $mem_password,
-    require         => $zk_requires
+    require         => concat(
+      $zk_requires,
+      Class['::midonet::cluster::install', '::midonet::cluster::run']
+    )
   }
   contain '::midonet::agent'
   # Add midonet-cli
@@ -281,12 +283,18 @@ class midonet_openstack::role::allinone_mem (
 
   #Add MEM manager class
   class {'midonet::mem':
-    mem_apache_servername => $mem_apache_servername,
-    cluster_ip            => $cluster_ip,
-    analytics_ip          => $analytics_ip,
-    is_insights           => $is_insights,
-    is_ssl                => $is_ssl,
-    insights_ssl          => $insights_ssl
+    cluster_ip   => $cluster_ip,
+    analytics_ip => $analytics_ip,
+    is_insights  => $is_insights,
+    is_ssl       => $is_ssl,
+    insights_ssl => $insights_ssl
+  }
+
+  class {'midonet::analytics':
+    zookeeper_hosts => [ { 'ip' => $client_ip } ],
+    is_mem          => true,
+    manage_repo     => false,
+    heap_size_gb    => '3',
   }
 
   #Xenial doesnt like daemons..
@@ -300,13 +308,14 @@ class midonet_openstack::role::allinone_mem (
   {
     package {'bridge-utils':
       ensure => installed,
-      before => [Midonet_host_registry[$::fqdn],
-      Midonet::Resources::Network_creation['Edge Router Setup']]
+      before => [
+        Midonet_host_registry[$::fqdn],
+        Midonet::Resources::Network_creation['Edge Router Setup']
+      ]
     }
   }
 
-  ##midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
-  # Register the host
+  #midonet_openstack#::resources::firewall { 'Midonet API': port => '8181', }
   # Register the host
   midonet_host_registry { $::fqdn:
     ensure          => present,
@@ -344,6 +353,27 @@ class midonet_openstack::role::allinone_mem (
   }
   contain midonet::gateway::static
 
+  exec { 'service midonet-cluster restart':
+      path    => '/usr/bin:/usr/sbin:/sbin:/bin',
+      require => Service['midonet-analytics']
+    } ->
+
+  exec { 'sleep 4':
+      path => '/usr/bin:/usr/sbin:/sbin:/bin'
+    } ->
+
+  exec { 'service midolman restart':
+      path => '/usr/bin:/usr/sbin:/sbin:/bin'
+    } ->
+
+  exec { 'sleep 5':
+      path => '/usr/bin:/usr/sbin:/sbin:/bin'
+    } ->
+
+  exec { 'service midonet-jmxscraper restart':
+      path => '/usr/bin:/usr/sbin:/sbin:/bin'
+    }
+
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
@@ -363,30 +393,13 @@ class midonet_openstack::role::allinone_mem (
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
   Midonet::Resources::Network_creation['Edge Router Setup']  ->
-  Class['midonet::gateway::static']
+  Class['midonet::gateway::static'] ->
+  Class['midonet::analytics'] ->
+  Exec['service midonet-cluster restart']
 
   Keystone_tenant<||>
   -> Keystone_role<||>
   -> Midonet_openstack::Resources::Keystone_user<||>
   -> Midonet_host_registry[$::fqdn]
 
-
-    if $::osfamily == 'Debian' {
-      $command = 'cp /tmp/15-horizon_vhost.conf /etc/apache2/sites-available/15-horizon_vhost.conf && service apache2 restart'
-    }
-    else {
-      $command= 'cp /tmp/15-horizon_vhost.conf /etc/httpd/sites-available/15-horizon_vhost.conf && service httpd restart'
-    }
-
-    file { '/tmp/15-horizon_vhost.conf':
-      ensure  => present,
-      require => Class['midonet_openstack::profile::horizon::horizon'],
-      source  => 'puppet:///modules/midonet_openstack/15-horizon_vhost.conf',
-    }
-
-    exec {'reload apache':
-      path    => ['/usr/sbin', '/usr/bin', '/bin', '/sbin'],
-      require => File['/tmp/15-horizon_vhost.conf'],
-      command => $command
-    }
 }
