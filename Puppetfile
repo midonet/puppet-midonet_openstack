@@ -74,7 +74,7 @@ mod 'glance',
   mod 'jfryman/selinux'
 
 mod 'TubeMogul/curator'
-mod 'elasticsearch/elasticsearch'
+mod 'elasticsearch/elasticsearch' , '0.13.2'
 mod 'elasticsearch/logstash'
 mod 'electrical/file_concat'
 mod 'richardc/datacat'

@@ -135,7 +135,7 @@ class midonet_openstack::role::allinone_mem (
   $horizon_extra_aliases         = undef,
   $cluster_ip                    = undef,
   $analytics_ip                  = undef,
-  $is_insights                   = undef,
+  $is_insights                   = true,
   $is_ssl                        = undef,
   $insights_ssl                  = undef,
   $zookeeper_servers             = $midonet_openstack::params::zookeeper_servers,
@@ -195,7 +195,7 @@ class midonet_openstack::role::allinone_mem (
   contain '::midonet_openstack::profile::zookeeper::midozookeeper'
 
   class {'::midonet_openstack::profile::cassandra::midocassandra':
-    seeds              => $cassandra_seeds,
+    seeds              => $client_ip,
     seed_address       => $client_ip,
     storage_port       => '7000',
     ssl_storage_port   => '7001',
@@ -290,6 +290,13 @@ class midonet_openstack::role::allinone_mem (
     insights_ssl => $insights_ssl
   }
 
+  class {'midonet::analytics':
+    zookeeper_hosts => [ { 'ip' => $client_ip } ],
+    is_mem          => true,
+    manage_repo     => false,
+    heap_size_gb    => '3',
+  }
+
   #Xenial doesnt like daemons..
   if $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemmajrelease, '16') >= 0
   {
@@ -346,6 +353,27 @@ class midonet_openstack::role::allinone_mem (
   }
   contain midonet::gateway::static
 
+  exec { 'service midonet-cluster restart':
+      path    => '/usr/bin:/usr/sbin:/sbin:/bin',
+      require => Service['midonet-analytics']
+    } ->
+
+  exec { 'sleep 4':
+      path => '/usr/bin:/usr/sbin:/sbin:/bin'
+    } ->
+
+  exec { 'service midolman restart':
+      path => '/usr/bin:/usr/sbin:/sbin:/bin'
+    } ->
+
+  exec { 'sleep 5':
+      path => '/usr/bin:/usr/sbin:/sbin:/bin'
+    } ->
+
+  exec { 'service midonet-jmxscraper restart':
+      path => '/usr/bin:/usr/sbin:/sbin:/bin'
+    }
+
   Class['midonet_openstack::profile::repos']                      ->
   Class['midonet::repository']                                    ->
   Class['midonet_openstack::profile::midojava::midojava']         ->
@@ -365,7 +393,9 @@ class midonet_openstack::role::allinone_mem (
   Class['midonet::cli']                                           ->
   Midonet_host_registry[$::fqdn]                                  ->
   Midonet::Resources::Network_creation['Edge Router Setup']  ->
-  Class['midonet::gateway::static']
+  Class['midonet::gateway::static'] ->
+  Class['midonet::analytics'] ->
+  Exec['service midonet-cluster restart']
 
   Keystone_tenant<||>
   -> Keystone_role<||>
