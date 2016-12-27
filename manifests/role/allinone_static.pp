@@ -16,14 +16,6 @@
 #
 # == Parameters
 #
-#  [*zookeeper_client_ip*]
-#    Zookeeper Host Ip
-# [*is_mem*]
-#   Using MEM installation?
-# [*mem_username*]
-#   Midonet MEM username
-# [*mem_password*]
-#   Midonet MEM password
 class midonet_openstack::role::allinone_static (
   $zk_id,
   $zk_servers              = $::midonet_openstack::params::zookeeper_servers,
@@ -100,17 +92,14 @@ class midonet_openstack::role::allinone_static (
 
   class { '::midonet_openstack::profile::repos': }
   contain '::midonet_openstack::profile::repos'
-
   class { '::midonet::repository':
     is_mem       => $is_mem,
     mem_username => $mem_username,
     mem_password => $mem_password
   }
   contain '::midonet::repository'
-
   class { '::midonet_openstack::profile::midojava::midojava': }
   contain '::midonet_openstack::profile::midojava::midojava'
-
   class { '::midonet_openstack::profile::zookeeper::midozookeeper':
     zk_servers => zookeeper_servers($zk_servers),
     id         => $zk_id,
@@ -125,20 +114,23 @@ class midonet_openstack::role::allinone_static (
   }
   contain '::midonet_openstack::profile::zookeeper::midozookeeper'
 
-  class { '::midonet_openstack::profile::cassandra::midocassandra':
-    seeds        => $cassandra_seeds,
-    seed_address => $client_ip,
+  class {'::midonet_openstack::profile::cassandra::midocassandra':
+    seeds              => $cassandra_seeds,
+    seed_address       => $client_ip,
+    storage_port       => '7000',
+    ssl_storage_port   => '7001',
+    client_port        => '9042',
+    client_port_thrift => '9160',
   }
   contain '::midonet_openstack::profile::cassandra::midocassandra'
-
   class { '::midonet_openstack::profile::memcache::memcache':}
   contain '::midonet_openstack::profile::memcache::memcache'
-  class { '::midonet_openstack::profile::keystone::controller': }
-  contain '::midonet_openstack::profile::keystone::controller'
   class { '::midonet_openstack::profile::mysql::controller': }
   contain '::midonet_openstack::profile::mysql::controller'
   class { '::midonet_openstack::profile::rabbitmq::controller': }
   contain '::midonet_openstack::profile::rabbitmq::controller'
+  class { '::midonet_openstack::profile::keystone::controller': }
+  contain '::midonet_openstack::profile::keystone::controller'
   class { '::midonet_openstack::profile::glance::controller':
     require => Class['::midonet_openstack::profile::keystone::controller'],
   }
@@ -150,7 +142,7 @@ class midonet_openstack::role::allinone_static (
   contain '::midonet_openstack::profile::nova::api'
   class { '::midonet_openstack::profile::nova::compute':}
   contain '::midonet_openstack::profile::nova::compute'
-  class { '::midonet_openstack::profile::horizon::horizon':}
+  class { '::midonet_openstack::profile::horizon::horizon': }
   contain '::midonet_openstack::profile::horizon::horizon'
 
 
@@ -164,8 +156,19 @@ class midonet_openstack::role::allinone_static (
     require              => $zk_requires,
   }
   contain '::midonet::cluster'
-
-  # MidoNet CLI
+  # MidoNet Agent (a.k.a. Midolman)
+  class { 'midonet::agent':
+    controller_host => '127.0.0.1',
+    metadata_port   => $metadata_port,
+    shared_secret   => $shared_secret,
+    zookeeper_hosts => [ { 'ip' => $client_ip} ],
+    require         => concat(
+      $zk_requires,
+      Class['::midonet::cluster::install', '::midonet::cluster::run']
+    )
+  }
+  contain '::midonet::agent'
+  # Add midonet-cli
   class { 'midonet::cli':
     username => $admin_user,
     password => $admin_password,
@@ -181,19 +184,6 @@ class midonet_openstack::role::allinone_static (
       analytics_ip          => $analytics_ip
     }
   }
-
-  # MidoNet Agent (a.k.a. Midolman)
-  class { 'midonet::agent':
-    controller_host => '127.0.0.1',
-    metadata_port   => $metadata_port,
-    shared_secret   => $shared_secret,
-    zookeeper_hosts => [ { 'ip' => $client_ip} ],
-    require         => concat(
-      $zk_requires,
-      Class['::midonet::cluster::install', '::midonet::cluster::run']
-    )
-  }
-  contain '::midonet::agent'
 
   # Register the host
   midonet_host_registry { $::fqdn:
@@ -257,5 +247,7 @@ class midonet_openstack::role::allinone_static (
   -> Keystone_role<||>
   -> Midonet_openstack::Resources::Keystone_user<||>
   -> Midonet_host_registry[$::fqdn]
+
+  exec { '/bin/echo "Include /etc/httpd/conf.modules.d/*.load" >> /etc/httpd/conf/httpd.conf': } -> Service['httpd']
 
 }

@@ -28,8 +28,9 @@ class midonet_openstack::profile::mysql::controller (
   $bind_address = $::midonet_openstack::params::controller_address_management
   ){
   class { '::mysql::server':
-    override_options => {
-      mysqld => { bind-address      => $bind_address} #Allow remote connections
+    remove_default_accounts => true,
+    override_options        => {
+      mysqld => { bind-address => $bind_address} #Allow remote connections
     },
     # ... other class options
   }

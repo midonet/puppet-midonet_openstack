@@ -152,6 +152,16 @@ class midonet_openstack::profile::nova::compute(
         Package['device-mapper']
       ]
     }
+
+    exec { 'install-libvirt-python':
+      command => '/bin/rpm -Uvh ftp://195.220.108.108/linux/centos/7.2.1511/os/x86_64/Packages/libvirt-python-1.2.17-2.el7.x86_64.rpm',
+    }
+
+    Package['libvirt'] -> Exec['install-libvirt-python']
+
+    # TODO: Add CentOS 7.2 vault repo in puppet
+    Package<| title == "libvirt" |> { ensure => '1.2.17' }
+    Package<| title == "libvirt-nwfilter" |> { ensure => '1.2.17' }
   }
   class { '::nova::compute::libvirt':
     libvirt_virt_type => $nova_libvirt_type,
