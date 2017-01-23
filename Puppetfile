@@ -31,7 +31,7 @@ mod 'keystone',
   :git => 'https://git.openstack.org/openstack/puppet-keystone',
   :ref => 'stable/mitaka'
 mod 'puppetlabs/inifile'
-mod 'puppetlabs/apache'
+mod 'puppetlabs/apache' , '1.10.0'
 mod 'puppetlabs/concat' , '1.2.5'
 mod 'puppet-openstacklib',
   :git => 'https://git.openstack.org/openstack/puppet-openstacklib',
