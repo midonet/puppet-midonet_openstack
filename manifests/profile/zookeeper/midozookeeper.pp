@@ -53,25 +53,11 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
         client_ip           => $client_ip,
         packages            => $zk_packages,
         service_name        => 'zookeeper',
-        manage_service      => false,
-        manage_service_file => false,
+        service_provider    => 'init',
+        manage_service      => true,
+        manage_service_file => true,
       }
       contain zookeeper
-
-      service { 'zookeeper-service':
-        ensure  => 'running',
-        name    => 'zookeeper',
-        enable  => true,
-        require => [
-          File["${cfg_dir}/zoo.cfg"],
-        ],
-      }
-
-      Class['zookeeper::os::redhat'] ->
-      Class['zookeeper::config'] ->
-      #File['zookeeper-old-initscript'] ->
-      Service['zookeeper-service']
-
     }
     elsif $::osfamily == 'Debian'
     {
@@ -92,3 +78,4 @@ class midonet_openstack::profile::zookeeper::midozookeeper(
       fail("Unsupported Operating System Family ${::osfamily}")
     }
   }
+
